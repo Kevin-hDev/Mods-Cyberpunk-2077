@@ -1,0 +1,10 @@
+# Apex Grapple: a pull reaches 25 m/s and keeps the momentum carried on top of it. The engine holds V to
+# player.locomotion.maxAirXYSpeed (18 in the air); the mod lifts that hold during a pull as the game does for a dash
+# (TemporarySpeedLimitIgnore), and V is held to these extended limits instead: 30 in the game. Other mods of ours that
+# need these values carry the same numbers: the install tool refuses two different values. Read when the game starts.
+player.locomotion.extendedMaxGroundSpeed:
+  $type: Float
+  $value: 50.0
+player.locomotion.extendedMaxAirXYSpeed:
+  $type: Float
+  $value: 50.0

@@ -1,0 +1,30 @@
+# Omni Slide: the slide works in every direction, and V's body turns with the camera during it.
+# The slide state reads its values only when a save loads; the scripts bring the game's rules back while
+# the switch in Mod Settings is off: OmniSlideGameAngle(), OmniSlideGameClimbAngle(), the back key's braking and the
+# heading lock on.
+# The slide after a fall (slideAfterFall, a landing slide) is a state of its own with the same rules.
+playerStateMachineLocomotion.slide.enterAngleThreshold:
+  $type: Float
+  $value: 180.0
+playerStateMachineLocomotion.slideAfterFall.enterAngleThreshold:
+  $type: Float
+  $value: 180.0
+playerStateMachineLocomotion.slide.backInputDeceleratesSlide:
+  $type: Bool
+  $value: false
+playerStateMachineLocomotion.slideAfterFall.backInputDeceleratesSlide:
+  $type: Bool
+  $value: false
+# The game ends a slide at once on a climb of this angle, and the edge of a small step reads as one for a moment.
+# The test needs an angle under 89.5, so 90 turns it off; Edges.reds keeps the rule for a climb that lasts.
+playerStateMachineLocomotion.slide.minAngleToStopUphillSlide:
+  $type: Float
+  $value: 90.0
+playerStateMachineLocomotion.slideAfterFall.minAngleToStopUphillSlide:
+  $type: Float
+  $value: 90.0
+# With the heading locked, the body keeps its direction while the camera turns: looking back shows V's arms,
+# and the game ends the slide at 96 degrees of camera turn. The three slide states share this camera setting.
+fppCameraParamSets.Slide.headingLocked:
+  $type: Bool
+  $value: false

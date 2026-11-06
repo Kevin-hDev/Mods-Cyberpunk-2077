@@ -1,0 +1,16 @@
+# Axle Slide: during a slide, V's body turns with the view and the back key turns the slide backward instead of
+# braking it. The game reads these when a save loads; the scripts put the game's rules back while the switch in
+# Mod Settings is off. The game's values: true for all three.
+# Our other mods that carry any of these values carry the same ones: the install tool refuses two different values.
+playerStateMachineLocomotion.slide.backInputDeceleratesSlide:
+  $type: Bool
+  $value: false
+# The slide after a fall (a landing, or a bump in a slide) is a state of its own, with its own braking rule.
+playerStateMachineLocomotion.slideAfterFall.backInputDeceleratesSlide:
+  $type: Bool
+  $value: false
+# With the heading locked, the body keeps its direction while the view turns: looking back shows V's arms,
+# and the game ends the slide at 96 degrees of view turn. The three slide states share this camera set.
+fppCameraParamSets.Slide.headingLocked:
+  $type: Bool
+  $value: false

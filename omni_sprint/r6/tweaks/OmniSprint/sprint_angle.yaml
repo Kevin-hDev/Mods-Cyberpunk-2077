@@ -1,0 +1,5 @@
+# Omni Sprint: opens the sprint to every direction. The game's own limit, and why the scripts bring it back while the
+# switch in Mod Settings is off: scripts/OmniSprint/OmniSprint.reds.
+playerStateMachineLocomotion.sprint.enterAngleThreshold:
+  $type: Float
+  $value: 180.0

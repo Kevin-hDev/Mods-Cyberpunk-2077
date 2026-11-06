@@ -1,0 +1,11 @@
+# Omni Slide: lets the slide speed setting go past the game's limits. Read when the game starts, before any save loads.
+# The engine holds V to player.locomotion.maxGroundSpeed (15 on the ground, 18 in the air). SpeedLimit.reds lifts that
+# hold, as the game does for a dash, and V is held to these extended limits instead: 30 in the game, which stopped
+# slides boosted toward 50 at 30 m/s (log of 21 October 2026). A boosted slide never starts faster than the ground one.
+# Other mods of ours that need these values carry the same numbers: the install tool refuses two different values.
+player.locomotion.extendedMaxGroundSpeed:
+  $type: Float
+  $value: 50.0
+player.locomotion.extendedMaxAirXYSpeed:
+  $type: Float
+  $value: 50.0

@@ -1,0 +1,5 @@
+AGENTS.md
+CLAUDE.md
+*.tmp
+# Apex Grapple's hook and rope archive is built over a mesh taken from the game: shipped on Nexus only, never here.
+*.archive

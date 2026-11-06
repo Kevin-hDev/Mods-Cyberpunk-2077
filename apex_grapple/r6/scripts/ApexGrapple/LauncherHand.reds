@@ -1,0 +1,67 @@
+// V's own left hand hidden while the launcher is lent (Launcher.reds): the holstered arms add their pieces to V and the
+// launcher adds its own arm, hand lowered, so both hands showed (capture 69, 31 October 2026). The holstered arms'
+// left-arm pieces are switched off, found by the rendering plane the game draws V's left arm with, and switched back on
+// when the launcher is taken back.
+// The plane alone finds them, whatever the arm implant (lists of 1 November): bare hands, Monowire, Mantis Blades,
+// Gorilla Arms, the launcher's holstered pieces, the personal link; none of the lent launcher's pieces is drawn on that
+// plane. Holstered arms put away with a drawn arm implant come back during the loan, half a second after the shot: the
+// pieces are looked for again each frame.
+
+// Without Codeware V's hand cannot be hidden, and the rope is not drawn (Pieces.reds): the launcher would show over V's
+// own hand for nothing, so it is not lent (Launcher.reds).
+@if(ModuleExists("Codeware"))
+public func ApexGrappleLauncherCanShow() -> Bool {
+  return true;
+}
+
+@if(!ModuleExists("Codeware"))
+public func ApexGrappleLauncherCanShow() -> Bool {
+  return false;
+}
+
+@if(ModuleExists("Codeware"))
+public func ApexGrappleLauncherIsOwnLeftArm(component: ref<IComponent>) -> Bool {
+  let skinned: ref<entSkinnedMeshComponent> = component as entSkinnedMeshComponent;
+  return IsDefined(skinned) && Equals(skinned.renderingPlaneAnimationParam, n"renderPlaneLeftArm");
+}
+
+// `first`: as the launcher comes into the hand, written even when nothing is found; afterwards only what came back.
+@if(ModuleExists("Codeware"))
+public func ApexGrappleLauncherHideHand(loan: ref<ApexGrappleLauncherLoan>, first: Bool, now: Float, player: ref<GameObject>) -> Void {
+  let found: array<wref<IComponent>>;
+  let names: String = "";
+  for component in player.GetComponents() {
+    if component.IsEnabled() && ApexGrappleLauncherIsOwnLeftArm(component) {
+      ArrayPush(found, component);
+      names += " " + NameToString(component.GetName());
+    }
+  }
+  if ArraySize(found) == 0 && !first {
+    return;
+  }
+  ApexGrappleLog((first ? "launcher in the left hand " + ToString(now - loan.shotAt) + " s after the shot, " : "") + ToString(ArraySize(found)) + " pieces of V's own left arm switched off" + (first ? "" : ", come back during the loan") + ":" + names);
+  for held in found {
+    let component: ref<IComponent> = held;
+    if IsDefined(component) {
+      component.Toggle(false);
+      ArrayPush(loan.hiddenHand, held);
+    }
+  }
+}
+
+@if(!ModuleExists("Codeware"))
+public func ApexGrappleLauncherHideHand(loan: ref<ApexGrappleLauncherLoan>, first: Bool, now: Float, player: ref<GameObject>) -> Void {}
+
+// How many pieces were switched back on.
+public func ApexGrappleLauncherShowHand(loan: ref<ApexGrappleLauncherLoan>) -> Int32 {
+  let back: Int32 = 0;
+  for held in loan.hiddenHand {
+    let component: ref<IComponent> = held;
+    if IsDefined(component) {
+      component.Toggle(true);
+      back += 1;
+    }
+  }
+  ArrayClear(loan.hiddenHand);
+  return back;
+}
