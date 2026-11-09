@@ -70,7 +70,7 @@ public class ApexGrappleChinese extends ModLocalizationPackage {
     this.Text("ApexGrapple-HookTargets", "抓钩可勾载具和人物");
     this.Text("ApexGrapple-HookTargets-Description", "抓钩也能勾住载具、敌人和路人，并随其移动。载具总是把 V 拉过去。需要 Codeware。");
     this.Text("ApexGrapple-PullPeople", "把人拉向 V");
-    this.Text("ApexGrapple-PullPeople-Description", "需开启上一项：在游戏允许时，被勾住的人会被拉向 V，而不是 V 被拉过去；否则 V 被拉过去（过场、载具、有障碍、V 附近没有地面）。只有人类和仿生人会被拉过来：首领、无人机和机甲总是把 V 拉过去。");
+    this.Text("ApexGrapple-PullPeople-Description", "需开启上一项：在游戏允许时，被勾住的人会被拉向 V，而不是 V 被拉过去；否则 V 被拉过去（任务过场、坐在载具里的人、V 附近没有地面）。只有人类和仿生人会被拉过来：首领、无人机和机甲总是把 V 拉过去。");
     this.Text("ApexGrapple-PullDamage", "拉人时造成伤害");
     this.Text("ApexGrapple-PullDamage-Description", "需开启上面两项：被拉向 V 的人会被重重摔在 V 面前的地上，按游戏规则承受冲击伤害，可能因此死亡。关闭时，在其静止之前，坠落和撞击不会造成伤害；V 的射击仍会造成伤害。");
     this.Text("ApexGrapple-SteerPeople", "用准星控制被拉的人");

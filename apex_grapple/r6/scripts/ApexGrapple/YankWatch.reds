@@ -87,6 +87,10 @@ public func ApexGrappleYankWatchStart(yank: ref<ApexGrappleYank>, person: ref<Ga
   yank.watchFallen = ApexGrappleFallen(person);
   yank.watchJumps = 0;
   yank.watchAlive = ScriptedPuppet.IsAlive(person);
+  if !yank.watchAlive {
+    ApexGrappleLog("person pulled to V: dead at the pull's end, " + ApexGrappleWhoText(person));
+    ApexGrappleLootLater(person);
+  }
 }
 
 // Each frame of the watch: a move no body makes, the moment the person gets up, and a death.
@@ -108,6 +112,7 @@ public func ApexGrappleYankWatchMoves(system: ref<ApexGrappleSystem>, yank: ref<
   let alive: Bool = ScriptedPuppet.IsAlive(person);
   if yank.watchAlive && !alive {
     ApexGrappleLog("person pulled to V: died " + ToString(after) + " s after, ragdoll " + ToString(fallen) + ", shielded " + ToString(ApexGrappleIsShielded(system, person.GetEntityID())) + ", held for it: " + ApexGrappleKillerText(person) + ", " + ApexGrappleWhoText(person));
+    ApexGrappleLootLater(person);
   }
   yank.watchChest = chest;
   yank.watchPlace = place;

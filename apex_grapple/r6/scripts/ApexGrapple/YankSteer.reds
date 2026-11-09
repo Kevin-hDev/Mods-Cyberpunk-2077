@@ -56,19 +56,17 @@ public func ApexGrappleSteerTry(step: Int32) -> Float {
   return 0.25;
 }
 
-// A moved goal the person can reach: ground where the AI can stand under it, and a clear way from the chest. The
-// audit of 2 November 2026 found the moved goal never checked, where the straight one is (YankWhy.reds): steered
-// throws came 74 % of the time, straight ones 91 % (fifth test).
-public func ApexGrappleSteerFits(yank: ref<ApexGrappleYank>, chest: Vector4, goal: Vector4, side: Float, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
-  let up: Vector4 = DefaultTransition.GetUpVector();
-  if AbsF(side) > ApexGrappleTiny() {
-    let ground: Vector4 = goal - up * (goal.Z - yank.baseGoal.Z + ApexGrappleYankChestUp());
-    let snapped: Vector4;
-    if !GameInstance.GetAINavigationSystem(scriptInterface.GetGame()).IsPointOnNavmesh(yank.person, ground, new Vector4(0.5, 0.5, 1.0, 1.0), snapped) {
-      return false;
-    }
+// A moved goal the person can reach: ground where the AI can stand under it, as for the straight one (YankWhy.reds).
+// The audit of 2 November 2026 found the moved goal never checked: steered throws came 74 % of the time, straight ones
+// 91 % (fifth test). Something in the way does not count, for the straight goal neither (Kevin, 9 November 2026).
+public func ApexGrappleSteerFits(yank: ref<ApexGrappleYank>, goal: Vector4, side: Float, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+  if AbsF(side) <= ApexGrappleTiny() {
+    return true;
   }
-  return !ApexGrappleWayBlockedBetween(chest + up * 0.5, goal, scriptInterface);
+  let up: Vector4 = DefaultTransition.GetUpVector();
+  let ground: Vector4 = goal - up * (goal.Z - yank.baseGoal.Z + ApexGrappleYankChestUp());
+  let snapped: Vector4;
+  return GameInstance.GetAINavigationSystem(scriptInterface.GetGame()).IsPointOnNavmesh(yank.person, ground, new Vector4(0.5, 0.5, 1.0, 1.0), snapped);
 }
 
 // Moves the goal for where V looks now, against the line from the view to the bite: up as the aim is raised, to the
@@ -96,7 +94,7 @@ public func ApexGrappleYankSteer(yank: ref<ApexGrappleYank>, chest: Vector4, whe
     let step: Int32 = 0;
     while step < 4 && share <= 0.0 {
       let tried: Vector4 = yank.baseGoal + DefaultTransition.GetUpVector() * (up * ApexGrappleSteerTry(step)) + right * (side * ApexGrappleSteerTry(step));
-      if ApexGrappleSteerFits(yank, chest, tried, side * ApexGrappleSteerTry(step), scriptInterface) {
+      if ApexGrappleSteerFits(yank, tried, side * ApexGrappleSteerTry(step), scriptInterface) {
         share = ApexGrappleSteerTry(step);
         goal = tried;
       }

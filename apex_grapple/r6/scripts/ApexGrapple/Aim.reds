@@ -140,6 +140,12 @@ public func ApexGrappleAimNow(scriptInterface: ref<StateGameScriptInterface>, se
         aim.seen = aim.seen + how;
         return aim;
       }
+      let rider: ref<GameObject> = ApexGrappleRiderOf(way.object);
+      if IsDefined(rider) {
+        aim = ApexGrappleAimAtPerson(rider, from);
+        aim.seen = aim.seen + ", riding the motorcycle" + how;
+        return aim;
+      }
       if way.byRay {
         aim = ApexGrappleAimAtVehicle(way.object, way.hit, from);
         aim.seen = aim.seen + how;

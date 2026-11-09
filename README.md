@@ -10,7 +10,7 @@ Movement mods for Cyberpunk 2077 2.5, written in redscript, inspired by Apex Leg
 | [Axle Slide](axle_slide/) | Steer your slides with the move keys, slide faster with a speed boost, and farther | 1.0.0 |
 | [Air Strafe](air_strafe/) | Steer your momentum in the air through 360 degrees with the move keys without losing speed, and tap strafe | 1.0.0 |
 | [Wall Climb](wall_climb/) | Climb any wall in Night City, sideways and upward | 1.0.0 |
-| [Apex Grapple](apex_grapple/) | A grappling hook: aim at a surface, the hook flies out, and the rope pulls you while your aim steers you | 1.0.7 |
+| [Apex Grapple](apex_grapple/) | A grappling hook: aim at a surface, the hook flies out, and the rope pulls you while your aim steers you | 1.0.8 |
 
 Each folder holds the mod exactly as it ships on Nexus Mods: its `r6` folder mirrors the game folder.
 

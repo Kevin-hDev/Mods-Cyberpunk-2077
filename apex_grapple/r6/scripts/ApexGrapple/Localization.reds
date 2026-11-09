@@ -89,7 +89,7 @@ public class ApexGrappleEnglish extends ModLocalizationPackage {
     this.Text("ApexGrapple-HookTargets", "Grapple onto vehicles and people");
     this.Text("ApexGrapple-HookTargets-Description", "The hook also takes vehicles, enemies and passers-by, and follows them as they move. A vehicle always pulls V. Needs Codeware.");
     this.Text("ApexGrapple-PullPeople", "Pull people to V");
-    this.Text("ApexGrapple-PullPeople-Description", "Works with the setting above on: a person the hook takes is pulled to V, instead of V to them, when the game allows it; otherwise V is pulled (a scene, a vehicle, something in the way, no ground by V). Only humans and androids come: bosses, drones and mechs always pull V.");
+    this.Text("ApexGrapple-PullPeople-Description", "Works with the setting above on: a person the hook takes is pulled to V, instead of V to them, when the game allows it; otherwise V is pulled (a mission scene, someone sitting in a vehicle, no ground by V). Only humans and androids come: bosses, drones and mechs always pull V.");
     this.Text("ApexGrapple-PullDamage", "Damage when pulling people");
     this.Text("ApexGrapple-PullDamage-Description", "Works with the two settings above on: a person pulled to V is slammed to the ground in front of V and takes the blow, as the game counts it; it can kill. Off, the fall and what they hit do them no harm until they lie still; V's shots still hurt.");
     this.Text("ApexGrapple-SteerPeople", "Steer pulled people with the aim");
@@ -172,7 +172,7 @@ public class ApexGrappleFrench extends ModLocalizationPackage {
     this.Text("ApexGrapple-HookTargets", "Grappin sur les véhicules et les personnes");
     this.Text("ApexGrapple-HookTargets-Description", "Le crochet prend aussi les véhicules, les ennemis et les passants, et les suit quand ils bougent. Un véhicule tire toujours V. Demande Codeware.");
     this.Text("ApexGrapple-PullPeople", "Tirer les personnes vers V");
-    this.Text("ApexGrapple-PullPeople-Description", "Marche avec le réglage du dessus allumé : la personne prise vient vers V, au lieu de V vers elle, quand le jeu le permet ; sinon V est tiré (scène, véhicule, obstacle, pas de sol près de V). Seuls les humains et les androïdes viennent : les boss, les drones et les mechs tirent toujours V.");
+    this.Text("ApexGrapple-PullPeople-Description", "Marche avec le réglage du dessus allumé : la personne prise vient vers V, au lieu de V vers elle, quand le jeu le permet ; sinon V est tiré (scène de mission, personne assise dans un véhicule, pas de sol près de V). Seuls les humains et les androïdes viennent : les boss, les drones et les mechs tirent toujours V.");
     this.Text("ApexGrapple-PullDamage", "Dégâts quand la personne est tirée");
     this.Text("ApexGrapple-PullDamage-Description", "Marche avec les deux réglages du dessus allumés : la personne tirée vers V est plaquée au sol devant V et prend le choc, comme le jeu le compte ; elle peut en mourir. Éteint, la chute et ce qu'elle heurte ne la blessent pas jusqu'à ce qu'elle soit immobile ; les tirs de V la blessent toujours.");
     this.Text("ApexGrapple-SteerPeople", "Diriger la personne au viseur");

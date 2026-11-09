@@ -68,6 +68,20 @@ private final func ApexGrappleScannerInUse(scriptInterface: ref<StateGameScriptI
   return "";
 }
 
+// A press made with a menu open (inventory, crafting, map...) belongs to the menu. The player's states go on running
+// there: the game's own equipment and gadget decisions refuse in any menu (IsPlayerInAnyMenu, equipment.script:565,
+// combatGadgetTransitions.script:286, scripts 2.5). Without this test, a player holding an own key on E to craft the
+// most of an item fired the grapple behind the crafting screen (report of 9 November 2026). The press is used up: the
+// key, still down once the menu is closed, needs a new press.
+@addMethod(LocomotionEventsTransition)
+private final func ApexGrappleMenuTakes(scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+  if this.IsPlayerInAnyMenu(scriptInterface) {
+    ApexGrappleLog("press left to the game: a menu is open");
+    return true;
+  }
+  return false;
+}
+
 // A method of the locomotion states, for the game's IsInFocusMode. states: the own keys' places this frame.
 @addMethod(LocomotionEventsTransition)
 private final func ApexGrappleReadKey(scriptInterface: ref<StateGameScriptInterface>, system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, states: array<ApexGrappleOwnKey>, now: Float) -> ApexGrappleKey {
@@ -78,10 +92,13 @@ private final func ApexGrappleReadKey(scriptInterface: ref<StateGameScriptInterf
     // The place of the profile whose key is read (KeyProfile.reds).
     let slot: Int32 = system.keyProfile - 1;
     let own: ApexGrappleOwnKey = states[slot];
-    // The own key is heard in menus too: a press made there counts only if the key is still down back in the game.
+    // The own key is heard in menus too (ApexGrappleMenuTakes).
     key.pressed = own.presses != system.ownPressesSeen[slot] && own.held;
     system.ownPressesSeen[slot] = own.presses;
     key.held = own.held;
+    if key.pressed && this.ApexGrappleMenuTakes(scriptInterface) {
+      key.pressed = false;
+    }
     if key.pressed {
       system.keyIsQuickMelee = ApexGrappleKeyStrikesQuickMelee(game, settings.key);
       shared = ApexGrappleKeyOpensScanner(game, settings.key);
@@ -89,6 +106,9 @@ private final func ApexGrappleReadKey(scriptInterface: ref<StateGameScriptInterf
   } else {
     key.pressed = scriptInterface.IsActionJustPressed(n"QuickMelee");
     key.held = key.pressed || scriptInterface.GetActionValue(n"QuickMelee") > 0.0;
+    if key.pressed && this.ApexGrappleMenuTakes(scriptInterface) {
+      key.pressed = false;
+    }
     if key.pressed {
       system.keyIsQuickMelee = true;
       shared = ApexGrappleScannerShares(scriptInterface);
