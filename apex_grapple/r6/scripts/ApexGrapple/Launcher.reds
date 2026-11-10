@@ -3,7 +3,8 @@
 // fires the hook with. Lent as the arm rises; taken back as the arm is put back, at a new shot, when the view leaves
 // the eyes, when the game puts something else in the hand, or once the grapple's frame stops (LauncherWatch.reds).
 // - A real item given to V and set in the left hand slot: a preview item never showed on V (8 shots of 8, 31 October
-//   2026). Its added event is flagged silent, else "Looted" showed in the activity log. Its ID is made as the game
+//   2026). Its added event is flagged silent, else "Looted" showed in the activity log, and the game's "Removed" line
+//   for it is taken out of that log (LauncherNotice.reds). Its ID is made as the game
 //   makes the items it crafts (ItemID.FromTDBID), and it is taken back by that ID.
 // - It carries a tag of our own, given with it as the game's HideInUI is: saving is refused while it is lent (Hook.reds,
 //   IsSavingLocked), as the game itself refuses it during an air dash (locomotionTransitions.script), and a save that
@@ -30,6 +31,12 @@ public class ApexGrappleLauncherLoan extends IScriptable {
   public let noCrosshairSaid: Bool;
   // A save that kept the launcher, looked for once a load.
   public let saveChecked: Bool;
+  // The launcher last taken back, until the game's removal event for it is seen (LauncherNotice.reds).
+  public let takenBack: ItemID;
+  // The activity log line the game builds for that removal, still to be taken out of the log.
+  public let noticeText: String;
+  public let noticeAt: Float;
+  public let noticeCount: Int32;
 }
 
 public func ApexGrappleLauncherRecord() -> TweakDBID {
@@ -132,6 +139,7 @@ public func ApexGrappleLauncherTakeBack(system: ref<ApexGrappleSystem>, now: Flo
   if !IsDefined(held) || ApexGrappleLauncherIsOurs(held, id) {
     fromHand = items.RemoveItemFromSlot(player, ApexGrappleLauncherSlot(), true);
   }
+  loan.takenBack = id;
   let removed: Bool = items.RemoveItem(player, id, 1);
   let back: Int32 = ApexGrappleLauncherShowHand(loan);
   ApexGrappleLauncherCrosshairRestore(loan);
@@ -156,6 +164,7 @@ public func ApexGrappleLauncherLeftInSave(system: ref<ApexGrappleSystem>, player
       if ApexGrappleLauncherIsOurs(items.GetItemInSlot(player, ApexGrappleLauncherSlot()), id) {
         items.RemoveItemFromSlot(player, ApexGrappleLauncherSlot(), true);
       }
+      loan.takenBack = id;
       let removed: Bool = items.RemoveItem(player, id, 1);
       ApexGrappleLog("a lent launcher kept by the save, taken back: from the inventory " + ToString(removed) + ", still owned " + ToString(items.HasItem(player, id)));
     }
