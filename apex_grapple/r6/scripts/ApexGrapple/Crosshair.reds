@@ -4,7 +4,8 @@
 // frame's visibility in UpdateRootVisibility, which every change of its own goes through: the mod's rule
 // (CrosshairRule.reds) is applied right after it. While the crosshair shows, the frame is made visible and the game's
 // dot hidden; once it hides, both go back to the game's rule. Updated on events only: right-hand weapon, vehicle,
-// scene tier, scanner, the aim the game listens to, and Mod Settings (CrosshairWatch.reds).
+// scene tier, scanner, the aim the game listens to, and Mod Settings (CrosshairWatch.reds); only the range indicator's
+// colour follows the aim each frame (CrosshairRange.reds).
 
 public class ApexGrappleCrosshairState extends IScriptable {
   public let player: wref<GameObject>;
@@ -25,6 +26,8 @@ public class ApexGrappleCrosshairState extends IScriptable {
   public let sceneCallback: ref<CallbackHandle>;
   public let visionCallback: ref<CallbackHandle>;
   public let watch: ref<ApexGrappleCrosshairWatch>;
+  // The range indicator (CrosshairRange.reds), driven by the grapple's frame through the link its system keeps.
+  public let range: ref<ApexGrappleCrosshairRange>;
 }
 
 @addField(CrosshairGameControllerPersistentDot)
@@ -55,6 +58,13 @@ private func ApexGrappleCrosshairAttach(player: ref<GameObject>) -> Void {
   let state: ref<ApexGrappleCrosshairState> = new ApexGrappleCrosshairState();
   this.apexGrapple = state;
   state.player = player;
+  // The grapple's system is made before the crosshair attaches: "loaded" comes before "crosshair host found" at each
+  // load (releves/apex-grapple/2026-11-10-reticule/gamelog-reticule.log).
+  state.range = new ApexGrappleCrosshairRange();
+  let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(player.GetGame());
+  if IsDefined(system) {
+    system.crosshairRange = state.range;
+  }
   let defs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
   let boards: ref<BlackboardSystem> = this.GetBlackboardSystem();
   // The right hand's weapon as the game's crosshairs read it (crosshairContainerController.script, OnWeaponSwap).
@@ -81,7 +91,7 @@ private func ApexGrappleCrosshairAttach(player: ref<GameObject>) -> Void {
   if IsDefined(root) {
     dot = root.GetWidgetByPathName(n"dot");
   }
-  ApexGrappleLog("crosshair host found: the game's dot " + (IsDefined(dot) ? "found" : "not found") + ", its option " + (IsDefined(option) && option.GetValue() ? "on" : "off") + ", weapons " + ToString(IsDefined(state.weapons)) + ", player states " + ToString(IsDefined(state.psm)));
+  ApexGrappleLog("crosshair host found: the game's dot " + (IsDefined(dot) ? "found" : "not found") + ", its option " + (IsDefined(option) && option.GetValue() ? "on" : "off") + ", weapons " + ToString(IsDefined(state.weapons)) + ", player states " + ToString(IsDefined(state.psm)) + ", range indicator linked " + ToString(IsDefined(system)));
   this.UpdateRootVisibility();
 }
 
@@ -108,6 +118,7 @@ private func ApexGrappleCrosshairDetach() -> Void {
     }
   }
   ApexGrappleCrosshairWatchStop(state.watch);
+  ApexGrappleCrosshairRangeStop(state.range);
   this.apexGrapple = null;
   let frame: wref<inkCanvas> = state.frame;
   if IsDefined(frame) {
@@ -141,14 +152,17 @@ private func ApexGrappleCrosshairApply() -> Void {
   if Equals(why, "") {
     let shown: ref<inkCanvas> = ApexGrappleCrosshairFrameOf(state, root);
     let wanted: String = ApexGrappleCrosshairSettingsText(settings);
-    if NotEquals(wanted, state.drawnWith) {
+    let redrawn: Bool = NotEquals(wanted, state.drawnWith);
+    if redrawn {
       ApexGrappleCrosshairDraw(shown, settings);
       state.drawnWith = wanted;
     }
+    ApexGrappleCrosshairRangeStart(state.range, shown, settings, redrawn);
     shown.SetVisible(true);
     root.SetVisible(true);
     this.ApexGrappleCrosshairGameDot(false);
   } else {
+    ApexGrappleCrosshairRangeStop(state.range);
     let hidden: wref<inkCanvas> = state.frame;
     if IsDefined(hidden) {
       hidden.SetVisible(false);

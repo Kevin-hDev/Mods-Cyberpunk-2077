@@ -55,3 +55,26 @@ public func ApexGrappleCrosshairSlicedImage(parent: ref<inkCompoundWidget>, anch
   image.useNineSliceScale = true;
   image.nineSliceScale = new inkMargin(nine[0], nine[1], nine[2], nine[3]);
 }
+
+// Gives the pieces of colour from the colour to, without drawing them again (the range indicator, CrosshairRange.reds).
+// Canvases are walked, never tinted; a piece its game file gives a fixed colour keeps it.
+public func ApexGrappleCrosshairRecolor(parent: ref<inkCompoundWidget>, from: HDRColor, to: HDRColor) -> Void {
+  let count: Int32 = parent.GetNumChildren();
+  let i: Int32 = 0;
+  while i < count {
+    let child: ref<inkWidget> = parent.GetWidgetByIndex(i);
+    let inner: ref<inkCompoundWidget> = child as inkCompoundWidget;
+    if IsDefined(inner) {
+      ApexGrappleCrosshairRecolor(inner, from, to);
+    } else {
+      if IsDefined(child) && ApexGrappleSameColor(child.GetTintColor(), from) {
+        child.SetTintColor(to);
+      }
+    }
+    i += 1;
+  }
+}
+
+public func ApexGrappleSameColor(a: HDRColor, b: HDRColor) -> Bool {
+  return a.Red == b.Red && a.Green == b.Green && a.Blue == b.Blue && a.Alpha == b.Alpha;
+}

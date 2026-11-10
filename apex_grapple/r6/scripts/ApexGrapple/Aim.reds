@@ -1,9 +1,7 @@
-// Where the hook would go: one ray from the camera along the view, the length of the range, against the world's
-// surfaces (Static, Terrain, and Dynamic: billboards hung on buildings are movable objects, probe of 29 October 2026;
-// the hook stays where it was planted even if the object falls). Borderlands 4's rule: a surface takes the hook; someone
-// or a vehicle in the way, or nothing in range, leaves the key to the game's quick melee. Someone within quick melee
-// range wins over a surface behind them ("Quick melee wins over grapple"). With "Grapple onto vehicles and people", the
-// person or vehicle in the way takes the hook instead (Target.reds).
+// What lies along the view: rays from the camera, as far as asked, against the world's surfaces (Static, Terrain, and
+// Dynamic: billboards hung on buildings are movable objects, probe of 29 October 2026; the hook stays where it was
+// planted even if the object falls), vehicles and people, and what the game's targeting looks at. The rule that judges
+// it for a profile, the shot's and the crosshair's alike, is in AimRule.reds.
 
 public struct ApexGrappleAim {
   let found: Bool;
@@ -87,81 +85,48 @@ public func ApexGrappleMetText(object: ref<GameObject>, hit: TraceResult) -> Str
   return " (" + NameToString(object.GetClassName()) + ", material " + NameToString(hit.material) + ")";
 }
 
-// The surface ray stopped by a person or a vehicle is no surface, and what lies behind them is not known: until
-// 2 November 2026 the hook was planted where a passer-by stood when the game's targeting saw no one, and hung there in
-// the air as they walked on (Kevin). Codeware tells what a ray hit; without it, the targeting alone, as before.
-public func ApexGrappleAimNow(scriptInterface: ref<StateGameScriptInterface>, settings: ref<ApexGrappleSettings>) -> ApexGrappleAim {
-  let aim: ApexGrappleAim;
+// What the rays met, the nearest in each group, and how far (-1: nothing within the length). Its objects are those of
+// this frame: a sight is judged in the frame it is cast, never kept.
+public struct ApexGrappleSight {
+  let from: Vector4;
+  let surface: TraceResult;
+  let surfaceAt: Float;
+  // What the surface belongs to, which may be a person or a vehicle (Codeware tells; none without it).
+  let met: wref<GameObject>;
+  let vehicle: TraceResult;
+  let vehicleAt: Float;
+  let vehicleObject: wref<GameObject>;
+  // People's bodies: standing in the AI group, fallen in Ragdoll (engine\physics\collision_presets.json, game 2.5).
+  let people: TraceResult;
+  let peopleAt: Float;
+  let body: wref<GameObject>;
+  // Not held to the length: the targeting sees as far as it sees.
+  let looked: wref<GameObject>;
+  let lookedAt: Float;
+}
+
+// Six rays and one question to the targeting. length: the range of the profile that shoots, or the longest range of
+// the profiles that can fire, for the crosshair (CrosshairRange.reds).
+public func ApexGrappleLook(scriptInterface: ref<StateGameScriptInterface>, length: Float) -> ApexGrappleSight {
+  let sight: ApexGrappleSight;
   let view: Transform = scriptInterface.GetCameraWorldTransform();
   let from: Vector4 = Transform.GetPosition(view);
-  let to: Vector4 = from + Transform.GetForward(view) * settings.range;
+  let to: Vector4 = from + Transform.GetForward(view) * length;
+  sight.from = from;
   let statics: TraceResult = scriptInterface.RaycastWithASingleGroup(from, to, n"Static");
   let terrain: TraceResult = scriptInterface.RaycastWithASingleGroup(from, to, n"Terrain");
   let dynamics: TraceResult = scriptInterface.RaycastWithASingleGroup(from, to, n"Dynamic");
-  let surface: TraceResult = ApexGrappleNearest(ApexGrappleNearest(statics, terrain, from), dynamics, from);
-  let surfaceAt: Float = ApexGrappleHitDistance(surface, from);
-  let met: ref<GameObject> = ApexGrappleHitObject(surface);
-  let way: ApexGrappleInTheWay;
-  way.at = -1.0;
-  if ApexGrappleIsTarget(met) {
-    way = ApexGrappleWayByRay(met, surfaceAt, surface, IsDefined(met as VehicleObject));
-    surfaceAt = -1.0;
-  }
-  let vehicle: TraceResult = scriptInterface.RaycastWithASingleGroup(from, to, n"Vehicle");
-  let vehicleAt: Float = ApexGrappleHitDistance(vehicle, from);
-  if ApexGrappleCloser(vehicleAt, way.at) && ApexGrappleCloser(vehicleAt, surfaceAt) {
-    way = ApexGrappleWayByRay(ApexGrappleHitObject(vehicle), vehicleAt, vehicle, true);
-  }
-  // People's bodies: standing in the AI group, fallen in Ragdoll (engine\physics\collision_presets.json, game 2.5).
-  let people: TraceResult = ApexGrappleNearest(scriptInterface.RaycastWithASingleGroup(from, to, n"AI"), scriptInterface.RaycastWithASingleGroup(from, to, n"Ragdoll"), from);
-  let peopleAt: Float = ApexGrappleHitDistance(people, from);
-  let body: ref<GameObject> = ApexGrappleHitObject(people);
-  if ApexGrappleCloser(peopleAt, way.at) && ApexGrappleCloser(peopleAt, surfaceAt) && (!IsDefined(body) || IsDefined(body as ScriptedPuppet)) {
-    way = ApexGrappleWayByRay(body, peopleAt, people, false);
-  }
+  sight.surface = ApexGrappleNearest(ApexGrappleNearest(statics, terrain, from), dynamics, from);
+  sight.surfaceAt = ApexGrappleHitDistance(sight.surface, from);
+  sight.met = ApexGrappleHitObject(sight.surface);
+  sight.vehicle = scriptInterface.RaycastWithASingleGroup(from, to, n"Vehicle");
+  sight.vehicleAt = ApexGrappleHitDistance(sight.vehicle, from);
+  sight.vehicleObject = ApexGrappleHitObject(sight.vehicle);
+  sight.people = ApexGrappleNearest(scriptInterface.RaycastWithASingleGroup(from, to, n"AI"), scriptInterface.RaycastWithASingleGroup(from, to, n"Ragdoll"), from);
+  sight.peopleAt = ApexGrappleHitDistance(sight.people, from);
+  sight.body = ApexGrappleHitObject(sight.people);
   let looked: ref<GameObject> = ApexGrappleLookedAt(scriptInterface);
-  let lookedAt: Float = ApexGrappleObjectDistance(looked, from);
-  if ApexGrappleCloser(lookedAt, way.at) && ApexGrappleCloser(lookedAt, surfaceAt) {
-    way.object = looked;
-    way.at = lookedAt;
-    way.vehicle = IsDefined(looked as VehicleObject);
-    way.byRay = false;
-  }
-  let how: String = way.byRay ? ", met by the ray" + ApexGrappleMetText(way.object, way.hit) : ", seen by the game's targeting";
-  let who: String = (way.vehicle ? "a vehicle " : "someone ") + ToString(way.at) + " m away" + how;
-  if settings.punchWins && way.at >= 0.0 && way.at <= settings.punchRange {
-    aim.seen = who + ", within quick melee range";
-    return aim;
-  }
-  if way.at >= 0.0 {
-    if settings.hookTargets && ApexGrappleTargetsAvailable() && IsDefined(way.object) && way.at <= settings.range {
-      if !way.vehicle {
-        aim = ApexGrappleAimAtPerson(way.object, from);
-        aim.seen = aim.seen + how;
-        return aim;
-      }
-      let rider: ref<GameObject> = ApexGrappleRiderOf(way.object);
-      if IsDefined(rider) {
-        aim = ApexGrappleAimAtPerson(rider, from);
-        aim.seen = aim.seen + ", riding the motorcycle" + how;
-        return aim;
-      }
-      if way.byRay {
-        aim = ApexGrappleAimAtVehicle(way.object, way.hit, from);
-        aim.seen = aim.seen + how;
-        return aim;
-      }
-    }
-    aim.seen = who + (surfaceAt >= 0.0 ? ", before the surface at " + ToString(surfaceAt) + " m" : "");
-    return aim;
-  }
-  if surfaceAt < 0.0 {
-    aim.seen = "no surface within " + ToString(settings.range) + " m";
-    return aim;
-  }
-  aim.found = true;
-  aim.anchor = Vector4.Vector3To4(surface.position);
-  aim.distance = surfaceAt;
-  aim.seen = "surface " + ToString(surfaceAt) + " m away" + ApexGrappleMetText(met, surface);
-  return aim;
+  sight.looked = looked;
+  sight.lookedAt = ApexGrappleObjectDistance(looked, from);
+  return sight;
 }

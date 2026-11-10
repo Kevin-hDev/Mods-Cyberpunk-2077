@@ -301,6 +301,36 @@ public class ApexGrappleProfile2 {
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let fallEffect: Bool = false;
 
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
+  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-DynamicFov")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-DynamicFov-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let dynamicFov: Bool = true;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
+  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-FovWidening")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-FovWidening-Description")
+  @runtimeProperty("ModSettings.step", "1.0")
+  @runtimeProperty("ModSettings.min", "0.0")
+  @runtimeProperty("ModSettings.max", "40.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let fovWidening: Float = 15.0;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
+  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-FovTransition")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-FovTransition-Description")
+  @runtimeProperty("ModSettings.step", "0.1")
+  @runtimeProperty("ModSettings.min", "0.5")
+  @runtimeProperty("ModSettings.max", "3.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let fovTransition: Float = 2.0;
+
   // Its key, or none while the profile is off.
   public func OwnKey() -> EInputKey {
     return this.active ? this.key : EInputKey.IK_None;
@@ -341,6 +371,9 @@ public class ApexGrappleProfile2 {
     s.punchRange = this.punchRange;
     s.softLanding = this.softLanding;
     s.fallEffect = this.fallEffect;
+    s.dynamicFov = this.dynamicFov;
+    s.fovWidening = this.fovWidening;
+    s.fovTransition = this.fovTransition;
     return s;
   }
 }

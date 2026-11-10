@@ -1,8 +1,8 @@
 // Each frame of every locomotion state: the key, the shot and the hook's flight (Shot.reds), the pull (Pulling.reds),
 // the grapple's flight ending on the ground (Ground.reds), V's left arm (Arm.reds), the right-hand weapon
-// (RightWeapon.reds), our pieces (PiecesDraw.reds) and the sounds (Sounds.reds). Ground, air, ladder and swimming
-// states derive from LocomotionEventsTransition and call its OnUpdate (scripts 2.31); the two met during a grapple
-// whose own OnUpdate does not are in TakenOver.reds.
+// (RightWeapon.reds), our pieces (PiecesDraw.reds), the sounds (Sounds.reds), the field of view (FovFrame.reds) and the
+// crosshair's range indicator (CrosshairRange.reds). Ground, air, ladder and swimming states derive from LocomotionEventsTransition and call its
+// OnUpdate (scripts 2.31); the two met during a grapple whose own OnUpdate does not are in TakenOver.reds.
 
 // Half of V's height (1.8 m): the pull acts on V's middle, as Borderlands 4 pulled the centre of the capsule.
 public func ApexGrappleMiddleHeight() -> Float {
@@ -71,6 +71,10 @@ private final func ApexGrappleFrame(timeDelta: Float, stateContext: ref<StateCon
   // After the pieces, so that the hook home is heard in the frame it gets there.
   ApexGrappleSoundsFrame(system, scriptInterface);
   ApexGrappleYankWatch(system, now, scriptInterface.executionOwner.GetGame());
+  // After the phase is settled: a pull that starts or stops this frame widens or brings back the view in this frame.
+  ApexGrappleFovFrame(system, settings, now, timeDelta, stateContext, scriptInterface);
+  // Last: the colour answers for the next press, once this frame's shot is settled.
+  ApexGrappleCrosshairRangeFrame(system, now, scriptInterface);
 }
 
 @addMethod(LocomotionEventsTransition)

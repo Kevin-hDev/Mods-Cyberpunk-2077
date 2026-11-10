@@ -1,7 +1,8 @@
 // The crosshair shown with empty hands or fists (Crosshair.reds): settings shared by every profile, in a group of
 // their own above them, because the crosshair shows before any key is pressed. Without Mod Settings the fields keep
 // the values written here. A field is never renamed: Mod Settings keeps the player's value under its name.
-// Defaults (Kevin, 9 November 2026): shown, simple crosshair, yellow, at the game's size.
+// Defaults (Kevin, 9 November 2026): shown, simple crosshair, yellow, at the game's size; the range indicator on, red
+// out of range (10 November 2026).
 
 enum ApexGrappleCrosshairShape {
   Off = 0,
@@ -64,6 +65,26 @@ public class ApexGrappleCrosshairSettings {
   @runtimeProperty("ModSettings.min", "50.0")
   @runtimeProperty("ModSettings.max", "200.0")
   public let size: Float = 100.0;
+
+  // The range indicator (CrosshairRange.reds). Its colour is red: a change of colour is seen at a glance, even in
+  // daylight (docs/apex-grapple/portee/conception.md, decision 2).
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Crosshair")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-CrosshairRange")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-CrosshairRange-Description")
+  public let rangeIndicator: Bool = true;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Crosshair")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-CrosshairOutOfRangeColor")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-CrosshairOutOfRangeColor-Description")
+  @runtimeProperty("ModSettings.displayValues.Yellow", "ApexGrapple-CrosshairColor-Yellow")
+  @runtimeProperty("ModSettings.displayValues.White", "ApexGrapple-CrosshairColor-White")
+  @runtimeProperty("ModSettings.displayValues.Red", "ApexGrapple-CrosshairColor-Red")
+  @runtimeProperty("ModSettings.displayValues.Green", "ApexGrapple-CrosshairColor-Green")
+  @runtimeProperty("ModSettings.displayValues.Turquoise", "ApexGrapple-CrosshairColor-Turquoise")
+  @runtimeProperty("ModSettings.dependency", "rangeIndicator")
+  public let outOfRangeColor: ApexGrappleCrosshairColor = ApexGrappleCrosshairColor.Red;
 }
 
 // The game's own theme colours (main_colors.inkstyle, 2.5), without their dark outline (Kevin: « sans les contours

@@ -317,4 +317,38 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.description", "ApexGrapple-FallEffect-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let fallEffect: Bool = false;
+
+  // Kevin, 10 November 2026: "on peut ajouter une FOV dynamic pendant qu'on est en grapin ?". On by default, and added
+  // to the player's own field of view rather than set to a fixed value: "passer a 120 d'un coup c'est violent"
+  // (docs/apex-grapple/fov/conception.md).
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-DynamicFov")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-DynamicFov-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let dynamicFov: Bool = true;
+
+  // In the degrees of the game's Field of View setting; the total stops at 140 (Fov.reds). +15 and 2 s below: Kevin's
+  // choice after his trial of 10 November 2026 ("par defaut on va changer les reglage, on va mettre 15 de fov pour 2 de
+  // temp de transition").
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-FovWidening")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-FovWidening-Description")
+  @runtimeProperty("ModSettings.step", "1.0")
+  @runtimeProperty("ModSettings.min", "0.0")
+  @runtimeProperty("ModSettings.max", "40.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let fovWidening: Float = 15.0;
+
+  // The same both ways.
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-FovTransition")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-FovTransition-Description")
+  @runtimeProperty("ModSettings.step", "0.1")
+  @runtimeProperty("ModSettings.min", "0.5")
+  @runtimeProperty("ModSettings.max", "3.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let fovTransition: Float = 2.0;
 }

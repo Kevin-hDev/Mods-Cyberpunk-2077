@@ -121,6 +121,10 @@ public class ApexGrappleSystem extends ScriptableSystem {
   // Where V's left hand is read (Wrist.reds), and whether its fallback was said this load.
   public let handSlots: wref<SlotComponent>;
   public let handMissSaid: Bool;
+  // Our crosshair's range indicator (CrosshairRange.reds), owned by the crosshair, which links it here as it attaches.
+  public let crosshairRange: wref<ApexGrappleCrosshairRange>;
+  // The field of view widened during a pull (Fov.reds), made the first time a pull moves V.
+  public let fov: ref<ApexGrappleFov>;
 
   private func OnAttach() -> Void {
     ArrayResize(this.ownPressesSeen, ApexGrappleProfileCount());
