@@ -1,23 +1,17 @@
 // What the mod remembers between two openings of Mod Settings. A Codeware service lives as long as the game runs;
 // the menu's own controller dies each time the menu closes.
-// Folded sections are kept until the game closes. The place in the menu is forgotten when a save is loaded and when
+// Favourites and folded sections are in Choices.reds. The place in the menu is forgotten when a save is loaded and when
 // the player goes back to the main menu (Kevin, 10 November 2026: only "quand on ouvre/ferme/re ouvre le menu").
-
-// A player folds one section at a time, so 256 is far above real use; past it the oldest fold is forgotten.
-public func ModSettingsNavigatorMaxFolds() -> Int32 {
-  return 256;
-}
 
 @if(ModuleExists("ModSettingsModule") && ModuleExists("Codeware"))
 public class ModSettingsNavigatorMemory extends ScriptableService {
-  private let folded: array<String>;
   // The place the player is at now, saved as they move.
   private let hasPosition: Bool;
   private let positionMod: String;
   private let positionScroll: Float;
   private let positionRow: String;
   // The place to go back to, copied when the menu opens: saving the new place goes on while it is restored.
-  // Essai 1: a flag that stopped saving during the restore stayed set when the restore did not run.
+  // Trial 1: a flag that stopped saving during the restore stayed set when the restore did not run.
   private let targetMod: String;
   private let targetScroll: Float;
   private let targetRow: String;
@@ -28,12 +22,17 @@ public class ModSettingsNavigatorMemory extends ScriptableService {
   // A page started while its menu could not be found yet.
   private let menuPending: Bool;
   // The mod's two settings, read once per page built: Mod Settings rebuilds the page when a change is applied, so a
-  // change takes effect there. Reading them for each row and each hover cost an object each time (audit, essai 5).
+  // change takes effect there. Reading them for each row and each hover cost an object each time (audit, trial 5).
   private let foldingOn: Bool;
   private let rememberOn: Bool;
-  // Kept here so that the targets of the title and arrow callbacks live as long as the pages do.
+  // Kept here so that the targets of the title, arrow, page and key callbacks live as long as the pages do.
   private let sections: ref<ModSettingsNavigatorSections>;
   private let arrows: ref<ModSettingsNavigatorArrows>;
+  private let pages: ref<ModSettingsNavigatorPages>;
+  private let favorites: ref<ModSettingsNavigatorFavorites>;
+  private let bumpers: ref<ModSettingsNavigatorBumpers>;
+  private let order: ref<ModSettingsNavigatorListOrder>;
+  private let choices: ref<ModSettingsNavigatorChoices>;
 
   public static func Get() -> ref<ModSettingsNavigatorMemory> {
     let container = GameInstance.GetScriptableServiceContainer();
@@ -59,6 +58,47 @@ public class ModSettingsNavigatorMemory extends ScriptableService {
     return this.arrows;
   }
 
+  // Read from disk at the first call, which comes from the first opening of Mod Settings: RedFileSystem gives a mod
+  // its storage once per launch.
+  public func Choices() -> ref<ModSettingsNavigatorChoices> {
+    if !IsDefined(this.choices) {
+      this.choices = new ModSettingsNavigatorChoices();
+      this.choices.Load();
+    }
+    return this.choices;
+  }
+
+  public func Favorites() -> ref<ModSettingsNavigatorFavorites> {
+    if !IsDefined(this.favorites) {
+      this.favorites = new ModSettingsNavigatorFavorites();
+      this.favorites.Init(this.Order(), this.Choices());
+    }
+    return this.favorites;
+  }
+
+  public func Bumpers() -> ref<ModSettingsNavigatorBumpers> {
+    if !IsDefined(this.bumpers) {
+      this.bumpers = new ModSettingsNavigatorBumpers();
+      this.bumpers.Init(this.Order());
+    }
+    return this.bumpers;
+  }
+
+  public func Order() -> ref<ModSettingsNavigatorListOrder> {
+    if !IsDefined(this.order) {
+      this.order = new ModSettingsNavigatorListOrder();
+    }
+    return this.order;
+  }
+
+  public func Pages() -> ref<ModSettingsNavigatorPages> {
+    if !IsDefined(this.pages) {
+      this.pages = new ModSettingsNavigatorPages();
+      this.pages.Init(this.Order());
+    }
+    return this.pages;
+  }
+
   public func Sections() -> ref<ModSettingsNavigatorSections> {
     if !IsDefined(this.sections) {
       this.sections = new ModSettingsNavigatorSections();
@@ -78,36 +118,6 @@ public class ModSettingsNavigatorMemory extends ScriptableService {
 
   public func RememberOn() -> Bool {
     return this.rememberOn;
-  }
-
-  public func IsFolded(key: String) -> Bool {
-    for known in this.folded {
-      if Equals(known, key) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // Returns the new state: true when the section is now folded.
-  public func Toggle(key: String) -> Bool {
-    let i = 0;
-    while i < ArraySize(this.folded) {
-      if Equals(this.folded[i], key) {
-        ArrayErase(this.folded, i);
-        return false;
-      }
-      i += 1;
-    }
-    if ArraySize(this.folded) >= ModSettingsNavigatorMaxFolds() {
-      ArrayErase(this.folded, 0);
-    }
-    ArrayPush(this.folded, key);
-    return true;
-  }
-
-  public func FoldedCount() -> Int32 {
-    return ArraySize(this.folded);
   }
 
   public func Menu() -> wref<ModStngsMainGameController> {
@@ -150,7 +160,7 @@ public class ModSettingsNavigatorMemory extends ScriptableService {
   }
 
   // Logged only when the mod changes: a line for each row the cursor went over made two thirds of the log, up to 42
-  // lines a second (essai 5).
+  // lines a second (trial 5).
   public func SavePosition(mod: String, scroll: Float, row: String) {
     if !this.hasPosition || !Equals(mod, this.positionMod) {
       ModSettingsNavigatorLog("position mod=" + mod);

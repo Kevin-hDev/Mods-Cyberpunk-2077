@@ -2,7 +2,7 @@
 // it is shown: the rows without a section, then for each section a title (the game's SettingsCategoryController)
 // followed by its rows (the game's SettingsSelectorController). Each row is set up right after it is added to the list.
 // Titles are found from the rows: Mod Settings' wrapper of SettingsCategoryController.Setup does not call the methods
-// wrapped under it while its menu is open, so a wrapper of ours there never runs (essai 1, 10 November 2026: no title
+// wrapped under it while its menu is open, so a wrapper of ours there never runs (trial 1, 10 November 2026: no title
 // marked, no fold in the log).
 
 @if(ModuleExists("ModSettingsModule") && ModuleExists("Codeware"))
@@ -17,10 +17,9 @@ public let modSettingsNavigatorTitle: String;
 public class ModSettingsNavigatorSections extends IScriptable {
   // The first widget of the page being built. Mod Settings empties the list before each page, so a different first
   // widget means a new page. Guessing it from the row's place in the list missed a page that starts with a section
-  // whose rows are all hidden (audit, essai 5).
+  // whose rows are all hidden (audit, trial 5).
   private let pageFirst: wref<inkWidget>;
   private let pagesStarted: Int32;
-  private let currentTitle: wref<SettingsCategoryController>;
   private let currentFolded: Bool;
 
   // How many pages have started since the game was launched: tells the restore whether a page was just built.
@@ -39,7 +38,6 @@ public class ModSettingsNavigatorSections extends IScriptable {
     if first != known {
       this.pageFirst = first;
       this.pagesStarted += 1;
-      this.currentTitle = null;
       this.currentFolded = false;
       memory.ReadSettings();
       ModSettingsNavigatorPosition.OnPageStart(root, memory);
@@ -51,9 +49,7 @@ public class ModSettingsNavigatorSections extends IScriptable {
     if index > 0 {
       let title = list.GetWidgetByIndex(index - 1).GetController() as SettingsCategoryController;
       if IsDefined(title) {
-        this.SetUpTitle(title, row, memory);
-        this.currentTitle = title;
-        this.currentFolded = memory.IsFolded(title.modSettingsNavigatorKey);
+        this.currentFolded = this.SetUpTitle(title, row, memory);
       }
     }
     if this.currentFolded {
@@ -62,18 +58,20 @@ public class ModSettingsNavigatorSections extends IScriptable {
   }
 
   // The section's key: the title as shown, and the settings group of its first row (the mod's settings class).
-  // The title is the translated text: folds are forgotten when the game's language changes (audit, essai 5), to be
-  // settled with folds kept on disk in the next version.
+  // The title is the translated text: folds are forgotten when the game's language changes (audit, trial 5), on disk
+  // too since 1.0.1. Returns whether the section is folded.
   private func SetUpTitle(title: ref<SettingsCategoryController>, firstRow: ref<SettingsSelectorController>,
-    memory: ref<ModSettingsNavigatorMemory>) {
+    memory: ref<ModSettingsNavigatorMemory>) -> Bool {
     title.modSettingsNavigatorTitle = inkTextRef.GetText(title.m_label);
     title.modSettingsNavigatorKey = title.modSettingsNavigatorTitle + "|" + NameToString(firstRow.GetGroupPath());
-    this.Mark(title, memory.IsFolded(title.modSettingsNavigatorKey));
+    let folded = memory.Choices().IsFolded(title.modSettingsNavigatorKey);
+    this.Mark(title, folded);
     let titleRoot = title.GetRootWidget();
     titleRoot.SetInteractive(true);
     titleRoot.RegisterToCallback(n"OnRelease", this, n"OnTitleRelease");
     titleRoot.RegisterToCallback(n"OnHoverOver", this, n"OnTitleHoverOver");
     titleRoot.RegisterToCallback(n"OnHoverOut", this, n"OnTitleHoverOut");
+    return folded;
   }
 
   private func Mark(title: wref<SettingsCategoryController>, folded: Bool) {
@@ -95,11 +93,11 @@ public class ModSettingsNavigatorSections extends IScriptable {
       ModSettingsNavigatorLog("fold refused reason=" + (!IsDefined(title) ? "not_a_title" : "section_without_rows"));
       return false;
     }
-    let folded = memory.Toggle(title.modSettingsNavigatorKey);
+    let folded = memory.Choices().ToggleFold(title.modSettingsNavigatorKey);
     let rows = this.ShowSection(root, folded);
     this.Mark(title, folded);
     ModSettingsNavigatorLog("fold section=" + title.modSettingsNavigatorKey + " folded=" + ToString(folded)
-      + " rows=" + ToString(rows) + " kept=" + ToString(memory.FoldedCount()));
+      + " rows=" + ToString(rows) + " kept=" + ToString(memory.Choices().FoldedCount()));
     evt.Handle();
     return true;
   }
@@ -139,7 +137,7 @@ public class ModSettingsNavigatorSections extends IScriptable {
     root.SetOpacity(0.6);
     let title = root.GetController() as SettingsCategoryController;
     if IsDefined(title) && StrLen(title.modSettingsNavigatorKey) > 0 {
-      ModSettingsNavigatorPosition.OnHover("title:" + title.modSettingsNavigatorKey, root);
+      ModSettingsNavigatorPosition.OnHover(ModSettingsNavigatorPosition.TitleKey(title), root);
     }
     return false;
   }

@@ -24,9 +24,12 @@ public class ModSettingsNavigatorLocalization extends ModLocalizationProvider {
 public class ModSettingsNavigatorEnglish extends ModLocalizationPackage {
   protected func DefineTexts() {
     this.Text("ModSettingsNavigator-Sections", "Collapsible sections");
-    this.Text("ModSettingsNavigator-Sections-Description", "Click a section title, or select it and press the confirm button on a controller, to fold or unfold it. Folded sections stay folded until the game closes.");
+    this.Text("ModSettingsNavigator-Sections-Description", "Click a section title, or select it and press the confirm button on a controller, to fold or unfold it. Folded sections stay folded until the game closes, or for good when RedFileSystem is installed.");
     this.Text("ModSettingsNavigator-Position", "Reopen where you left off");
     this.Text("ModSettingsNavigator-Position-Description", "Mod Settings reopens on the mod and the line you were on. Forgotten when a save is loaded and when the game restarts.");
+    this.Text("ModSettingsNavigator-Page", "Page {0} / {1}");
+    this.Text("ModSettingsNavigator-PreviousPage", "Previous page");
+    this.Text("ModSettingsNavigator-NextPage", "Next page");
   }
 }
 
@@ -34,8 +37,11 @@ public class ModSettingsNavigatorEnglish extends ModLocalizationPackage {
 public class ModSettingsNavigatorFrench extends ModLocalizationPackage {
   protected func DefineTexts() {
     this.Text("ModSettingsNavigator-Sections", "Sections repliables");
-    this.Text("ModSettingsNavigator-Sections-Description", "Clique sur le titre d'une section, ou sélectionne-le et appuie sur le bouton de validation à la manette, pour la replier ou la déplier. Les sections repliées le restent jusqu'à la fermeture du jeu.");
+    this.Text("ModSettingsNavigator-Sections-Description", "Clique sur le titre d'une section, ou sélectionne-le et appuie sur le bouton de validation à la manette, pour la replier ou la déplier. Les sections repliées le restent jusqu'à la fermeture du jeu, ou pour de bon si RedFileSystem est installé.");
     this.Text("ModSettingsNavigator-Position", "Rouvrir là où tu étais");
     this.Text("ModSettingsNavigator-Position-Description", "Mod Settings se rouvre sur le mod et la ligne où tu étais. Oublié au chargement d'une partie et au redémarrage du jeu.");
+    this.Text("ModSettingsNavigator-Page", "Page {0} / {1}");
+    this.Text("ModSettingsNavigator-PreviousPage", "Page précédente");
+    this.Text("ModSettingsNavigator-NextPage", "Page suivante");
   }
 }

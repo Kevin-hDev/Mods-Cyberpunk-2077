@@ -49,7 +49,7 @@ protected cb func OnModSettingsNavigatorRestore(evt: ref<ModSettingsNavigatorRes
   }
   let builtBy = "none";
   if index != this.GetToggledIndex() {
-    // Setting the index makes Mod Settings build the mod's page, as L1 and R1 do (essai 5: two pages were built at
+    // Setting the index makes Mod Settings build the mod's page, as L1 and R1 do (trial 5: two pages were built at
     // each restore, Mod Settings' and ours). Ours is kept only for the case where the list built nothing.
     let pages = memory.Sections().PagesStarted();
     this.SetToggledIndex(index);
@@ -58,10 +58,7 @@ protected cb func OnModSettingsNavigatorRestore(evt: ref<ModSettingsNavigatorRes
       menu.PopulateCategorySettingsOptions(index);
       builtBy = "us";
     }
-    let size = this.Size();
-    if size > 1 {
-      menu.ScrollToMod(Cast<Float>(index) / Cast<Float>(size - 1));
-    }
+    ModSettingsNavigatorListView.Follow(menu, memory.Order().PositionOf(index));
   }
   ModSettingsNavigatorLog("restore step=mod index=" + ToString(index) + " page_built_by=" + builtBy);
   this.QueueEvent(new ModSettingsNavigatorRestoreRowEvent());
@@ -88,7 +85,7 @@ protected cb func OnModSettingsNavigatorRestoreRow(evt: ref<ModSettingsNavigator
     while i < count && !found {
       let widget = list.GetWidgetByIndex(i);
       if widget.IsVisible() && Equals(ModSettingsNavigatorPosition.WidgetKey(widget), memory.TargetRow()) {
-        // The saved scroll stayed at 0 in essai 2 whatever the row: the row is also brought into view.
+        // The saved scroll stayed at 0 in trial 2 whatever the row: the row is also brought into view.
         if IsDefined(scroll) {
           scroll.EnsureVisible(widget);
         }
@@ -98,7 +95,7 @@ protected cb func OnModSettingsNavigatorRestoreRow(evt: ref<ModSettingsNavigator
       i += 1;
     }
   }
-  // The place is saved again here, so that it never depends on a hover. Essai 5: the restore's page builds reset the
+  // The place is saved again here, so that it never depends on a hover. Trial 5: the restore's page builds reset the
   // row, and the cursor set by the mod brought no hover in three restores of twelve, which kept no row for the next
   // opening.
   memory.SavePosition(memory.TargetMod(), memory.TargetScroll(), memory.TargetRow());

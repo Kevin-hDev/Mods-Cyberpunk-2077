@@ -12,7 +12,7 @@ public func ModSettingsNavigatorStackDepth() -> Int32 {
 public abstract class ModSettingsNavigatorMenu {
   // The Mod Settings menu that is building a page right now, read from the script call stack (Codeware): a row is set
   // up by the menu's own PopulateOptions. Unlike Find, it answers during the first page of an opening, when the menu
-  // is not listed among the interface layers yet (essais 2 to 4: the menu was only found at the first hover, a second
+  // is not listed among the interface layers yet (trials 2 to 4: the menu was only found at the first hover, a second
   // or more after it opened, and never with a controller).
   public static func Building() -> wref<ModStngsMainGameController> {
     let trace = GetStackTrace(ModSettingsNavigatorStackDepth(), true);
@@ -31,7 +31,7 @@ public abstract class ModSettingsNavigatorMenu {
   }
 
   // The Mod Settings menu that holds this widget, looked up among the game's interface layers; used when no page is
-  // being built. A menu that is closing can still be listed beside the new one (essai 1: the second reopening was
+  // being built. A menu that is closing can still be listed beside the new one (trial 1: the second reopening was
   // sent to the wrong one), so the menu is the one whose root widget is an ancestor of the widget.
   public static func Find(widget: wref<inkWidget>) -> wref<ModStngsMainGameController> {
     for layer in GameInstance.GetInkSystem().GetLayers() {
@@ -67,6 +67,30 @@ public abstract class ModSettingsNavigatorMenu {
       return "";
     }
     return NameToString(menu.m_data[index].label);
+  }
+
+  // Why the menu's own input must be left alone now, or "" when this mod may act on a key: a confirmation window of
+  // Mod Settings is open, or a shortcut row waits for a key (choosing Q or V as a mod's shortcut must neither turn the
+  // page nor mark a favourite).
+  public static func InputBusy(menu: wref<ModStngsMainGameController>) -> String {
+    if IsDefined(menu.m_confirmationToken) {
+      return "confirmation";
+    }
+    let list = inkWidgetRef.Get(menu.m_settingsOptionsList) as inkCompoundWidget;
+    if !IsDefined(list) {
+      return "";
+    }
+    let count = list.GetNumChildren();
+    let i = 0;
+    while i < count {
+      let widget = list.GetWidgetByIndex(i);
+      let binding = widget.GetController() as SettingsSelectorControllerKeyBinding;
+      if IsDefined(binding) && binding.IsListeningForInput() {
+        return "binding";
+      }
+      i += 1;
+    }
+    return "";
   }
 
   public static func Scroll(menu: wref<ModStngsMainGameController>) -> Float {

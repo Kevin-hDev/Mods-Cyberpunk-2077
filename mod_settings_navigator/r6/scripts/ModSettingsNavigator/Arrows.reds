@@ -1,9 +1,9 @@
 // The controller's d-pad and the keyboard's arrow keys in Mod Settings. Without this mod they skip the section titles
-// (essai 2, 10 November 2026). After each press of an arrow, the cursor is put on the widget that should come next
+// (trial 2, 10 November 2026). After each press of an arrow, the cursor is put on the widget that should come next
 // from where it was before the press: a row, or the title of a section that has rows.
-// Essai 3: a correction made on the first hover after the press ran once in dozens of presses, the game's hover and
+// Trial 3: a correction made on the first hover after the press ran once in dozens of presses, the game's hover and
 // our press callback not coming in the order assumed. The check runs a frame after the arrow is released, when the
-// game's own move is over whatever that order. Essai 4: the signals come as pre-press, post-press, release, with no
+// game's own move is over whatever that order. Trial 4: the signals come as pre-press, post-press, release, with no
 // hover from the game between them.
 
 public class ModSettingsNavigatorArrowCheckEvent extends Event {}
@@ -19,7 +19,7 @@ public class ModSettingsNavigatorArrows extends IScriptable {
   private let hovers: Int32;
 
   // The arrows are up_button and down_button in inputUserMappings.xml: d-pad up and down, keyboard up and down.
-  // A closed menu takes its callbacks with it (essai 5: one call per press over 16 openings); a menu still alive is
+  // A closed menu takes its callbacks with it (trial 5: one call per press over 16 openings); a menu still alive is
   // released here, as Mod Settings releases its own callback when it closes.
   public func Watch(menu: wref<ModStngsMainGameController>) {
     let previous = this.menu;
@@ -95,7 +95,7 @@ public class ModSettingsNavigatorArrows extends IScriptable {
     if !memory.FoldingOn() || !IsDefined(menu) || this.hovers > 1 {
       return;
     }
-    // A confirmation window of Mod Settings is open over the menu: the arrows belong to it (audit, essai 5).
+    // A confirmation window of Mod Settings is open over the menu: the arrows belong to it (audit, trial 5).
     if IsDefined(menu.m_confirmationToken) {
       return;
     }
@@ -105,7 +105,7 @@ public class ModSettingsNavigatorArrows extends IScriptable {
     }
     // The row under the cursor at the press is gone when its page was rebuilt (L1, R1, Back): the arrows start from
     // the same row of the new page if it has one, else from the top of the page, whatever their direction (audit,
-    // essai 5: they had no start until the stick moved).
+    // trial 5: they had no start until the stick moved).
     let expected: wref<inkWidget>;
     let anchor = this.anchor;
     let from = IsDefined(anchor) ? this.IndexIn(list, anchor) : -1;
