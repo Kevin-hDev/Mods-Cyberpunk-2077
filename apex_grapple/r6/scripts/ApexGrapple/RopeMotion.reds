@@ -44,6 +44,11 @@ public func ApexGrappleHangPoints() -> Int32 {
   return 49;
 }
 
+// The point in the middle: its share of the way is 24 / 48, 0.5 exactly.
+public func ApexGrappleHangMiddle() -> Int32 {
+  return (ApexGrappleHangPoints() - 1) / 2;
+}
+
 // A whole turn in radians: the game's Pi() reads 3.14 in the decompiled scripts, too coarse to trust.
 public func ApexGrappleTurn() -> Float {
   return 6.28318531;
@@ -86,34 +91,76 @@ public func ApexGrappleRopeSwing(phase: Int32, since: Float) -> Float {
   return 0.0;
 }
 
-// The bow's depth under a span of `distance` metres, `shown` strong (negative: above the line, as the swing goes).
-public func ApexGrappleHangDepth(distance: Float, shown: Float) -> Float {
-  return MinF(ApexGrappleSlackShare() * distance, ApexGrappleSlackMost()) * shown;
-}
-
-// How far the rope is off its straight line at `part` of the way (0 to 1), `clock` seconds after the shot.
-public func ApexGrappleHangOffset(across: ApexGrappleAcross, depth: Float, part: Float, clock: Float) -> Vector4 {
-  let envelope: Float = SinF(0.5 * ApexGrappleTurn() * part);
-  let wave: Float = ApexGrappleWaveShare() * depth * envelope * SinF(ApexGrappleTurn() * (ApexGrappleWaveTurns() * part - ApexGrappleWaveRate() * clock));
-  return across.below * (depth * across.hang * envelope) + across.beside * wave;
+// The bow's depth under a span of `distance` metres at full strength: times `shown`, the depth (negative: above the
+// line, as the swing goes).
+public func ApexGrappleHangSlack(distance: Float) -> Float {
+  return MinF(ApexGrappleSlackShare() * distance, ApexGrappleSlackMost());
 }
 
 public func ApexGrappleSpanAcross(from: Vector4, to: Vector4) -> ApexGrappleAcross {
   return ApexGrappleAcrossOf(ApexGrappleToward(from, to));
 }
 
+// What a hanging span reads at each of its points, kept rather than worked out again for each point of each span: each
+// point's share of the way and its envelope, the same at every frame, and the wave's sine for the clock it was made
+// at, shared by every span of a frame. Made by the same operations as a point worked out alone, so the rope is the same
+// to the last digit (audit of 10 November 2026, B2).
+public class ApexGrappleHangTable extends IScriptable {
+  public let parts: array<Float>;
+  public let envelopes: array<Float>;
+  public let waves: array<Float>;
+  public let waveClock: Float;
+  public let waveMade: Bool;
+}
+
+public func ApexGrappleHangTableAt(table: ref<ApexGrappleHangTable>, clock: Float) -> Void {
+  let count: Int32 = ApexGrappleHangPoints();
+  if ArraySize(table.parts) != count {
+    ArrayClear(table.parts);
+    ArrayClear(table.envelopes);
+    let n: Int32 = 0;
+    while n < count {
+      let part: Float = Cast<Float>(n) / Cast<Float>(count - 1);
+      ArrayPush(table.parts, part);
+      ArrayPush(table.envelopes, SinF(0.5 * ApexGrappleTurn() * part));
+      n = n + 1;
+    }
+    table.waveMade = false;
+  }
+  if table.waveMade && table.waveClock == clock {
+    return;
+  }
+  ArrayResize(table.waves, count);
+  let i: Int32 = 0;
+  while i < count {
+    table.waves[i] = SinF(ApexGrappleTurn() * (ApexGrappleWaveTurns() * table.parts[i] - ApexGrappleWaveRate() * clock));
+    i = i + 1;
+  }
+  table.waveClock = clock;
+  table.waveMade = true;
+}
+
+// How far the rope is off its straight line at point `n` of the table, the bow `depth` deep.
+public func ApexGrappleHangOffsetAt(across: ApexGrappleAcross, depth: Float, table: ref<ApexGrappleHangTable>, n: Int32) -> Vector4 {
+  let envelope: Float = table.envelopes[n];
+  let wave: Float = ApexGrappleWaveShare() * depth * envelope * table.waves[n];
+  return across.below * (depth * across.hang * envelope) + across.beside * wave;
+}
+
 // The rope's points from `from` to `to`: the bow under the line and the wave running along it toward `to`, both
 // `shown` strong, nothing at either end. Its ends are `from` and `to` exactly, so that a bend stays where it is.
-public func ApexGrappleRopeHang(from: Vector4, to: Vector4, shown: Float, clock: Float) -> array<Vector4> {
+public func ApexGrappleRopeHang(from: Vector4, to: Vector4, across: ApexGrappleAcross, slack: Float, shown: Float, table: ref<ApexGrappleHangTable>) -> array<Vector4> {
   let points: array<Vector4>;
-  let across: ApexGrappleAcross = ApexGrappleSpanAcross(from, to);
-  let depth: Float = ApexGrappleHangDepth(Vector4.Distance(from, to), shown);
+  let depth: Float = slack * shown;
+  let bow: Float = depth * across.hang;
+  let rise: Float = ApexGrappleWaveShare() * depth;
+  let way: Vector4 = to - from;
   let count: Int32 = ApexGrappleHangPoints();
   ArrayPush(points, from);
   let n: Int32 = 1;
   while n < count - 1 {
-    let part: Float = Cast<Float>(n) / Cast<Float>(count - 1);
-    ArrayPush(points, from + (to - from) * part + ApexGrappleHangOffset(across, depth, part, clock));
+    let envelope: Float = table.envelopes[n];
+    ArrayPush(points, from + way * table.parts[n] + (across.below * (bow * envelope) + across.beside * (rise * envelope * table.waves[n])));
     n = n + 1;
   }
   ArrayPush(points, to);

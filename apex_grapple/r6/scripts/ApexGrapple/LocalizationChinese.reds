@@ -9,6 +9,13 @@ public class ApexGrappleChinese extends ModLocalizationPackage {
     this.Text("ApexGrapple-Enabled", "Apex Grapple");
     this.Text("ApexGrapple-Enabled-Description", "瞄准一个表面并按下敏捷近战键（键盘为 Q；手柄为 R3，在 Alternative 或 Switch Legacy 按键布局下为 L1）：钩子飞出，绳索拉动你，同时由你的瞄准操控方向。关闭：该键只执行敏捷近战。");
     this.Text("ApexGrapple-Profile1", "配置 1：基础抓钩");
+    this.Text("ApexGrapple-Profile1-Key", "配置 1：按键");
+    this.Text("ApexGrapple-Profile1-Hook", "配置 1：手臂与钩子");
+    this.Text("ApexGrapple-Profile1-Pull", "配置 1：牵引");
+    this.Text("ApexGrapple-Profile1-LetGo", "配置 1：脱钩");
+    this.Text("ApexGrapple-Profile1-Targets", "配置 1：载具和人物");
+    this.Text("ApexGrapple-Profile1-Landing", "配置 1：着陆");
+    this.Text("ApexGrapple-Profile1-Fov", "配置 1：视野");
     this.Text("ApexGrapple-Profile2", "配置 2");
     this.Text("ApexGrapple-Profile3", "配置 3");
     this.Text("ApexGrapple-Profile4", "配置 4");

@@ -63,12 +63,10 @@ public func ApexGrappleDoubleJumpWatch() -> Float {
 }
 
 // The double jump's highest vertical speed over its first moments, against the speed it began with: higher means it
-// pushed V up. A double jump that lands before the end of its watch writes no line.
-@wrapMethod(LocomotionAirEvents)
-protected func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  wrappedMethod(timeDelta, stateContext, scriptInterface);
-  let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(scriptInterface.executionOwner.GetGame());
-  if !IsDefined(system) || !system.doubleJumpWatched {
+// pushed V up. A double jump that lands before the end of its watch writes no line. Each frame in the air (AirFrame.reds).
+@addMethod(LocomotionAirEvents)
+private func ApexGrappleWatchDoubleJump(system: ref<ApexGrappleSystem>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+  if !system.doubleJumpWatched {
     return;
   }
   let since: Float = ApexGrappleTime(scriptInterface.executionOwner.GetGame()) - system.doubleJumpAt;

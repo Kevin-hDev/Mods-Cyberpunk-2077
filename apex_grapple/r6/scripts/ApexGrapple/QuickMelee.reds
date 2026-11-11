@@ -9,7 +9,11 @@
 public func ApexGrappleHoldsQuickMelee(game: GameInstance) -> Bool {
   let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(game);
   if IsDefined(system) && ApexGrappleTime(game) < system.holdBackUntil {
-    ApexGrappleLog("quick melee held back: its press is the grapple's");
+    // One line a hold-back, where two were written at each press until the audit of 10 November 2026 (A9).
+    if system.holdBackSaid != system.holdBacks {
+      system.holdBackSaid = system.holdBacks;
+      ApexGrappleLog("quick melee held back: its press is the grapple's");
+    }
     return true;
   }
   return false;

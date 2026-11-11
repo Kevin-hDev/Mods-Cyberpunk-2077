@@ -4,14 +4,14 @@
 public class ApexGrappleProfile2 {
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-ShowSettings")
   @runtimeProperty("ModSettings.description", "ApexGrapple-ShowSettings-Description")
   public let showSettings: Bool = false;
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-ProfileActive")
   @runtimeProperty("ModSettings.description", "ApexGrapple-ProfileActive-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -19,7 +19,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-ProfileKey")
   @runtimeProperty("ModSettings.description", "ApexGrapple-ProfileKey-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -27,25 +27,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
-  @runtimeProperty("ModSettings.displayName", "ApexGrapple-Implant")
-  @runtimeProperty("ModSettings.description", "ApexGrapple-Implant-Description")
-  @runtimeProperty("ModSettings.displayValues.None", "ApexGrapple-Implant-None")
-  @runtimeProperty("ModSettings.displayValues.ProjectileLauncher", "ApexGrapple-Implant-ProjectileLauncher")
-  @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let implant: ApexGrappleImplant = ApexGrappleImplant.ProjectileLauncher;
-
-  @runtimeProperty("ModSettings.mod", "Apex Grapple")
-  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
-  @runtimeProperty("ModSettings.displayName", "ApexGrapple-RequireLauncher")
-  @runtimeProperty("ModSettings.description", "ApexGrapple-RequireLauncher-Description")
-  @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let requireLauncher: Bool = false;
-
-  @runtimeProperty("ModSettings.mod", "Apex Grapple")
-  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-KeyboardHold")
   @runtimeProperty("ModSettings.description", "ApexGrapple-KeyboardHold-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -53,7 +35,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-ControllerHold")
   @runtimeProperty("ModSettings.description", "ApexGrapple-ControllerHold-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -61,7 +43,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-HoldTime")
   @runtimeProperty("ModSettings.description", "ApexGrapple-HoldTime-Description")
   @runtimeProperty("ModSettings.step", "0.05")
@@ -72,7 +54,25 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-Implant")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-Implant-Description")
+  @runtimeProperty("ModSettings.displayValues.None", "ApexGrapple-Implant-None")
+  @runtimeProperty("ModSettings.displayValues.ProjectileLauncher", "ApexGrapple-Implant-ProjectileLauncher")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let implant: ApexGrappleImplant = ApexGrappleImplant.ProjectileLauncher;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-RequireLauncher")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-RequireLauncher-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let requireLauncher: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-Range")
   @runtimeProperty("ModSettings.description", "ApexGrapple-Range-Description")
   @runtimeProperty("ModSettings.step", "1.0")
@@ -83,7 +83,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-HookSpeed")
   @runtimeProperty("ModSettings.description", "ApexGrapple-HookSpeed-Description")
   @runtimeProperty("ModSettings.step", "5.0")
@@ -94,7 +94,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-HookReturn")
   @runtimeProperty("ModSettings.description", "ApexGrapple-HookReturn-Description")
   @runtimeProperty("ModSettings.step", "0.5")
@@ -105,7 +105,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullStrength")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PullStrength-Description")
   @runtimeProperty("ModSettings.step", "0.1")
@@ -116,7 +116,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullSpeedCap")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PullSpeedCap-Description")
   @runtimeProperty("ModSettings.step", "0.5")
@@ -127,7 +127,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-SteerStrength")
   @runtimeProperty("ModSettings.description", "ApexGrapple-SteerStrength-Description")
   @runtimeProperty("ModSettings.step", "0.1")
@@ -138,7 +138,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-RopeCarry")
   @runtimeProperty("ModSettings.description", "ApexGrapple-RopeCarry-Description")
   @runtimeProperty("ModSettings.step", "5.0")
@@ -149,7 +149,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-TakeOffLift")
   @runtimeProperty("ModSettings.description", "ApexGrapple-TakeOffLift-Description")
   @runtimeProperty("ModSettings.step", "0.25")
@@ -160,7 +160,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-TakeOffTime")
   @runtimeProperty("ModSettings.description", "ApexGrapple-TakeOffTime-Description")
   @runtimeProperty("ModSettings.step", "0.05")
@@ -171,7 +171,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-HoldToKeepPulling")
   @runtimeProperty("ModSettings.description", "ApexGrapple-HoldToKeepPulling-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -179,7 +179,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-ArrivalDistance")
   @runtimeProperty("ModSettings.description", "ApexGrapple-ArrivalDistance-Description")
   @runtimeProperty("ModSettings.step", "0.1")
@@ -190,7 +190,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-LetGoPastAnchor")
   @runtimeProperty("ModSettings.description", "ApexGrapple-LetGoPastAnchor-Description")
   @runtimeProperty("ModSettings.step", "0.5")
@@ -201,7 +201,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-LongestPull")
   @runtimeProperty("ModSettings.description", "ApexGrapple-LongestPull-Description")
   @runtimeProperty("ModSettings.step", "0.5")
@@ -212,7 +212,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-LetGoOnLanding")
   @runtimeProperty("ModSettings.description", "ApexGrapple-LetGoOnLanding-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -220,7 +220,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PreserveJump")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PreserveJump-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -228,7 +228,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-RegainDoubleJump")
   @runtimeProperty("ModSettings.description", "ApexGrapple-RegainDoubleJump-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -236,7 +236,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-HookTargets")
   @runtimeProperty("ModSettings.description", "ApexGrapple-HookTargets-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -244,7 +244,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullPeople")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PullPeople-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -252,7 +252,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullDamage")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PullDamage-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -260,7 +260,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-SteerPeople")
   @runtimeProperty("ModSettings.description", "ApexGrapple-SteerPeople-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -268,7 +268,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PunchWins")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PunchWins-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -276,7 +276,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PunchRange")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PunchRange-Description")
   @runtimeProperty("ModSettings.step", "0.1")
@@ -287,7 +287,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-SoftLanding")
   @runtimeProperty("ModSettings.description", "ApexGrapple-SoftLanding-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -295,7 +295,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-FallEffect")
   @runtimeProperty("ModSettings.description", "ApexGrapple-FallEffect-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -303,7 +303,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-DynamicFov")
   @runtimeProperty("ModSettings.description", "ApexGrapple-DynamicFov-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -311,7 +311,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-FovWidening")
   @runtimeProperty("ModSettings.description", "ApexGrapple-FovWidening-Description")
   @runtimeProperty("ModSettings.step", "1.0")
@@ -322,7 +322,7 @@ public class ApexGrappleProfile2 {
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
-  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-FovTransition")
   @runtimeProperty("ModSettings.description", "ApexGrapple-FovTransition-Description")
   @runtimeProperty("ModSettings.step", "0.1")
@@ -342,11 +342,11 @@ public class ApexGrappleProfile2 {
     let s: ref<ApexGrappleSettings> = new ApexGrappleSettings();
     s.ownKey = true;
     s.key = this.key;
-    s.implant = this.implant;
-    s.requireLauncher = this.requireLauncher;
     s.keyboardHold = this.keyboardHold;
     s.controllerHold = this.controllerHold;
     s.holdTime = this.holdTime;
+    s.implant = this.implant;
+    s.requireLauncher = this.requireLauncher;
     s.range = this.range;
     s.hookSpeed = this.hookSpeed;
     s.hookReturn = this.hookReturn;

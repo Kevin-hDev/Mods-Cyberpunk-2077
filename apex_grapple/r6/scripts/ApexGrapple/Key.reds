@@ -31,6 +31,7 @@ public func ApexGrappleUntilRelease() -> Float {
 public func ApexGrappleTakeKey(system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, now: Float) -> Void {
   if system.keyIsQuickMelee {
     system.holdBackUntil = now + (system.keyDown ? ApexGrappleUntilRelease() : ApexGrappleQuickMeleeMargin());
+    system.holdBacks = system.holdBacks + 1;
   }
 }
 
@@ -86,7 +87,6 @@ private final func ApexGrappleMenuTakes(scriptInterface: ref<StateGameScriptInte
 @addMethod(LocomotionEventsTransition)
 private final func ApexGrappleReadKey(scriptInterface: ref<StateGameScriptInterface>, system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, states: array<ApexGrappleOwnKey>, now: Float) -> ApexGrappleKey {
   let key: ApexGrappleKey;
-  let game: GameInstance = scriptInterface.GetGame();
   let shared: Bool;
   if settings.ownKey {
     // The place of the profile whose key is read (KeyProfile.reds).
@@ -100,11 +100,12 @@ private final func ApexGrappleReadKey(scriptInterface: ref<StateGameScriptInterf
       key.pressed = false;
     }
     if key.pressed {
+      let game: GameInstance = scriptInterface.GetGame();
       system.keyIsQuickMelee = ApexGrappleKeyStrikesQuickMelee(game, settings.key);
       shared = ApexGrappleKeyOpensScanner(game, settings.key);
     }
   } else {
-    key.pressed = scriptInterface.IsActionJustPressed(n"QuickMelee");
+    key.pressed = ApexGrappleQuickMeleeNow(system, scriptInterface);
     key.held = key.pressed || scriptInterface.GetActionValue(n"QuickMelee") > 0.0;
     if key.pressed && this.ApexGrappleMenuTakes(scriptInterface) {
       key.pressed = false;
@@ -153,7 +154,10 @@ private final func ApexGrappleReadKey(scriptInterface: ref<StateGameScriptInterf
     system.releasedAt = now;
     ApexGrappleEndHoldBack(system, now);
   }
-  // A hold of the shared button is the scanner's: no hold to grapple on it.
-  key.holdMode = !key.sharedTap && (scriptInterface.executionOwner.PlayerLastUsedKBM() ? settings.keyboardHold : settings.controllerHold);
+  // A hold of the shared button is the scanner's: no hold to grapple on it. Read on a press only, the one time it is
+  // used (Shot.reds, ApexGrappleIdleFrame): the device used last is not asked each frame (A7).
+  if key.pressed {
+    key.holdMode = !key.sharedTap && (scriptInterface.executionOwner.PlayerLastUsedKBM() ? settings.keyboardHold : settings.controllerHold);
+  }
   return key;
 }

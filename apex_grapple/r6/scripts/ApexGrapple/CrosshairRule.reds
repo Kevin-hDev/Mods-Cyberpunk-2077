@@ -25,20 +25,26 @@ public func ApexGrappleCrosshairIsArmed(record: TweakDBID) -> Bool {
 // Profile 1 is always on, and the master switch covers all five (KeyProfile.reds). The launcher is read only when
 // every profile that is on asks for it. Installing a launcher changes nothing until the next event the crosshair
 // listens to (Crosshair.reds): none tells of it.
+// The settings are the mod's copy (SettingsCopy.reds); without the grapple's system no grapple fires.
 public func ApexGrappleCrosshairCanFire(player: ref<GameObject>) -> Bool {
-  let base: ref<ApexGrappleSettings> = new ApexGrappleSettings();
+  let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(player.GetGame());
+  if !IsDefined(system) {
+    return false;
+  }
+  let base: ref<ApexGrappleSettings> = ApexGrappleProfileSettings(system, 1);
   if !base.enabled {
     return false;
   }
   if !base.requireLauncher {
     return true;
   }
-  let p2: ref<ApexGrappleProfile2> = new ApexGrappleProfile2();
-  let p3: ref<ApexGrappleProfile3> = new ApexGrappleProfile3();
-  let p4: ref<ApexGrappleProfile4> = new ApexGrappleProfile4();
-  let p5: ref<ApexGrappleProfile5> = new ApexGrappleProfile5();
-  if (p2.active && !p2.requireLauncher) || (p3.active && !p3.requireLauncher) || (p4.active && !p4.requireLauncher) || (p5.active && !p5.requireLauncher) {
-    return true;
+  let p: Int32 = 2;
+  while p <= ApexGrappleProfileCount() {
+    let settings: ref<ApexGrappleSettings> = ApexGrappleProfileSettings(system, p);
+    if system.profilesOn[p - 1] && !settings.requireLauncher {
+      return true;
+    }
+    p += 1;
   }
   return ApexGrappleHasLauncher(player);
 }

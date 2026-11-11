@@ -79,10 +79,16 @@ public class ApexGrappleArm extends IScriptable {
   public let duration: Float;
   // The gesture's signals are up in the animation graph.
   public let sent: Bool;
+  // One feature kept and filled again at each send, as the launcher's own states keep theirs (m_leftCWFeature,
+  // leftHandCyberwareTransitions.script:24-42), rather than a new one each frame the arm is held (B14).
+  public let feature: ref<AnimFeature_LeftHandCyberware>;
 }
 
-public func ApexGrappleArmSendGesture(state: Int32, charging: Bool, duration: Float, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  let feature: ref<AnimFeature_LeftHandCyberware> = new AnimFeature_LeftHandCyberware();
+public func ApexGrappleArmSendGesture(arm: ref<ApexGrappleArm>, state: Int32, charging: Bool, duration: Float, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+  if !IsDefined(arm.feature) {
+    arm.feature = new AnimFeature_LeftHandCyberware();
+  }
+  let feature: ref<AnimFeature_LeftHandCyberware> = arm.feature;
   feature.state = state;
   feature.actionDuration = duration;
   feature.isChargeAction = charging;
@@ -90,7 +96,7 @@ public func ApexGrappleArmSendGesture(state: Int32, charging: Bool, duration: Fl
 }
 
 public func ApexGrappleArmSend(arm: ref<ApexGrappleArm>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  ApexGrappleArmSendGesture(arm.state, arm.charging, arm.duration, scriptInterface);
+  ApexGrappleArmSendGesture(arm, arm.state, arm.charging, arm.duration, scriptInterface);
 }
 
 // leftHandItemHandling, LeftHandItem and LeftHandAnimation, as the launcher's equip state sets them and its clean-up
@@ -119,7 +125,7 @@ public func ApexGrappleArmShow(arm: ref<ApexGrappleArm>, show: Bool, scriptInter
     ApexGrappleArmSend(arm, scriptInterface);
     scriptInterface.PushAnimationEvent(n"LeftHandCyberwareReady");
   } else {
-    ApexGrappleArmSendGesture(ApexGrappleGestureRest(), false, ApexGrappleNoDuration(), scriptInterface);
+    ApexGrappleArmSendGesture(arm, ApexGrappleGestureRest(), false, ApexGrappleNoDuration(), scriptInterface);
     ApexGrappleArmHandSignals(false, scriptInterface);
   }
   return true;
@@ -173,7 +179,7 @@ public func ApexGrappleArmFrame(system: ref<ApexGrappleSystem>, settings: ref<Ap
     return;
   }
   // The view can change during a grapple, by the player or by a mod.
-  let eyes: Float = ApexGrappleCameraFromEyes(scriptInterface);
+  let eyes: Float = ApexGrappleEyesNow(system, scriptInterface);
   if ApexGrappleArmShow(arm, ApexGrappleNearEyes(eyes, arm.sent), scriptInterface) {
     ApexGrappleLog("the arm's gesture " + (arm.sent ? "sent again, V seen from the eyes" : "taken down, V seen from outside") + ": camera " + ToString(eyes) + " m from the eyes");
   }
@@ -197,7 +203,7 @@ public func ApexGrappleArmRaise(arm: ref<ApexGrappleArm>, system: ref<ApexGrappl
   arm.state = ApexGrappleGestureEquip();
   arm.charging = false;
   arm.duration = ApexGrappleArmRaiseDuration();
-  let show: Bool = ApexGrappleNearEyes(ApexGrappleCameraFromEyes(scriptInterface), arm.sent);
+  let show: Bool = ApexGrappleNearEyes(ApexGrappleEyesNow(system, scriptInterface), arm.sent);
   // A new shot raises the arm again from the start.
   if show {
     arm.sent = false;

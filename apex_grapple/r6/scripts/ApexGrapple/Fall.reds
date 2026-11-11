@@ -16,7 +16,8 @@ protected const func EnterCondition(const stateContext: ref<StateContext>, const
   if wrappedMethod(stateContext, scriptInterface) {
     return true;
   }
-  return ApexGrappleLiftsOff(scriptInterface) && !this.IsTouchingGround(scriptInterface);
+  // The ground first: V is on it most frames, and it is one read where the grapple's system is a search (B10).
+  return !this.IsTouchingGround(scriptInterface) && ApexGrappleLiftsOff(scriptInterface);
 }
 
 @wrapMethod(SlideFallDecisions)
@@ -24,7 +25,8 @@ protected const func EnterCondition(const stateContext: ref<StateContext>, const
   if wrappedMethod(stateContext, scriptInterface) {
     return true;
   }
-  return ApexGrappleLiftsOff(scriptInterface) && !this.IsTouchingGround(scriptInterface);
+  // The ground first: V is on it most frames, and it is one read where the grapple's system is a search (B10).
+  return !this.IsTouchingGround(scriptInterface) && ApexGrappleLiftsOff(scriptInterface);
 }
 
 // So a pull rises in the fall, where the game is in its jump while V goes up. The animations follow the fall's
@@ -50,7 +52,10 @@ public func ApexGrappleLongFallHeight() -> Float {
 // game's own measure (Static, Terrain and PlayerBlocker, with a wide probe): two rays of our own, Static and Terrain
 // only, met nothing within 10 m where the game measured the ground 4.08 m below V, seen in game.
 public func ApexGrappleHighUp(scriptInterface: ref<StateGameScriptInterface>) -> Bool {
-  let ground: Float = DefaultTransition.GetDistanceToGround(scriptInterface);
+  return ApexGrappleHighAbove(DefaultTransition.GetDistanceToGround(scriptInterface));
+}
+
+public func ApexGrappleHighAbove(ground: Float) -> Bool {
   return ground < 0.0 || ground >= ApexGrappleLongFallHeight();
 }
 
@@ -73,7 +78,7 @@ protected func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<Sta
     return;
   }
   system.riseShown = false;
-  if !ApexGrappleLiftsOff(scriptInterface) {
+  if !ApexGrappleMovesV(system) {
     return;
   }
   // Told here either way: a pull that leaves the ground coming down stays a fall.
@@ -92,7 +97,7 @@ protected func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scrip
     return;
   }
   if !system.riseShown {
-    if ApexGrappleLiftsOff(scriptInterface) && system.riseFor != system.startedAt && system.anchor.Z > system.startPosition.Z && !ApexGrappleComingDown(stateContext, this.GetVerticalSpeed(scriptInterface)) {
+    if ApexGrappleMovesV(system) && system.riseFor != system.startedAt && system.anchor.Z > system.startPosition.Z && !ApexGrappleComingDown(stateContext, this.GetVerticalSpeed(scriptInterface)) {
       system.riseFor = system.startedAt;
       if !ApexGrappleHighUp(scriptInterface) {
         this.ApexGrappleShowRise(system, scriptInterface);
@@ -103,7 +108,9 @@ protected func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scrip
   }
   let verticalSpeed: Float = this.GetVerticalSpeed(scriptInterface);
   let comingDown: Bool = ApexGrappleComingDown(stateContext, verticalSpeed);
-  if !comingDown && !ApexGrappleHighUp(scriptInterface) {
+  // The ground measured once, for the test and the log line both (B7a): it is a query of the world's geometry.
+  let ground: Float = DefaultTransition.GetDistanceToGround(scriptInterface);
+  if !comingDown && !ApexGrappleHighAbove(ground) {
     return;
   }
   system.riseShown = false;
@@ -111,7 +118,7 @@ protected func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scrip
   this.SetDetailedState(scriptInterface, gamePSMDetailedLocomotionStates.Fall);
   let shownFor: Float = ApexGrappleTime(scriptInterface.executionOwner.GetGame()) - system.riseShownAt;
   let why: String = comingDown ? "coming down" : "high up";
-  ApexGrappleLog("rise shown as a jump for " + ToString(shownFor) + " s, then the fall, " + why + ", at " + ToString(verticalSpeed) + " m/s, " + ToString(DefaultTransition.GetDistanceToGround(scriptInterface)) + " m above the ground");
+  ApexGrappleLog("rise shown as a jump for " + ToString(shownFor) + " s, then the fall, " + why + ", at " + ToString(verticalSpeed) + " m/s, " + ToString(ground) + " m above the ground");
 }
 
 // A rise that ends before V comes down (on the ground, at a ledge) says so too.

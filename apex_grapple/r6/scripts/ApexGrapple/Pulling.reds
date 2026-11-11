@@ -28,11 +28,11 @@ private final func ApexGrapplePullFrame(system: ref<ApexGrappleSystem>, key: Ape
   let middle: Vector4 = feet + DefaultTransition.GetUpVector() * ApexGrappleMiddleHeight();
   let stride: Float = Vector4.Distance(middle, system.lastPosition);
   system.lastPosition = middle;
-  let game: Vector4 = DefaultTransition.GetLinearVelocity(scriptInterface);
+  let game: Vector4 = ApexGrappleVelocityNow(system, scriptInterface);
   let held: Float = now - system.startedAt;
   let onGround: Bool = scriptInterface.IsOnGround();
   let takingOff: Bool = ApexGrappleTakingOff(held, settings.takeOffTime);
-  let reason: String = this.ApexGrappleBlockedHere(stateContext, scriptInterface);
+  let reason: String = this.ApexGrappleBlockedHere(system.stateName, stateContext, scriptInterface);
   if !settings.enabled {
     reason = "the mod was switched off";
   }
@@ -60,7 +60,7 @@ private final func ApexGrapplePullFrame(system: ref<ApexGrappleSystem>, key: Ape
     wanted.Z = settings.takeOffLift;
   }
   let gravity: Float = AbsF(this.GetStaticFloatParameterDefault("downwardsGravity", ApexGrappleFallGravity()));
-  let look: Vector4 = Transform.GetForward(scriptInterface.GetCameraWorldTransform());
+  let look: Vector4 = Transform.GetForward(ApexGrappleViewNow(system, scriptInterface));
   if Vector4.Dot(wanted, system.anchor - middle) > 0.0 {
     system.cameToward = true;
   }

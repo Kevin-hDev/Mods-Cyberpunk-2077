@@ -24,6 +24,9 @@ public func ApexGrapplePiecesLate() -> Float {
 public class ApexGrapplePiecesSet extends IScriptable {
   public let entities: array<wref<Entity>>;
   public let found: Int32;
+  // Kept by strong pointers, against rule 3 of optimisation.md, on purpose (Kevin, 10 November 2026): they are pieces of
+  // our own entities, which ApexGrapplePiecesAlive checks through weak pointers at each frame before any use; weak
+  // pointers here would add more than 200 checks a frame for no risk seen either way.
   public let hook: ref<MeshComponent>;
   public let rope: array<ref<MeshComponent>>;
   public let shown: Int32;
@@ -31,6 +34,9 @@ public class ApexGrapplePiecesSet extends IScriptable {
   public let shot: ref<ApexGrappleHookShot>;
   public let bends: ref<ApexGrappleRopeBends>;
   public let hang: ref<ApexGrappleRopeHangs>;
+  // Worked out again at each frame, kept rather than made anew (RopeHang.reds, RopeMotion.reds).
+  public let laid: ref<ApexGrappleRopeLaid>;
+  public let table: ref<ApexGrappleHangTable>;
   // For the log, over one shot.
   public let mostPieces: Int32;
   public let mostPushStep: Float;
@@ -64,6 +70,8 @@ public func ApexGrappleAskForPieces(at: Vector4, now: Float) -> ref<ApexGrappleP
   pieces.askedAt = now;
   pieces.set = new ApexGrapplePiecesSet();
   pieces.set.lead = new ApexGrappleRopeLead();
+  pieces.set.laid = new ApexGrappleRopeLaid();
+  pieces.set.table = new ApexGrappleHangTable();
   ArrayResize(pieces.set.rope, ApexGrappleRopePieces());
   if ApexGrappleAskNextPieces(pieces, statics) {
     ApexGrappleLog("pieces asked for: " + ToString(ApexGrapplePiecesFiles()) + " entity files, one at a time");

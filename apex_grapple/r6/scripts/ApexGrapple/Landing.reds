@@ -32,10 +32,9 @@ public func ApexGrappleSoftLandingCovers(system: ref<ApexGrappleSystem>) -> Bool
   return ApexGrappleGrappleSettings(system).softLanding;
 }
 
-@wrapMethod(LocomotionAirEvents)
-protected func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  wrappedMethod(timeDelta, stateContext, scriptInterface);
-  let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(scriptInterface.executionOwner.GetGame());
+// Each frame in the air (AirFrame.reds).
+@addMethod(LocomotionAirEvents)
+private func ApexGrappleSoftenLanding(system: ref<ApexGrappleSystem>, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
   if !ApexGrappleSoftLandingCovers(system) {
     return;
   }

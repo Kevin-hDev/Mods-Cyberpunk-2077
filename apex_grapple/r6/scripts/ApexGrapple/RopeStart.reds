@@ -75,8 +75,17 @@ public func ApexGrappleMovingWith(system: ref<ApexGrappleSystem>, now: Float, ga
   return game;
 }
 
-// The rope's start as the last frame showed it; RopeLead.reds moves it on.
+// The rope's start as the last frame showed it; RopeLead.reds moves it on. While the launcher is lent its barrel is
+// read first, and the hand only when the wrist under it cannot be: read first, the hand was read for nothing (B13). The
+// barrel is read from the wrist joint, so wherever it is found the hand would have been too: the start is the same.
 public func ApexGrappleRopeStartNow(system: ref<ApexGrappleSystem>, view: Transform, scriptInterface: ref<StateGameScriptInterface>) -> ApexGrappleRopeStartRead {
+  let lent: Bool = ApexGrappleLauncherOut(system) && ApexGrappleHandSlotsFound(system, scriptInterface);
+  if lent {
+    let barrel: ApexGrappleWristRead = ApexGrappleLauncherBarrelStart(system, view);
+    if barrel.found {
+      return ApexGrappleRopeStartFrom(barrel.at, ApexGrappleRopeFromBarrel());
+    }
+  }
   let read: ApexGrappleWristRead = ApexGrappleLeftHand(system, scriptInterface);
   if !read.found {
     if !system.handMissSaid {
@@ -86,9 +95,9 @@ public func ApexGrappleRopeStartNow(system: ref<ApexGrappleSystem>, view: Transf
     let cameras: ref<CameraSystem> = GameInstance.GetCameraSystem(scriptInterface.executionOwner.GetGame());
     return ApexGrappleRopeStartFrom(ApexGrappleRopeStart(view, cameras.GetActiveCameraFOV(), cameras.GetAspectRatio()), ApexGrappleRopeFromFixedPoint());
   }
-  let barrel: ApexGrappleWristRead = ApexGrappleLauncherBarrelStart(system, view);
-  if barrel.found {
-    return ApexGrappleRopeStartFrom(barrel.at, ApexGrappleRopeFromBarrel());
+  if lent && !system.loan.wristMissSaid {
+    system.loan.wristMissSaid = true;
+    ApexGrappleLog("the wrist could not be read: the rope starts from the fist under the launcher");
   }
   // The step to the fist's middle was measured from WeaponLeft; the wrist joint gets none.
   if read.inHand {

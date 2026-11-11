@@ -26,12 +26,16 @@ public func ApexGrappleLauncherIsOwnLeftArm(component: ref<IComponent>) -> Bool 
 }
 
 // `first`: as the launcher comes into the hand, written even when nothing is found; afterwards only what came back.
+// The plane is read before asking the engine whether the piece is on: a field against a call for each of V's pieces,
+// of which two or three are on that plane (audit of 10 November 2026, A4). A piece that comes back is switched off
+// again but listed once (A17).
 @if(ModuleExists("Codeware"))
 public func ApexGrappleLauncherHideHand(loan: ref<ApexGrappleLauncherLoan>, first: Bool, now: Float, player: ref<GameObject>) -> Void {
   let found: array<wref<IComponent>>;
   let names: String = "";
-  for component in player.GetComponents() {
-    if component.IsEnabled() && ApexGrappleLauncherIsOwnLeftArm(component) {
+  let components: array<ref<IComponent>> = player.GetComponents();
+  for component in components {
+    if ApexGrappleLauncherIsOwnLeftArm(component) && component.IsEnabled() {
       ArrayPush(found, component);
       names += " " + NameToString(component.GetName());
     }
@@ -44,7 +48,9 @@ public func ApexGrappleLauncherHideHand(loan: ref<ApexGrappleLauncherLoan>, firs
     let component: ref<IComponent> = held;
     if IsDefined(component) {
       component.Toggle(false);
-      ArrayPush(loan.hiddenHand, held);
+      if !ArrayContains(loan.hiddenHand, held) {
+        ArrayPush(loan.hiddenHand, held);
+      }
     }
   }
 }

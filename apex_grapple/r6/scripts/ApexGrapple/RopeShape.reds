@@ -62,18 +62,6 @@ public func ApexGrappleRopeCut(points: array<Vector4>, length: Float) -> array<V
   return cut;
 }
 
-// One span's places added to the rope's, the point they share once. The pieces are laid span by span, so that a bend
-// is always between two pieces: one piece across a square corner would cut through it by up to a third of its length.
-public func ApexGrappleAddPlaces(places: array<Vector4>, more: array<Vector4>) -> array<Vector4> {
-  let all: array<Vector4> = places;
-  let n: Int32 = ArraySize(all) == 0 ? 0 : 1;
-  while n < ArraySize(more) {
-    ArrayPush(all, more[n]);
-    n = n + 1;
-  }
-  return all;
-}
-
 public func ApexGrappleRopePlaces(points: array<Vector4>, piece: Float) -> array<Vector4> {
   let places: array<Vector4>;
   let count: Int32 = ArraySize(points);

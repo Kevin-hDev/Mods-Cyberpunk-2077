@@ -54,12 +54,12 @@ private final func ApexGrappleCheckShot(system: ref<ApexGrappleSystem>, settings
     check.why = implant;
     return check;
   }
-  let blocked: String = this.ApexGrappleBlockedHere(stateContext, scriptInterface);
+  let blocked: String = this.ApexGrappleBlockedHere(system.stateName, stateContext, scriptInterface);
   if StrLen(blocked) > 0 {
     check.why = "refused: " + blocked;
     return check;
   }
-  check.aim = ApexGrappleAimNow(scriptInterface, settings);
+  check.aim = ApexGrappleAimNow(system, scriptInterface, settings);
   if !check.aim.found {
     check.why = "left to the game: " + check.aim.seen;
     return check;
@@ -89,6 +89,7 @@ private final func ApexGrappleSharedPress(system: ref<ApexGrappleSystem>, settin
   }
   if system.keyIsQuickMelee {
     system.holdBackUntil = now + ApexGrappleUntilRelease();
+    system.holdBacks = system.holdBacks + 1;
   }
 }
 
@@ -130,7 +131,7 @@ private final func ApexGrappleShoot(system: ref<ApexGrappleSystem>, settings: re
 
 @addMethod(LocomotionEventsTransition)
 private final func ApexGrappleFlyingFrame(system: ref<ApexGrappleSystem>, key: ApexGrappleKey, settings: ref<ApexGrappleSettings>, now: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  let reason: String = this.ApexGrappleBlockedHere(stateContext, scriptInterface);
+  let reason: String = this.ApexGrappleBlockedHere(system.stateName, stateContext, scriptInterface);
   if !settings.enabled {
     reason = "the mod was switched off";
   }

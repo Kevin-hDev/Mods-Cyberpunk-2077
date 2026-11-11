@@ -32,13 +32,26 @@ public func ApexGrappleHitDistance(hit: TraceResult, from: Vector4) -> Float {
   return Vector4.Distance(from, Vector4.Vector3To4(hit.position));
 }
 
-public func ApexGrappleNearest(a: TraceResult, b: TraceResult, from: Vector4) -> TraceResult {
-  let toA: Float = ApexGrappleHitDistance(a, from);
-  let toB: Float = ApexGrappleHitDistance(b, from);
-  if toA < 0.0 {
+// A ray's hit and its distance from the eye, worked out once: the nearer of two is then chosen without working either
+// distance out again (A5).
+public struct ApexGrappleRayHit {
+  let hit: TraceResult;
+  let at: Float;
+}
+
+public func ApexGrappleRayHitOf(hit: TraceResult, from: Vector4) -> ApexGrappleRayHit {
+  let ray: ApexGrappleRayHit;
+  ray.hit = hit;
+  ray.at = ApexGrappleHitDistance(hit, from);
+  return ray;
+}
+
+// The nearer of two hits, the first when they are as near; a ray that found nothing loses.
+public func ApexGrappleNearerHit(a: ApexGrappleRayHit, b: ApexGrappleRayHit) -> ApexGrappleRayHit {
+  if a.at < 0.0 {
     return b;
   }
-  if toB < 0.0 || toA <= toB {
+  if b.at < 0.0 || a.at <= b.at {
     return a;
   }
   return b;
@@ -106,27 +119,52 @@ public struct ApexGrappleSight {
 }
 
 // Six rays and one question to the targeting. length: the range of the profile that shoots, or the longest range of
-// the profiles that can fire, for the crosshair (CrosshairRange.reds).
+// the profiles that can fire, for the crosshair (CrosshairRange.reds). The rays for vehicles and people go only as far
+// as the surface found, the whole length without one: the rule keeps them only nearer than the surface (AimRule.reds).
+// Until the audit of 10 November 2026 they went the whole length (A3, Kevin's trial of 10 November 2026: 27 shots and
+// 22 212 verdicts of the range indicator alike, no distance more than 1 mm apart; releves/apex-grapple/
+// 2026-11-10-allegement).
 public func ApexGrappleLook(scriptInterface: ref<StateGameScriptInterface>, length: Float) -> ApexGrappleSight {
   let sight: ApexGrappleSight;
   let view: Transform = scriptInterface.GetCameraWorldTransform();
   let from: Vector4 = Transform.GetPosition(view);
-  let to: Vector4 = from + Transform.GetForward(view) * length;
+  let forward: Vector4 = Transform.GetForward(view);
+  let to: Vector4 = from + forward * length;
   sight.from = from;
-  let statics: TraceResult = scriptInterface.RaycastWithASingleGroup(from, to, n"Static");
-  let terrain: TraceResult = scriptInterface.RaycastWithASingleGroup(from, to, n"Terrain");
-  let dynamics: TraceResult = scriptInterface.RaycastWithASingleGroup(from, to, n"Dynamic");
-  sight.surface = ApexGrappleNearest(ApexGrappleNearest(statics, terrain, from), dynamics, from);
-  sight.surfaceAt = ApexGrappleHitDistance(sight.surface, from);
+  let statics: ApexGrappleRayHit = ApexGrappleRayHitOf(scriptInterface.RaycastWithASingleGroup(from, to, n"Static"), from);
+  let terrain: ApexGrappleRayHit = ApexGrappleRayHitOf(scriptInterface.RaycastWithASingleGroup(from, to, n"Terrain"), from);
+  let dynamics: ApexGrappleRayHit = ApexGrappleRayHitOf(scriptInterface.RaycastWithASingleGroup(from, to, n"Dynamic"), from);
+  let surface: ApexGrappleRayHit = ApexGrappleNearerHit(ApexGrappleNearerHit(statics, terrain), dynamics);
+  sight.surface = surface.hit;
+  sight.surfaceAt = surface.at;
   sight.met = ApexGrappleHitObject(sight.surface);
-  sight.vehicle = scriptInterface.RaycastWithASingleGroup(from, to, n"Vehicle");
+  let near: Vector4 = surface.at >= 0.0 ? from + forward * surface.at : to;
+  sight.vehicle = scriptInterface.RaycastWithASingleGroup(from, near, n"Vehicle");
   sight.vehicleAt = ApexGrappleHitDistance(sight.vehicle, from);
   sight.vehicleObject = ApexGrappleHitObject(sight.vehicle);
-  sight.people = ApexGrappleNearest(scriptInterface.RaycastWithASingleGroup(from, to, n"AI"), scriptInterface.RaycastWithASingleGroup(from, to, n"Ragdoll"), from);
-  sight.peopleAt = ApexGrappleHitDistance(sight.people, from);
+  let standing: ApexGrappleRayHit = ApexGrappleRayHitOf(scriptInterface.RaycastWithASingleGroup(from, near, n"AI"), from);
+  let fallen: ApexGrappleRayHit = ApexGrappleRayHitOf(scriptInterface.RaycastWithASingleGroup(from, near, n"Ragdoll"), from);
+  let people: ApexGrappleRayHit = ApexGrappleNearerHit(standing, fallen);
+  sight.people = people.hit;
+  sight.peopleAt = people.at;
   sight.body = ApexGrappleHitObject(sight.people);
   let looked: ref<GameObject> = ApexGrappleLookedAt(scriptInterface);
   sight.looked = looked;
   sight.lookedAt = ApexGrappleObjectDistance(looked, from);
+  return sight;
+}
+
+// A look counted for the log's cost line (Cost.reds) and kept for the rest of its frame: the range indicator, last in
+// the frame, takes the decision's when it would look as far, rather than cast the same six rays again from the same
+// camera (A10). Judged in the frame it was cast, as any sight.
+public func ApexGrappleLookFor(system: ref<ApexGrappleSystem>, scriptInterface: ref<StateGameScriptInterface>, length: Float) -> ApexGrappleSight {
+  let sight: ApexGrappleSight = ApexGrappleLook(scriptInterface, length);
+  system.sightKept = sight;
+  system.sightKeptIn = system.frames;
+  system.sightKeptLength = length;
+  let cost: ref<ApexGrappleCost> = system.cost;
+  if IsDefined(cost) {
+    cost.aimRays = cost.aimRays + ApexGrappleLookRays();
+  }
   return sight;
 }

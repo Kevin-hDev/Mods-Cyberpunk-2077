@@ -7,12 +7,11 @@ public func ApexGrappleKeyFree(system: ref<ApexGrappleSystem>) -> Bool {
   return system.phase == ApexGrappleIdle() && !system.keyDown && !system.waitingForHold && !system.sharedDown;
 }
 
-// The settings of the profile whose key is read this frame: read fresh at each free frame, as before profiles, then
-// kept from the frame its key was pressed. own: the own keys' places this frame (ApexGrappleOwnKeysNow). One
-// ApexGrappleSettings made per frame, as before profiles.
+// The settings of the profile whose key is read this frame: taken from the copy at each free frame (SettingsCopy.reds),
+// then kept from the frame its key was pressed. own: the own keys' places this frame (ApexGrappleOwnKeysFor).
 public func ApexGrappleKeySettingsNow(system: ref<ApexGrappleSystem>, own: array<ApexGrappleOwnKey>, scriptInterface: ref<StateGameScriptInterface>) -> ref<ApexGrappleSettings> {
   let free: Bool = ApexGrappleKeyFree(system);
-  let base: ref<ApexGrappleSettings> = new ApexGrappleSettings();
+  let base: ref<ApexGrappleSettings> = ApexGrappleProfileSettings(system, 1);
   if free {
     system.keyProfile = ApexGrapplePressedProfile(system, base, own, scriptInterface);
   }
@@ -25,13 +24,14 @@ public func ApexGrappleKeySettingsNow(system: ref<ApexGrappleSystem>, own: array
     i += 1;
   }
   if free {
-    system.keySettings = ApexGrappleSettingsOf(system.keyProfile, base);
+    system.keySettings = ApexGrappleProfileSettings(system, system.keyProfile);
   }
   if !IsDefined(system.keySettings) {
     system.keySettings = base;
   }
   // The master switch is no profile setting: kept live in the key's and the grapple's settings, as before profiles,
-  // so that the mod switched off in the menu during a grapple ends it (Pulling.reds) and asks for no pieces.
+  // so that the mod switched off in the menu during a grapple ends it (Pulling.reds) and asks for no pieces. On the
+  // copy's own objects this writes the value they already hold (ToSettings).
   system.keySettings.enabled = base.enabled;
   if IsDefined(system.settings) {
     system.settings.enabled = base.enabled;
@@ -41,7 +41,7 @@ public func ApexGrappleKeySettingsNow(system: ref<ApexGrappleSystem>, own: array
 
 // Profile 1 first, on the quick melee key or on its own key; then each own key, from profile 2 up.
 public func ApexGrapplePressedProfile(system: ref<ApexGrappleSystem>, base: ref<ApexGrappleSettings>, own: array<ApexGrappleOwnKey>, scriptInterface: ref<StateGameScriptInterface>) -> Int32 {
-  if !base.ownKey && scriptInterface.IsActionJustPressed(n"QuickMelee") {
+  if !base.ownKey && ApexGrappleQuickMeleeNow(system, scriptInterface) {
     return 1;
   }
   let i: Int32 = 0;

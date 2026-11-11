@@ -1,46 +1,9 @@
 // How the mod reads its settings. Five profiles: profile 1 is ApexGrappleSettings (Settings.reds), profiles 2 to 5 are
-// made from it (Profile2.reds to Profile5.reds). The rest of the mod reads one ApexGrappleSettings: the profile whose
-// key is read (KeyProfile.reds), or the one that fired the grapple.
+// made from it (Profile2.reds to Profile5.reds), all read into one copy (SettingsCopy.reds). The rest of the mod reads
+// one ApexGrappleSettings: the profile whose key is read (KeyProfile.reds), or the one that fired the grapple.
 
 public func ApexGrappleProfileCount() -> Int32 {
   return 5;
-}
-
-// Profile 1 is base, read by the caller.
-public func ApexGrappleSettingsOf(profile: Int32, base: ref<ApexGrappleSettings>) -> ref<ApexGrappleSettings> {
-  if profile == 2 {
-    let p2: ref<ApexGrappleProfile2> = new ApexGrappleProfile2();
-    return p2.ToSettings();
-  }
-  if profile == 3 {
-    let p3: ref<ApexGrappleProfile3> = new ApexGrappleProfile3();
-    return p3.ToSettings();
-  }
-  if profile == 4 {
-    let p4: ref<ApexGrappleProfile4> = new ApexGrappleProfile4();
-    return p4.ToSettings();
-  }
-  if profile == 5 {
-    let p5: ref<ApexGrappleProfile5> = new ApexGrappleProfile5();
-    return p5.ToSettings();
-  }
-  return base;
-}
-
-// Each profile's own key, profile 1 first: none for a profile that is off, or for profile 1 on the quick melee key.
-public func ApexGrappleOwnKeys() -> array<EInputKey> {
-  let base: ref<ApexGrappleSettings> = new ApexGrappleSettings();
-  let p2: ref<ApexGrappleProfile2> = new ApexGrappleProfile2();
-  let p3: ref<ApexGrappleProfile3> = new ApexGrappleProfile3();
-  let p4: ref<ApexGrappleProfile4> = new ApexGrappleProfile4();
-  let p5: ref<ApexGrappleProfile5> = new ApexGrappleProfile5();
-  let keys: array<EInputKey>;
-  ArrayPush(keys, base.ownKey ? base.key : EInputKey.IK_None);
-  ArrayPush(keys, p2.OwnKey());
-  ArrayPush(keys, p3.OwnKey());
-  ArrayPush(keys, p4.OwnKey());
-  ArrayPush(keys, p5.OwnKey());
-  return keys;
 }
 
 // The grapple's settings: those of the profile that fired the last grapple, as they were at its shot, through its
@@ -52,7 +15,7 @@ public func ApexGrappleGrappleSettings(system: ref<ApexGrappleSystem>, opt fallb
   if IsDefined(fallback) {
     return fallback;
   }
-  return new ApexGrappleSettings();
+  return ApexGrappleProfileSettings(system, 1);
 }
 
 // The hook's speed as used, flight and way back alike: a settings file edited by hand to 0 would keep the hook out for
@@ -70,14 +33,13 @@ public func ApexGrappleKeyName(key: EInputKey) -> String {
 }
 
 // For the log: profile 1, each other profile that is on, and the keys two profiles share (the lower number fires).
-public func ApexGrappleProfilesText() -> String {
-  let base: ref<ApexGrappleSettings> = new ApexGrappleSettings();
-  let keys: array<EInputKey> = ApexGrappleOwnKeys();
-  let text: String = "profile 1: " + ApexGrappleSettingsText(base);
+public func ApexGrappleProfilesText(system: ref<ApexGrappleSystem>) -> String {
+  let keys: array<EInputKey> = system.ownKeys;
+  let text: String = "profile 1: " + ApexGrappleSettingsText(ApexGrappleProfileSettings(system, 1));
   let p: Int32 = 2;
   while p <= ApexGrappleProfileCount() {
     if NotEquals(keys[p - 1], EInputKey.IK_None) {
-      text = text + "; profile " + ToString(p) + ": " + ApexGrappleSettingsText(ApexGrappleSettingsOf(p, base));
+      text = text + "; profile " + ToString(p) + ": " + ApexGrappleSettingsText(ApexGrappleProfileSettings(system, p));
     }
     p += 1;
   }

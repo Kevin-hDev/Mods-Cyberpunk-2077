@@ -45,18 +45,12 @@ public func ApexGrappleLauncherWrist(system: ref<ApexGrappleSystem>) -> ApexGrap
   return read;
 }
 
-// Called by the rope's start (RopeStart.reds): the barrel while the launcher is lent, else nothing.
+// Called by the rope's start (RopeStart.reds) while the launcher is lent: the barrel's mouth, or nothing when the
+// wrist cannot be read.
 public func ApexGrappleLauncherBarrelStart(system: ref<ApexGrappleSystem>, view: Transform) -> ApexGrappleWristRead {
   let read: ApexGrappleWristRead;
-  if !ApexGrappleLauncherOut(system) {
-    return read;
-  }
   let wrist: ApexGrappleWristRead = ApexGrappleLauncherWrist(system);
   if !wrist.found {
-    if !system.loan.wristMissSaid {
-      system.loan.wristMissSaid = true;
-      ApexGrappleLog("the wrist could not be read: the rope starts from the fist under the launcher");
-    }
     return read;
   }
   let at: Vector4 = wrist.at + Transform.GetRight(view) * ApexGrappleLauncherBarrelRight() + Transform.GetUp(view) * ApexGrappleLauncherBarrelUp();

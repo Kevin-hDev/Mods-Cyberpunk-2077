@@ -24,8 +24,16 @@ public class ApexGrappleFov {
   // The settings of the profile whose pull widened it: the way back keeps them once that pull has let go.
   public let widening: Float;
   public let transition: Float;
-  // Why the current pull does not widen the view, as last written to the log.
+  // Why the current pull does not widen the view, as last written to the log, and whether there is one: at rest it is
+  // forgotten once, not written again each frame (audit of 10 November 2026, A16).
   public let refused: String;
+  public let refusing: Bool;
+  // The setting the player's value was worked out from, and the setting and widening the widened value was worked out
+  // from: each is worked out again only when they change (A11).
+  public let homeFrom: Float;
+  public let wideFrom: Float;
+  public let wideWidening: Float;
+  public let wideValue: Float;
   // Lines written this load (ApexGrappleLogUpTo): the grapple's system is made again at each load.
   public let lines: Int32;
 }
@@ -37,6 +45,28 @@ public func ApexGrappleFovMostLines() -> Int32 {
 
 public func ApexGrappleFovLog(fov: ref<ApexGrappleFov>, const text: String) -> Void {
   fov.lines = ApexGrappleLogUpTo(fov.lines, ApexGrappleFovMostLines(), "field of view", text);
+}
+
+// A line is made only while one can still be written; at the bound itself ApexGrappleLogUpTo writes its own (A16).
+public func ApexGrappleFovLogs(fov: ref<ApexGrappleFov>) -> Bool {
+  return fov.lines <= ApexGrappleFovMostLines();
+}
+
+// The player's field of view as the camera holds it, from the last setting that could be read.
+public func ApexGrappleFovHomeNow(fov: ref<ApexGrappleFov>, setting: Float) -> Void {
+  if setting > 0.0 && setting != fov.homeFrom {
+    fov.home = ApexGrappleFovCameraOf(setting);
+    fov.homeFrom = setting;
+  }
+}
+
+public func ApexGrappleFovWideNow(fov: ref<ApexGrappleFov>, setting: Float) -> Float {
+  if setting != fov.wideFrom || fov.widening != fov.wideWidening {
+    fov.wideValue = ApexGrappleFovWideOf(setting, fov.widening);
+    fov.wideFrom = setting;
+    fov.wideWidening = fov.widening;
+  }
+  return fov.wideValue;
 }
 
 // Kevin's upper bound for the widened field of view, in the degrees of the game's setting.

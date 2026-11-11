@@ -16,8 +16,26 @@ public func ApexGrapplePulling() -> Int32 {
 public class ApexGrappleSystem extends ScriptableSystem {
   public let phase: Int32;
   public let shots: Int32;
-  // When the grapple's frame last ran (Frame.reds), to see the game stop running it.
+  // When the grapple's frame last ran (Frame.reds), to see the game stop running it, and how many times this load.
   public let lastFrameAt: Float;
+  public let frames: Int32;
+  // What the frame reads once and shares (FrameReads.reds), with the frame it was read in.
+  public let viewRead: Transform;
+  public let viewReadIn: Int32;
+  public let velocityRead: Vector4;
+  public let velocityReadIn: Int32;
+  public let eyesRead: Float;
+  public let eyesReadIn: Int32;
+  public let quickMeleeRead: Bool;
+  public let quickMeleeReadIn: Int32;
+  // This state's name, read once a frame (Frame.reds), and the decision's sight kept for the range indicator in the
+  // frame it was cast (CrosshairRange.reds).
+  public let stateName: CName;
+  public let sightKept: ApexGrappleSight;
+  public let sightKeptIn: Int32;
+  public let sightKeptLength: Float;
+  // What the mod did over the last minute, for its line in the log (Cost.reds).
+  public let cost: ref<ApexGrappleCost>;
   // The shot.
   public let anchor: Vector4;
   public let firedAt: Float;
@@ -66,6 +84,20 @@ public class ApexGrappleSystem extends ScriptableSystem {
   // One place per profile, profile 1 first (OwnKey.reds).
   public let ownPressesSeen: array<Int32>;
   public let holdBackUntil: Float;
+  // Hold-backs begun and the last one the log told: several of the game's decisions ask in the frame (QuickMelee.reds).
+  public let holdBacks: Int32;
+  public let holdBackSaid: Int32;
+  // The settings as Mod Settings holds them (SettingsCopy.reds): each profile's, profile 1 first, whether it is on, its
+  // own key, whether any own key is set, a number that changes with them and the one the log last told.
+  public let profiles: array<ref<ApexGrappleSettings>>;
+  public let profilesOn: array<Bool>;
+  public let ownKeys: array<EInputKey>;
+  public let anyOwnKey: Bool;
+  public let settingsVersion: Int32;
+  public let settingsLoggedVersion: Int32;
+  public let settingsWatch: ref<ApexGrappleSettingsWatch>;
+  // The crosshair, told when the settings change (Crosshair.reds).
+  public let crosshairHost: wref<CrosshairGameControllerPersistentDot>;
   // The profile whose key is read and its settings (KeyProfile.reds); the profile that fired the last grapple and its
   // settings as they were at the shot (Profiles.reds).
   public let keyProfile: Int32;
@@ -130,9 +162,19 @@ public class ApexGrappleSystem extends ScriptableSystem {
     ArrayResize(this.ownPressesSeen, ApexGrappleProfileCount());
     this.keyProfile = 1;
     this.profile = 1;
-    this.settingsLogged = ApexGrappleProfilesText();
+    ApexGrappleCopySettings(this);
+    this.settingsWatch = new ApexGrappleSettingsWatch();
+    this.settingsWatch.system = this;
+    ApexGrappleSettingsWatchStart(this.settingsWatch);
+    this.settingsLogged = ApexGrappleProfilesText(this);
+    this.settingsLoggedVersion = this.settingsVersion;
     ApexGrappleLog("loaded; settings in use: " + this.settingsLogged);
     ApexGrappleSayWhatCodewareGives();
+  }
+
+  private func OnDetach() -> Void {
+    ApexGrappleSettingsWatchStop(this.settingsWatch);
+    this.settingsWatch = null;
   }
 
   // A save made while the launcher is lent would keep it in V's inventory (Launcher.reds).
@@ -150,9 +192,14 @@ public func ApexGrappleSystemOf(game: GameInstance) -> ref<ApexGrappleSystem> {
   return GameInstance.GetScriptableSystemsContainer(game).Get(n"ApexGrappleSystem") as ApexGrappleSystem;
 }
 
-// Settings change during play: each shot writes them again if they changed since the last line.
+// Settings change during play: each shot writes them again if they changed since the last line. The text is made only
+// when the copy has been made again since it was last made (A1).
 public func ApexGrappleLogSettingsIfChanged(system: ref<ApexGrappleSystem>) -> Void {
-  let text: String = ApexGrappleProfilesText();
+  if system.settingsLoggedVersion == system.settingsVersion {
+    return;
+  }
+  system.settingsLoggedVersion = system.settingsVersion;
+  let text: String = ApexGrappleProfilesText(system);
   if !Equals(text, system.settingsLogged) {
     system.settingsLogged = text;
     ApexGrappleLog("settings in use: " + text);

@@ -25,13 +25,19 @@ public func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptIn
 
 @addMethod(LocomotionEventsTransition)
 private final func ApexGrappleFrame(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(scriptInterface.executionOwner.GetGame());
+  // The game and this state's name read once for the whole frame (A14).
+  let game: GameInstance = scriptInterface.executionOwner.GetGame();
+  let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(game);
   if !IsDefined(system) {
     return;
   }
-  let now: Float = ApexGrappleTime(scriptInterface.executionOwner.GetGame());
+  let now: Float = ApexGrappleTime(game);
   let missed: Float = now - system.lastFrameAt - timeDelta;
   system.lastFrameAt = now;
+  // From 1 on: the frame numbers kept by FrameReads.reds start at 0, never this frame's.
+  system.frames = system.frames + 1;
+  system.stateName = this.GetStateName();
+  ApexGrappleCostFrame(system, now);
   if system.phase != ApexGrappleIdle() && missed > ApexGrappleLongestGap() {
     this.ApexGrappleLetGo(system, "the game did not run the grapple for " + ToString(missed) + " s", now, scriptInterface);
   }
@@ -44,9 +50,9 @@ private final func ApexGrappleFrame(timeDelta: Float, stateContext: ref<StateCon
   }
   // The settings of the profile whose key is read, for the key and a shot (KeyProfile.reds); during a grapple, the
   // grapple's own (Profiles.reds), which are the same.
-  let own: array<ApexGrappleOwnKey> = ApexGrappleOwnKeysNow(scriptInterface.executionOwner.GetGame());
+  let own: array<ApexGrappleOwnKey> = ApexGrappleOwnKeysFor(system, game);
   let keySettings: ref<ApexGrappleSettings> = ApexGrappleKeySettingsNow(system, own, scriptInterface);
-  if ApexGrappleIsHitReaction(this.GetStateName()) {
+  if ApexGrappleIsHitReaction(system.stateName) {
     ApexGrappleHitTakesOver(system, stateContext);
   }
   let key: ApexGrappleKey = this.ApexGrappleReadKey(scriptInterface, system, keySettings, own, now);
@@ -70,7 +76,7 @@ private final func ApexGrappleFrame(timeDelta: Float, stateContext: ref<StateCon
   ApexGrappleDrawPieces(system, settings, now, timeDelta, scriptInterface);
   // After the pieces, so that the hook home is heard in the frame it gets there.
   ApexGrappleSoundsFrame(system, scriptInterface);
-  ApexGrappleYankWatch(system, now, scriptInterface.executionOwner.GetGame());
+  ApexGrappleYankWatch(system, now, game);
   // After the phase is settled: a pull that starts or stops this frame widens or brings back the view in this frame.
   ApexGrappleFovFrame(system, settings, now, timeDelta, stateContext, scriptInterface);
   // Last: the colour answers for the next press, once this frame's shot is settled.
@@ -88,11 +94,11 @@ private final func ApexGrappleLetGo(system: ref<ApexGrappleSystem>, reason: Stri
 }
 
 // Why the grapple cannot start or go on here; empty when it can. Where the game takes V over, or forbids jumping and
-// climbing, the grapple lets go too.
+// climbing, the grapple lets go too. state: this state's name, read once a frame (ApexGrappleFrame).
 @addMethod(LocomotionEventsTransition)
-private final func ApexGrappleBlockedHere(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> String {
-  if ApexGrappleIsHitReaction(this.GetStateName()) {
-    return "knocked down (" + NameToString(this.GetStateName()) + ")";
+private final func ApexGrappleBlockedHere(state: CName, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> String {
+  if ApexGrappleIsHitReaction(state) {
+    return "knocked down (" + NameToString(state) + ")";
   }
   // A ladder is not refused: the pull takes V off it (LadderExit.reds). Except sliding down one, a state without the
   // crouch exit (its exits in the locomotion tweak; Wall Climb's audit of 25 October 2026, B2): the pull would freeze.
@@ -110,7 +116,7 @@ private final func ApexGrappleBlockedHere(stateContext: ref<StateContext>, scrip
     return "in a takedown";
   }
   if IsDefined(this as ForceIdleEvents) || IsDefined(this as ForceWalkEvents) || IsDefined(this as ForceFreezeEvents) {
-    return "held by a scene (" + NameToString(this.GetStateName()) + ")";
+    return "held by a scene (" + NameToString(state) + ")";
   }
   if VehicleComponent.IsMountedToVehicle(scriptInterface.executionOwner.GetGame(), scriptInterface.executionOwner) {
     return "in a vehicle";

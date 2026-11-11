@@ -5,16 +5,17 @@
 
 // The rotation that turns a piece's +Y, its length in our meshes (fabrique), along `way`: BuildFromDirectionVector
 // turns +Y (seen in game, the planted hook's +Y along its way). A way of no length, as the rope's on the frame of the
-// shot, leaves the piece unturned rather than normalise nothing.
+// shot, leaves the piece unturned rather than normalise nothing. How much the way points up is read off its own Z: the
+// same number as its dot with straight up, multiplied by 0 or 1, with no vector made for it (B5).
 public func ApexGrappleFacing(way: Vector4) -> Quaternion {
   if Vector4.Length(way) <= ApexGrappleTiny() {
     return new Quaternion(0.0, 0.0, 0.0, 1.0);
   }
-  let up: Vector4 = new Vector4(0.0, 0.0, 1.0, 0.0);
-  if AbsF(Vector4.Dot(Vector4.Normalize(way), up)) > 0.99 {
-    up = new Vector4(0.0, 1.0, 0.0, 0.0);
+  let along: Vector4 = Vector4.Normalize(way);
+  if AbsF(along.Z) > 0.99 {
+    return Quaternion.BuildFromDirectionVector(way, new Vector4(0.0, 1.0, 0.0, 0.0));
   }
-  return Quaternion.BuildFromDirectionVector(way, up);
+  return Quaternion.BuildFromDirectionVector(way, new Vector4(0.0, 0.0, 1.0, 0.0));
 }
 
 public func ApexGrappleLocal(point: Vector4, origin: Vector4) -> Vector4 {
@@ -56,8 +57,8 @@ public func ApexGrappleDrawPieces(system: ref<ApexGrappleSystem>, settings: ref<
   if system.phase == ApexGrappleIdle() && !IsDefined(set.shot) {
     return;
   }
-  let view: Transform = scriptInterface.GetCameraWorldTransform();
-  let game: Vector4 = DefaultTransition.GetLinearVelocity(scriptInterface);
+  let view: Transform = ApexGrappleViewNow(system, scriptInterface);
+  let game: Vector4 = ApexGrappleVelocityNow(system, scriptInterface);
   let moving: Vector4 = ApexGrappleMovingWith(system, now, game);
   let here: ApexGrappleRopeStartRead = ApexGrappleRopeStartNow(system, view, scriptInterface);
   let step: Vector4 = ApexGrappleRopeLeadStep(set.lead, here.at, here.from, moving, now, frame);
@@ -103,6 +104,8 @@ public func ApexGrappleDrawSet(system: ref<ApexGrappleSystem>, set: ref<ApexGrap
     set.shot = null;
     return;
   }
+  // The rays this frame casts for the rope, for the minute's line (Cost.reds).
+  let raysBefore: Int32 = set.bends.rays + set.hang.rays;
   // The rope's line: straight to the flying hook; from the bite on, through its bends to where the hook was planted,
   // and on the way back cut where the hook has got to.
   let line: array<Vector4>;
@@ -137,26 +140,45 @@ public func ApexGrappleDrawSet(system: ref<ApexGrappleSystem>, set: ref<ApexGrap
     set.hookShown = true;
   }
   let shown: Float = ApexGrappleRopeSwing(pose.phase, pose.since);
-  ApexGrappleLayRope(set, ApexGrappleHungPlaces(scriptInterface, set.hang, line, shown, now - set.shot.firedAt, ApexGrappleRopePieceFor(line, ArraySize(set.rope))), start);
+  let piece: Float = ApexGrappleRopePieceFor(line, ArraySize(set.rope));
+  ApexGrappleHungPlaces(scriptInterface, set.hang, set.laid, set.table, line, shown, now - set.shot.firedAt, piece);
+  if IsDefined(system.cost) {
+    system.cost.ropeRays = system.cost.ropeRays + set.bends.rays + set.hang.rays - raysBefore;
+  }
+  ApexGrappleLayRope(set, set.laid, start);
 }
 
 // Each piece from one place to the next, stretched alike to its span (visualScale along its length, +Y); pieces shown
-// or hidden only when their number changes.
+// or hidden only when their number changes. The pieces of a straight span lie one after the other on its line, all of
+// a length: they take the first one's turn and stretch rather than work their own out again, the gap left to Kevin's
+// eye (10 November 2026, audit B6: "oui").
 @if(ModuleExists("Codeware"))
-public func ApexGrappleLayRope(set: ref<ApexGrapplePiecesSet>, places: array<Vector4>, start: Vector4) -> Void {
-  let wanted: Int32 = ArraySize(places) - 1;
+public func ApexGrappleLayRope(set: ref<ApexGrapplePiecesSet>, laid: ref<ApexGrappleRopeLaid>, start: Vector4) -> Void {
+  let wanted: Int32 = ArraySize(laid.places) - 1;
   let count: Int32 = Max(Min(wanted, ArraySize(set.rope)), 0);
   if wanted > count {
     set.cut = true;
   }
   let length: Float = ApexGrappleRopePieceLength();
+  let span: Int32 = 0;
+  let sharedUntil: Int32 = 0;
+  let turn: Quaternion;
+  let stretch: Vector3;
   let i: Int32 = 0;
   while i < count {
-    let from: Vector4 = places[i];
-    let to: Vector4 = places[i + 1];
+    let from: Vector4 = laid.places[i];
+    let to: Vector4 = laid.places[i + 1];
+    if i >= sharedUntil {
+      while span < ArraySize(laid.spanEnds) - 1 && i >= laid.spanEnds[span] {
+        span = span + 1;
+      }
+      turn = ApexGrappleFacing(to - from);
+      stretch = new Vector3(1.0, Vector4.Distance(from, to) / length, 1.0);
+      sharedUntil = laid.straight[span] ? laid.spanEnds[span] : i + 1;
+    }
     let piece: ref<MeshComponent> = set.rope[i];
-    piece.SetLocalTransform(ApexGrappleLocal(from, start), ApexGrappleFacing(to - from));
-    piece.visualScale = new Vector3(1.0, Vector4.Distance(from, to) / length, 1.0);
+    piece.SetLocalTransform(ApexGrappleLocal(from, start), turn);
+    piece.visualScale = stretch;
     if i >= set.shown {
       piece.Toggle(true);
     }

@@ -4,13 +4,15 @@
 // frame's visibility in UpdateRootVisibility, which every change of its own goes through: the mod's rule
 // (CrosshairRule.reds) is applied right after it. While the crosshair shows, the frame is made visible and the game's
 // dot hidden; once it hides, both go back to the game's rule. Updated on events only: right-hand weapon, vehicle,
-// scene tier, scanner, the aim the game listens to, and Mod Settings (CrosshairWatch.reds); only the range indicator's
-// colour follows the aim each frame (CrosshairRange.reds).
+// scene tier, scanner, the aim the game listens to, and Mod Settings (told by the grapple's system, SettingsCopy.reds);
+// only the range indicator's colour follows the aim each frame (CrosshairRange.reds), and not while a menu is open.
+// The game's boards are kept by weak pointers, checked before each use (optimisation.md, rule 3; A18).
 
 public class ApexGrappleCrosshairState extends IScriptable {
   public let player: wref<GameObject>;
-  public let weapons: ref<IBlackboard>;
-  public let psm: ref<IBlackboard>;
+  public let weapons: wref<IBlackboard>;
+  public let psm: wref<IBlackboard>;
+  public let ui: wref<IBlackboard>;
   public let frame: wref<inkCanvas>;
   // The settings the frame was drawn with (CrosshairDraw.reds), "" before it is drawn.
   public let drawnWith: String;
@@ -25,7 +27,7 @@ public class ApexGrappleCrosshairState extends IScriptable {
   public let vehicleCallback: ref<CallbackHandle>;
   public let sceneCallback: ref<CallbackHandle>;
   public let visionCallback: ref<CallbackHandle>;
-  public let watch: ref<ApexGrappleCrosshairWatch>;
+  public let menuCallback: ref<CallbackHandle>;
   // The range indicator (CrosshairRange.reds), driven by the grapple's frame through the link its system keeps.
   public let range: ref<ApexGrappleCrosshairRange>;
 }
@@ -64,34 +66,42 @@ private func ApexGrappleCrosshairAttach(player: ref<GameObject>) -> Void {
   let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(player.GetGame());
   if IsDefined(system) {
     system.crosshairRange = state.range;
+    system.crosshairHost = this;
+    state.range.system = system;
   }
   let defs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
   let boards: ref<BlackboardSystem> = this.GetBlackboardSystem();
   // The right hand's weapon as the game's crosshairs read it (crosshairContainerController.script, OnWeaponSwap).
-  state.weapons = boards.Get(defs.UI_ActiveWeaponData);
-  if IsDefined(state.weapons) {
-    state.weaponCallback = state.weapons.RegisterListenerVariant(defs.UI_ActiveWeaponData.RightWeaponRecordID, this, n"OnApexGrappleCrosshairWeapon");
-    state.armed = ApexGrappleCrosshairIsArmed(FromVariant<TweakDBID>(state.weapons.GetVariant(defs.UI_ActiveWeaponData.RightWeaponRecordID)));
+  let weapons: ref<IBlackboard> = boards.Get(defs.UI_ActiveWeaponData);
+  state.weapons = weapons;
+  if IsDefined(weapons) {
+    state.weaponCallback = weapons.RegisterListenerVariant(defs.UI_ActiveWeaponData.RightWeaponRecordID, this, n"OnApexGrappleCrosshairWeapon");
+    state.armed = ApexGrappleCrosshairIsArmed(FromVariant<TweakDBID>(weapons.GetVariant(defs.UI_ActiveWeaponData.RightWeaponRecordID)));
   }
-  state.psm = this.GetPSMBlackboard(player);
-  if IsDefined(state.psm) {
-    state.vehicleCallback = state.psm.RegisterListenerInt(defs.PlayerStateMachine.Vehicle, this, n"OnApexGrappleCrosshairVehicle");
-    state.sceneCallback = state.psm.RegisterListenerInt(defs.PlayerStateMachine.SceneTier, this, n"OnApexGrappleCrosshairSceneTier");
-    state.visionCallback = state.psm.RegisterListenerInt(defs.PlayerStateMachine.Vision, this, n"OnApexGrappleCrosshairVision");
-    state.vehicle = state.psm.GetInt(defs.PlayerStateMachine.Vehicle);
-    state.sceneTier = state.psm.GetInt(defs.PlayerStateMachine.SceneTier);
-    state.vision = state.psm.GetInt(defs.PlayerStateMachine.Vision);
+  let psm: ref<IBlackboard> = this.GetPSMBlackboard(player);
+  state.psm = psm;
+  if IsDefined(psm) {
+    state.vehicleCallback = psm.RegisterListenerInt(defs.PlayerStateMachine.Vehicle, this, n"OnApexGrappleCrosshairVehicle");
+    state.sceneCallback = psm.RegisterListenerInt(defs.PlayerStateMachine.SceneTier, this, n"OnApexGrappleCrosshairSceneTier");
+    state.visionCallback = psm.RegisterListenerInt(defs.PlayerStateMachine.Vision, this, n"OnApexGrappleCrosshairVision");
+    state.vehicle = psm.GetInt(defs.PlayerStateMachine.Vehicle);
+    state.sceneTier = psm.GetInt(defs.PlayerStateMachine.SceneTier);
+    state.vision = psm.GetInt(defs.PlayerStateMachine.Vision);
   }
-  state.watch = new ApexGrappleCrosshairWatch();
-  state.watch.host = this;
-  ApexGrappleCrosshairWatchStart(state.watch);
+  // Any menu (inventory, crafting, map...), as the game's IsPlayerInAnyMenu reads it (defaultTransition.script:1688).
+  let ui: ref<IBlackboard> = boards.Get(defs.UI_System);
+  state.ui = ui;
+  if IsDefined(ui) {
+    state.menuCallback = ui.RegisterListenerBool(defs.UI_System.IsInMenu, this, n"OnApexGrappleCrosshairMenu");
+    state.range.inMenu = ui.GetBool(defs.UI_System.IsInMenu);
+  }
   let option: ref<ConfigVarBool> = this.m_settings.GetVar(this.m_groupPath, n"PersistentCenterDot") as ConfigVarBool;
   let root: wref<inkCompoundWidget> = this.GetRootWidget() as inkCompoundWidget;
   let dot: wref<inkWidget>;
   if IsDefined(root) {
     dot = root.GetWidgetByPathName(n"dot");
   }
-  ApexGrappleLog("crosshair host found: the game's dot " + (IsDefined(dot) ? "found" : "not found") + ", its option " + (IsDefined(option) && option.GetValue() ? "on" : "off") + ", weapons " + ToString(IsDefined(state.weapons)) + ", player states " + ToString(IsDefined(state.psm)) + ", range indicator linked " + ToString(IsDefined(system)));
+  ApexGrappleLog("crosshair host found: the game's dot " + (IsDefined(dot) ? "found" : "not found") + ", its option " + (IsDefined(option) && option.GetValue() ? "on" : "off") + ", weapons " + ToString(IsDefined(weapons)) + ", player states " + ToString(IsDefined(psm)) + ", menus " + ToString(IsDefined(ui)) + ", range indicator linked " + ToString(IsDefined(system)));
   this.UpdateRootVisibility();
 }
 
@@ -103,21 +113,26 @@ private func ApexGrappleCrosshairDetach() -> Void {
     return;
   }
   let defs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
-  if IsDefined(state.weapons) && IsDefined(state.weaponCallback) {
-    state.weapons.UnregisterListenerVariant(defs.UI_ActiveWeaponData.RightWeaponRecordID, state.weaponCallback);
+  let weapons: ref<IBlackboard> = state.weapons;
+  if IsDefined(weapons) && IsDefined(state.weaponCallback) {
+    weapons.UnregisterListenerVariant(defs.UI_ActiveWeaponData.RightWeaponRecordID, state.weaponCallback);
   }
-  if IsDefined(state.psm) {
+  let psm: ref<IBlackboard> = state.psm;
+  if IsDefined(psm) {
     if IsDefined(state.vehicleCallback) {
-      state.psm.UnregisterListenerInt(defs.PlayerStateMachine.Vehicle, state.vehicleCallback);
+      psm.UnregisterListenerInt(defs.PlayerStateMachine.Vehicle, state.vehicleCallback);
     }
     if IsDefined(state.sceneCallback) {
-      state.psm.UnregisterListenerInt(defs.PlayerStateMachine.SceneTier, state.sceneCallback);
+      psm.UnregisterListenerInt(defs.PlayerStateMachine.SceneTier, state.sceneCallback);
     }
     if IsDefined(state.visionCallback) {
-      state.psm.UnregisterListenerInt(defs.PlayerStateMachine.Vision, state.visionCallback);
+      psm.UnregisterListenerInt(defs.PlayerStateMachine.Vision, state.visionCallback);
     }
   }
-  ApexGrappleCrosshairWatchStop(state.watch);
+  let ui: ref<IBlackboard> = state.ui;
+  if IsDefined(ui) && IsDefined(state.menuCallback) {
+    ui.UnregisterListenerBool(defs.UI_System.IsInMenu, state.menuCallback);
+  }
   ApexGrappleCrosshairRangeStop(state.range);
   this.apexGrapple = null;
   let frame: wref<inkCanvas> = state.frame;

@@ -5,15 +5,21 @@
 // flying, pull, hook on its way back), a press fires no grapple: out of range, without rays (Kevin, 10 November 2026,
 // after the audit; seen only with the arm implant set to None, the launcher hides the crosshair then). Left out: the
 // places where the grapple is refused (ApexGrappleBlockedHere), or the crosshair would flash red at each vault, for a
-// press no one makes. The launcher a profile asks for is kept (ApexGrappleImplantRefusal). The pieces take a new
-// colour only when it changes (CrosshairPieces.reds).
+// press no one makes. The launcher a profile asks for is kept (ApexGrappleImplantRefusal), read once a frame however
+// many profiles ask for it (A6). The pieces take a new colour only when it changes (CrosshairPieces.reds). With a menu
+// open (inventory, crafting, map...) nothing is judged: the colour waits for the menu to close (A2).
 
 public class ApexGrappleCrosshairRange extends IScriptable {
-  // Our crosshair shows and the indicator is on: only then are rays cast.
+  // Our crosshair shows and the indicator is on: only then are rays cast. inMenu: a menu is open (Crosshair.reds).
   public let on: Bool;
+  public let inMenu: Bool;
+  public let system: wref<ApexGrappleSystem>;
   public let frame: wref<inkCanvas>;
+  // The pieces a colour may be given to, listed at the first change of colour after each drawing (A15).
+  public let pieces: array<wref<inkWidget>>;
+  public let piecesListed: Bool;
   // The profiles that can fire and their numbers, read again at each event of the crosshair and each change of the
-  // settings (Crosshair.reds, CrosshairWatch.reds), and the longest of their ranges.
+  // settings (Crosshair.reds, SettingsCopy.reds), and the longest of their ranges.
   public let profiles: array<ref<ApexGrappleSettings>>;
   public let numbers: array<Int32>;
   public let longest: Float;
@@ -58,6 +64,8 @@ public func ApexGrappleCrosshairRangeStart(range: ref<ApexGrappleCrosshairRange>
   range.outOfRange = ApexGrappleCrosshairTint(settings.outOfRangeColor);
   if redrawn {
     range.tint = range.inRange;
+    ArrayClear(range.pieces);
+    range.piecesListed = false;
   }
   if !range.on {
     range.logged = false;
@@ -73,19 +81,22 @@ public func ApexGrappleCrosshairRangeStop(range: ref<ApexGrappleCrosshairRange>)
   range.on = false;
 }
 
-// Profile 1 always; the others while on and given a key (ApexGrappleOwnKeys gives none otherwise) that no lower profile
+// Profile 1 always; the others while on and given a key (the copy keeps none otherwise) that no lower profile
 // has, since the lowest fires (ApexGrappleFirstWithKey), and only while own keys are heard (Codeware).
 public func ApexGrappleCrosshairRangeProfiles(range: ref<ApexGrappleCrosshairRange>) -> Void {
   ArrayClear(range.profiles);
   ArrayClear(range.numbers);
   range.longest = 0.0;
-  let base: ref<ApexGrappleSettings> = new ApexGrappleSettings();
-  let keys: array<EInputKey> = ApexGrappleOwnKeys();
+  let system: ref<ApexGrappleSystem> = range.system;
+  if !IsDefined(system) {
+    return;
+  }
+  let keys: array<EInputKey> = system.ownKeys;
   let heard: Bool = ApexGrappleOwnKeysHeard();
   let p: Int32 = 1;
   while p <= ApexGrappleProfileCount() {
     if p == 1 || (heard && NotEquals(keys[p - 1], EInputKey.IK_None) && ApexGrappleFirstWithKey(keys, p - 1)) {
-      let settings: ref<ApexGrappleSettings> = ApexGrappleSettingsOf(p, base);
+      let settings: ref<ApexGrappleSettings> = ApexGrappleProfileSettings(system, p);
       ArrayPush(range.profiles, settings);
       ArrayPush(range.numbers, p);
       range.longest = MaxF(range.longest, settings.range);
@@ -97,7 +108,7 @@ public func ApexGrappleCrosshairRangeProfiles(range: ref<ApexGrappleCrosshairRan
 // Each frame of the grapple (Frame.reds): the profiles are judged in order until one would fire.
 public func ApexGrappleCrosshairRangeFrame(system: ref<ApexGrappleSystem>, now: Float, scriptInterface: ref<StateGameScriptInterface>) -> Void {
   let range: ref<ApexGrappleCrosshairRange> = system.crosshairRange;
-  if !IsDefined(range) || !range.on {
+  if !IsDefined(range) || !range.on || range.inMenu {
     return;
   }
   if system.phase != ApexGrappleIdle() || ApexGrappleHookStillOut(system) {
@@ -105,15 +116,28 @@ public func ApexGrappleCrosshairRangeFrame(system: ref<ApexGrappleSystem>, now: 
     ApexGrappleCrosshairTintTo(range, range.outOfRange);
     return;
   }
-  let sight: ApexGrappleSight = ApexGrappleLook(scriptInterface, range.longest);
+  if IsDefined(system.cost) {
+    system.cost.indicatorFrames = system.cost.indicatorFrames + 1;
+  }
+  let sight: ApexGrappleSight;
+  if system.sightKeptIn == system.frames && system.sightKeptLength == range.longest {
+    sight = system.sightKept;
+  } else {
+    sight = ApexGrappleLookFor(system, scriptInterface, range.longest);
+  }
   let player: ref<GameObject> = scriptInterface.executionOwner;
   let firing: Int32 = 0;
   // Profile 1's reason when none would fire, for the log; it may ask for the launcher while V has none.
   let reason: Int32 = ApexGrappleRangeLauncherRequired();
+  // The launcher read at the first profile that asks for it (-1: not yet).
+  let launcher: Int32 = -1;
   let i: Int32 = 0;
   while i < ArraySize(range.profiles) && firing == 0 {
     let settings: ref<ApexGrappleSettings> = range.profiles[i];
-    if StrLen(ApexGrappleImplantRefusal(settings, player)) == 0 {
+    if settings.requireLauncher && launcher < 0 {
+      launcher = ApexGrappleHasLauncher(player) ? 1 : 0;
+    }
+    if !settings.requireLauncher || launcher == 1 {
       let verdict: ApexGrappleVerdict = ApexGrappleVerdictOf(sight, settings);
       if verdict.fires {
         firing = range.numbers[i];
@@ -135,7 +159,11 @@ public func ApexGrappleCrosshairTintTo(range: ref<ApexGrappleCrosshairRange>, co
   }
   let frame: ref<inkCanvas> = range.frame;
   if IsDefined(frame) {
-    ApexGrappleCrosshairRecolor(frame, range.tint, color);
+    if !range.piecesListed {
+      ApexGrappleCrosshairListPieces(range, frame);
+      range.piecesListed = true;
+    }
+    ApexGrappleCrosshairRecolor(range, range.tint, color);
   }
   range.tint = color;
 }

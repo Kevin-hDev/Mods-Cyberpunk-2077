@@ -56,22 +56,34 @@ public func ApexGrappleCrosshairSlicedImage(parent: ref<inkCompoundWidget>, anch
   image.nineSliceScale = new inkMargin(nine[0], nine[1], nine[2], nine[3]);
 }
 
-// Gives the pieces of colour from the colour to, without drawing them again (the range indicator, CrosshairRange.reds).
-// Canvases are walked, never tinted; a piece its game file gives a fixed colour keeps it.
-public func ApexGrappleCrosshairRecolor(parent: ref<inkCompoundWidget>, from: HDRColor, to: HDRColor) -> Void {
+// The pieces under parent that a colour may be given to, in the order of the drawing: canvases are walked, never
+// tinted. Listed once after each drawing (CrosshairRange.reds) rather than the whole drawing walked at each change of
+// colour (A15).
+public func ApexGrappleCrosshairListPieces(range: ref<ApexGrappleCrosshairRange>, parent: ref<inkCompoundWidget>) -> Void {
   let count: Int32 = parent.GetNumChildren();
   let i: Int32 = 0;
   while i < count {
     let child: ref<inkWidget> = parent.GetWidgetByIndex(i);
     let inner: ref<inkCompoundWidget> = child as inkCompoundWidget;
     if IsDefined(inner) {
-      ApexGrappleCrosshairRecolor(inner, from, to);
+      ApexGrappleCrosshairListPieces(range, inner);
     } else {
-      if IsDefined(child) && ApexGrappleSameColor(child.GetTintColor(), from) {
-        child.SetTintColor(to);
+      if IsDefined(child) {
+        ArrayPush(range.pieces, child);
       }
     }
     i += 1;
+  }
+}
+
+// Gives the listed pieces of colour from the colour to, without drawing them again (the range indicator). A piece its
+// game file gives a fixed colour keeps it.
+public func ApexGrappleCrosshairRecolor(range: ref<ApexGrappleCrosshairRange>, from: HDRColor, to: HDRColor) -> Void {
+  for held in range.pieces {
+    let piece: ref<inkWidget> = held;
+    if IsDefined(piece) && ApexGrappleSameColor(piece.GetTintColor(), from) {
+      piece.SetTintColor(to);
+    }
   }
 }
 

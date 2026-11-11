@@ -39,7 +39,7 @@ private final func ApexGrappleYankFrame(system: ref<ApexGrappleSystem>, key: Ape
   let person: ref<GameObject> = yank.person;
   let chest: Vector4 = system.anchor;
   ApexGrappleYankReadSpeed(yank, chest, now);
-  let reason: String = this.ApexGrappleBlockedHere(stateContext, scriptInterface);
+  let reason: String = this.ApexGrappleBlockedHere(system.stateName, stateContext, scriptInterface);
   if !settings.enabled {
     reason = "the mod was switched off";
   }

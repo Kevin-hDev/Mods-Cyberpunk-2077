@@ -20,20 +20,29 @@ public final func ApexGrappleHandSlots() -> ref<SlotComponent> {
   return this.FindComponentByName(n"ItemAttachmentSlots") as SlotComponent;
 }
 
+// V's slots, looked up the first time and kept in the system; false when V has none.
+public func ApexGrappleHandSlotsFound(system: ref<ApexGrappleSystem>, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+  if IsDefined(system.handSlots) {
+    return true;
+  }
+  let player: ref<PlayerPuppet> = scriptInterface.executionOwner as PlayerPuppet;
+  if !IsDefined(player) {
+    return false;
+  }
+  let slots: ref<SlotComponent> = player.ApexGrappleHandSlots();
+  if !IsDefined(slots) {
+    return false;
+  }
+  system.handSlots = slots;
+  return true;
+}
+
 public func ApexGrappleLeftHand(system: ref<ApexGrappleSystem>, scriptInterface: ref<StateGameScriptInterface>) -> ApexGrappleWristRead {
   let read: ApexGrappleWristRead;
-  let slots: ref<SlotComponent> = system.handSlots;
-  if !IsDefined(slots) {
-    let player: ref<PlayerPuppet> = scriptInterface.executionOwner as PlayerPuppet;
-    if !IsDefined(player) {
-      return read;
-    }
-    slots = player.ApexGrappleHandSlots();
-    if !IsDefined(slots) {
-      return read;
-    }
-    system.handSlots = slots;
+  if !ApexGrappleHandSlotsFound(system, scriptInterface) {
+    return read;
   }
+  let slots: ref<SlotComponent> = system.handSlots;
   let place: WorldTransform;
   if slots.GetSlotTransform(n"WeaponLeft", place) {
     read.inHand = true;

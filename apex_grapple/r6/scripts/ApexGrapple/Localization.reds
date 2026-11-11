@@ -28,6 +28,13 @@ public class ApexGrappleEnglish extends ModLocalizationPackage {
     this.Text("ApexGrapple-Enabled", "Apex Grapple");
     this.Text("ApexGrapple-Enabled-Description", "Aim at a surface and press the quick melee key (Q on a keyboard; R3 on a controller, or L1 in the Alternative or Switch Legacy layout): the hook flies and the rope pulls you, while your aim steers you. Off: the key does only the quick melee.");
     this.Text("ApexGrapple-Profile1", "Profile 1: base grapple");
+    this.Text("ApexGrapple-Profile1-Key", "Profile 1: key");
+    this.Text("ApexGrapple-Profile1-Hook", "Profile 1: arm and hook");
+    this.Text("ApexGrapple-Profile1-Pull", "Profile 1: pull");
+    this.Text("ApexGrapple-Profile1-LetGo", "Profile 1: letting go");
+    this.Text("ApexGrapple-Profile1-Targets", "Profile 1: vehicles and people");
+    this.Text("ApexGrapple-Profile1-Landing", "Profile 1: landing");
+    this.Text("ApexGrapple-Profile1-Fov", "Profile 1: field of view");
     this.Text("ApexGrapple-Profile2", "Profile 2");
     this.Text("ApexGrapple-Profile3", "Profile 3");
     this.Text("ApexGrapple-Profile4", "Profile 4");
@@ -111,6 +118,13 @@ public class ApexGrappleFrench extends ModLocalizationPackage {
     this.Text("ApexGrapple-Enabled", "Apex Grapple");
     this.Text("ApexGrapple-Enabled-Description", "Visez une surface et appuyez sur la touche du coup rapide (Q au clavier ; R3 à la manette, ou L1 en disposition Alternative ou Switch Legacy) : le crochet part et la corde vous tire, pendant que votre visée vous dirige. Éteint : la touche ne fait que le coup rapide.");
     this.Text("ApexGrapple-Profile1", "Profil 1 : grappin de base");
+    this.Text("ApexGrapple-Profile1-Key", "Profil 1 : touche");
+    this.Text("ApexGrapple-Profile1-Hook", "Profil 1 : bras et crochet");
+    this.Text("ApexGrapple-Profile1-Pull", "Profil 1 : traction");
+    this.Text("ApexGrapple-Profile1-LetGo", "Profil 1 : lâcher");
+    this.Text("ApexGrapple-Profile1-Targets", "Profil 1 : véhicules et personnes");
+    this.Text("ApexGrapple-Profile1-Landing", "Profil 1 : atterrissage");
+    this.Text("ApexGrapple-Profile1-Fov", "Profil 1 : champ de vision");
     this.Text("ApexGrapple-Profile2", "Profil 2");
     this.Text("ApexGrapple-Profile3", "Profil 3");
     this.Text("ApexGrapple-Profile4", "Profil 4");

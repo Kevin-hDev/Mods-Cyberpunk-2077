@@ -1,5 +1,5 @@
 // The keys of the player's choice, one place per profile, profile 1 first: profile 1's "Own key" when it is on, and
-// the key of each profile 2 to 5 that is on (ApexGrappleOwnKeys). Heard through Codeware's raw key events
+// the key of each profile 2 to 5 that is on (the settings' copy, SettingsCopy.reds). Heard through Codeware's raw key events
 // (Input/Key), as Air Strafe's tap strafe key. The mouse wheel never arrives there. Without Codeware no own key does
 // anything, said in the log once a load (Prerequisites.reds); the quick melee key still grapples for profile 1.
 
@@ -45,7 +45,11 @@ public class ApexGrappleKeyListener extends ScriptableSystem {
       }
       i += 1;
     }
-    let keys: array<EInputKey> = ApexGrappleOwnKeys();
+    let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(this.GetGameInstance());
+    if !IsDefined(system) {
+      return;
+    }
+    let keys: array<EInputKey> = system.ownKeys;
     i = 0;
     while i < ArraySize(keys) && i < ArraySize(this.held) {
       if Equals(keys[i], key) {

@@ -27,6 +27,11 @@ public func ApexGrappleLauncherLoanOf(owner: ref<GameObject>) -> ref<ApexGrapple
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnItemBeingRemovedFromInventory(evt: ref<ItemBeingRemovedEvent>) -> Bool {
+  // Only a launcher of the mod's record is ever taken back (Launcher.reds): any other item, dozens at once at a sale,
+  // leaves before the system is looked for (audit of 10 November 2026, A12).
+  if ItemID.GetTDBID(evt.itemID) != ApexGrappleLauncherRecord() {
+    return wrappedMethod(evt);
+  }
   let loan: ref<ApexGrappleLauncherLoan> = ApexGrappleLauncherLoanOf(this);
   if IsDefined(loan) && ItemID.IsValid(loan.takenBack) && loan.takenBack == evt.itemID && IsDefined(evt.itemData) {
     let none: ItemID;

@@ -85,10 +85,8 @@ public func ApexGrappleRopeHitOf(scriptInterface: ref<StateGameScriptInterface>,
   let way: Vector4 = (to - from) * (1.0 / span);
   let a: Vector4 = from + way * margin;
   let b: Vector4 = to - way * margin;
-  bends.rays = bends.rays + 2;
-  let statics: TraceResult = scriptInterface.RaycastWithASingleGroup(a, b, n"Static");
-  let terrain: TraceResult = scriptInterface.RaycastWithASingleGroup(a, b, n"Terrain");
-  let nearest: TraceResult = ApexGrappleNearest(statics, terrain, a);
+  bends.rays = bends.rays + 1;
+  let nearest: TraceResult = ApexGrappleRopeRay(scriptInterface, a, b);
   if !TraceResult.IsValid(nearest) {
     return hit;
   }
@@ -98,6 +96,19 @@ public func ApexGrappleRopeHitOf(scriptInterface: ref<StateGameScriptInterface>,
   hit.at = Vector4.Vector3To4(nearest.position);
   hit.normal = normal;
   return hit;
+}
+
+// Only whether the line is cut, as ApexGrappleRopeHitOf finds it, without working out where (audit of 10 November
+// 2026, B4).
+public func ApexGrappleRopeBlocked(scriptInterface: ref<StateGameScriptInterface>, bends: ref<ApexGrappleRopeBends>, from: Vector4, to: Vector4) -> Bool {
+  let margin: Float = ApexGrappleBendMargin();
+  let span: Float = Vector4.Distance(from, to);
+  if span <= 2.0 * margin + 0.05 {
+    return false;
+  }
+  let way: Vector4 = (to - from) * (1.0 / span);
+  bends.rays = bends.rays + 1;
+  return TraceResult.IsValid(ApexGrappleRopeRay(scriptInterface, from + way * margin, to - way * margin));
 }
 
 public func ApexGrappleClosestOn(a: Vector4, b: Vector4, p: Vector4) -> Vector4 {
@@ -141,22 +152,30 @@ public func ApexGrappleRopeEdge(scriptInterface: ref<StateGameScriptInterface>, 
 // One frame of the rope from `start` to `end`, the hook's base where it was planted.
 public func ApexGrappleBendRope(scriptInterface: ref<StateGameScriptInterface>, bends: ref<ApexGrappleRopeBends>, start: Vector4, end: Vector4) -> Void {
   bends.frames = bends.frames + 1;
+  let undoneNow: Bool = false;
   while ArraySize(bends.points) > 0 {
     let count: Int32 = ArraySize(bends.points);
     let next: Vector4 = count >= 2 ? bends.points[count - 2] : end;
-    let across: ApexGrappleRopeHit = ApexGrappleRopeHitOf(scriptInterface, bends, start, next);
-    if across.found {
+    let blocked: Bool = ApexGrappleRopeBlocked(scriptInterface, bends, start, next);
+    if blocked {
       break;
     }
     ArrayResize(bends.points, count - 1);
     bends.undone = bends.undone + 1;
+    undoneNow = true;
   }
   let tries: Int32 = 0;
   let going: Bool = true;
   while going {
     let count: Int32 = ArraySize(bends.points);
     let pivot: Vector4 = count > 0 ? bends.points[count - 1] : end;
-    let hit: ApexGrappleRopeHit = ApexGrappleRopeHitOf(scriptInterface, bends, start, pivot);
+    // Just after a bend went, the line to the point it leaves was found clear by the last test above, from the same
+    // start: it is not cast again (P8).
+    let hit: ApexGrappleRopeHit;
+    if !undoneNow {
+      hit = ApexGrappleRopeHitOf(scriptInterface, bends, start, pivot);
+    }
+    undoneNow = false;
     if !hit.found {
       bends.clear = true;
       bends.lastStart = start;
