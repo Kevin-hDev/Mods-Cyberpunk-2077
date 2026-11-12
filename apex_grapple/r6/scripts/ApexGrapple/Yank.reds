@@ -3,6 +3,8 @@
 // which gets them up there. Kevin, 2 November 2026: "le grappin attrape et ramène ce qu'il attrape jusqu'à V", as in
 // Apex Legends, and "c'est pas grave s'il meurt", with a setting for it (YankFlight.reds). The game would move no
 // passer-by standing: its AI slide never started and 27 to 29 AI teleports a pull moved no one (third test).
+// With the game's grab key seen before the bite, a person the game lets be grabbed is brought standing instead, for
+// the game's own grab (Grab.reds).
 
 public class ApexGrappleYank {
   public let person: wref<GameObject>;
@@ -65,20 +67,36 @@ public func ApexGrappleFlat(v: Vector4) -> Vector4 {
   return flat;
 }
 
-// The hook bites a person to pull to V: false, and V is pulled to them, when the game would not let it work. The
-// person falls as the game knocks a living person down (aiHitReactionTasks.script:567-569,
-// hitReactionComponent.script:2719-2729): with it, the person's place followed their body in every pull of the second
-// test, where the first test's thrown-body fall left it behind.
+// The hook bites a person who comes to V: pulled ("Pull people to V"), or, with that setting off, brought for the
+// game's grab alone (Shot.reds). False, and V is pulled to them, when the game would not let it work.
 public func ApexGrappleStartYank(system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, now: Float, hanging: Bool, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
   let person: ref<GameObject> = system.target;
   let feet: Vector4 = DefaultTransition.GetPlayerPosition(scriptInterface);
   let spot: Vector4;
-  let why: String = IsDefined(person) ? ApexGrappleCannotYank(person, feet, hanging, scriptInterface, spot) : "the person is gone";
+  // "Pull people to V" for this shot: the person may be thrown to V.
+  let pulls: Bool = system.comesToV;
+  // The game's grab asked for and possible on this person (Grab.reds): brought standing, not thrown.
+  let noGrab: String = IsDefined(person) ? ApexGrappleCannotGrab(system, settings, person, hanging, scriptInterface.executionOwner) : "the person is gone";
+  let grabs: Bool = StrLen(noGrab) == 0;
+  let why: String;
+  let noGround: Bool;
+  // Asked before anything is done to the person: the pull's own test takes them off a vehicle (YankWhy.reds).
+  if !pulls && !grabs {
+    ApexGrappleLog("person not grabbed: " + noGrab + "; V is pulled to them" + (IsDefined(person) ? ", " + ApexGrappleWhoText(person) : ""));
+    return false;
+  }
+  why = IsDefined(person) ? ApexGrappleCannotYank(person, feet, hanging, scriptInterface, spot) : "the person is gone";
+  noGround = grabs && Equals(why, ApexGrappleNoGroundByV());
+  if noGround {
+    spot = ApexGrappleGrabStandIn(person, feet);
+    why = "";
+  }
   if StrLen(why) > 0 {
     system.comesToV = false;
     ApexGrappleLog("person not pulled to V: " + why + "; V is pulled to them" + (IsDefined(person) ? ", " + ApexGrappleWhoText(person) : ""));
     return false;
   }
+  system.comesToV = true;
   if !IsDefined(system.yank) {
     system.yank = new ApexGrappleYank();
   }
@@ -86,10 +104,11 @@ public func ApexGrappleStartYank(system: ref<ApexGrappleSystem>, settings: ref<A
   yank.person = person;
   yank.baseGoal = spot + DefaultTransition.GetUpVector() * ApexGrappleYankChestUp();
   yank.goal = yank.baseGoal;
-  yank.steers = settings.steerPeople;
+  // A person brought for a grab comes straight to V and is not slammed down.
+  yank.steers = settings.steerPeople && !grabs;
   yank.aimFrom = Vector4.Normalize(system.anchor - Transform.GetPosition(scriptInterface.GetCameraWorldTransform()));
   yank.speed = ApexGrappleHookSpeedOf(settings);
-  yank.hurts = settings.pullDamage;
+  yank.hurts = settings.pullDamage && !grabs;
   yank.startedAt = now;
   yank.startGap = Vector4.Length(ApexGrappleFlat(system.anchor - feet));
   yank.thrownAt = 0.0;
@@ -115,12 +134,23 @@ public func ApexGrappleStartYank(system: ref<ApexGrappleSystem>, settings: ref<A
   if posed {
     workspots.StopNpcInWorkspot(person);
   }
-  if ScriptedPuppet.IsAlive(person) {
-    StatusEffectHelper.ApplyStatusEffect(person, t"BaseStatusEffect.UncontrolledMovement_Default", scriptInterface.executionOwner.GetEntityID());
+  if grabs {
+    ApexGrappleGrabCarryStart(ApexGrappleGrabOf(system), person, scriptInterface.executionOwner, pulls && !noGround, settings.grabSpeed, now);
+  } else {
+    ApexGrappleYankFall(person, scriptInterface.executionOwner);
   }
-  person.QueueEvent(CreateForceRagdollEvent(n"ApexGrapple"));
   yank.personID = person.GetEntityID();
   ApexGrappleKeepSeen(scriptInterface.GetGame(), yank.personID, true, 0.0);
-  ApexGrappleLog("person pulled to V: hook set after " + ToString(now - system.firedAt) + " s, " + ToString(yank.startGap) + " m away, to a spot " + ToString(Vector4.Length(ApexGrappleFlat(spot - feet))) + " m from V and " + ToString(feet.Z - spot.Z) + " m below V's feet" + (hanging ? " (V on a ladder)" : "") + ", at " + ToString(yank.speed) + " m/s, damage " + ToString(yank.hurts) + ", steered " + ToString(yank.steers) + ", posed " + ToString(posed) + ", " + ApexGrappleWhoText(person));
+  ApexGrappleLog("person pulled to V: hook set after " + ToString(now - system.firedAt) + " s, " + ToString(yank.startGap) + " m away, to a spot " + ToString(Vector4.Length(ApexGrappleFlat(spot - feet))) + " m from V and " + ToString(feet.Z - spot.Z) + " m below V's feet" + (hanging ? " (V on a ladder)" : "") + ", at " + ToString(yank.speed) + " m/s, damage " + ToString(yank.hurts) + ", steered " + ToString(yank.steers) + ", posed " + ToString(posed) + ", " + ApexGrappleWhoText(person) + ", pull people " + ToString(pulls) + ", grabbed " + (grabs ? "yes" : "no: " + noGrab));
   return true;
+}
+
+// The person falls as the game knocks a living person down (aiHitReactionTasks.script:567-569,
+// hitReactionComponent.script:2719-2729): with it, the person's place followed their body in every pull of the second
+// test, where the first test's thrown-body fall left it behind.
+public func ApexGrappleYankFall(person: ref<GameObject>, player: ref<GameObject>) -> Void {
+  if ScriptedPuppet.IsAlive(person) {
+    StatusEffectHelper.ApplyStatusEffect(person, t"BaseStatusEffect.UncontrolledMovement_Default", player.GetEntityID());
+  }
+  person.QueueEvent(CreateForceRagdollEvent(n"ApexGrapple"));
 }

@@ -1,6 +1,7 @@
 // Each frame of every locomotion state: the key, the shot and the hook's flight (Shot.reds), the pull (Pulling.reds),
 // the grapple's flight ending on the ground (Ground.reds), V's left arm (Arm.reds), the right-hand weapon
-// (RightWeapon.reds), our pieces (PiecesDraw.reds), the sounds (Sounds.reds), the field of view (FovFrame.reds) and the
+// (RightWeapon.reds), our pieces (PiecesDraw.reds), the sounds (Sounds.reds), the game's grab on a person brought to V
+// (GrabHold.reds), the field of view (FovFrame.reds) and the
 // crosshair's range indicator (CrosshairRange.reds). Ground, air, ladder and swimming states derive from LocomotionEventsTransition and call its
 // OnUpdate (scripts 2.31); the two met during a grapple whose own OnUpdate does not are in TakenOver.reds.
 
@@ -76,6 +77,7 @@ private final func ApexGrappleFrame(timeDelta: Float, stateContext: ref<StateCon
   ApexGrappleDrawPieces(system, settings, now, timeDelta, scriptInterface);
   // After the pieces, so that the hook home is heard in the frame it gets there.
   ApexGrappleSoundsFrame(system, scriptInterface);
+  this.ApexGrappleGrabFrame(system, now, stateContext, scriptInterface);
   ApexGrappleYankWatch(system, now, game);
   // After the phase is settled: a pull that starts or stops this frame widens or brings back the view in this frame.
   ApexGrappleFovFrame(system, settings, now, timeDelta, stateContext, scriptInterface);

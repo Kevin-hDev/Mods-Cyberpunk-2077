@@ -318,6 +318,30 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let steerPeople: Bool = false;
 
+  // Kevin, 11 November 2026: the game's own grab on a pulled person, by hand, with the game's grab key (Grab.reds).
+  // Off by default, as every setting added since 1.0.4: on a pad that key also reloads, and a reload during the
+  // hook's flight would turn a pull into a grab for a player who never asked for one.
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Targets")
+  @runtimeProperty("ModSettings.category.order", "6")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-GrabPeople")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-GrabPeople-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let grabPeople: Bool = false;
+
+  // Kevin, 12 November 2026: "la vitesse de 24 m/s est valider c'est bon", of 20, 24 and 28 tried in game (what is
+  // asked of the game's slide; 19.6 to 22.6 m/s over a whole way at 24).
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Targets")
+  @runtimeProperty("ModSettings.category.order", "6")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-GrabSpeed")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-GrabSpeed-Description")
+  @runtimeProperty("ModSettings.step", "1.0")
+  @runtimeProperty("ModSettings.min", "16.0")
+  @runtimeProperty("ModSettings.max", "32.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let grabSpeed: Float = 24.0;
+
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Targets")
   @runtimeProperty("ModSettings.category.order", "6")

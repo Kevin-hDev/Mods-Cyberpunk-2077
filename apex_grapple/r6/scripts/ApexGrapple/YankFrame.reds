@@ -38,6 +38,8 @@ private final func ApexGrappleYankFrame(system: ref<ApexGrappleSystem>, key: Ape
   let yank: ref<ApexGrappleYank> = system.yank;
   let person: ref<GameObject> = yank.person;
   let chest: Vector4 = system.anchor;
+  let grab: ref<ApexGrappleGrab> = system.grab;
+  let carried: String;
   ApexGrappleYankReadSpeed(yank, chest, now);
   let reason: String = this.ApexGrappleBlockedHere(system.stateName, stateContext, scriptInterface);
   if !settings.enabled {
@@ -59,6 +61,21 @@ private final func ApexGrappleYankFrame(system: ref<ApexGrappleSystem>, key: Ape
   if StrLen(reason) > 0 {
     this.ApexGrappleEndPull(system, reason, now, scriptInterface);
     return;
+  }
+  // A person brought standing for a grab (GrabCarry.reds): no throw. A carry that failed has handed over to the
+  // throw below in this same frame.
+  if IsDefined(grab) && grab.carried {
+    carried = ApexGrappleGrabCarry(grab, yank, person, now, stateContext, scriptInterface);
+    if StrLen(carried) > 0 {
+      this.ApexGrappleEndPull(system, carried, now, scriptInterface);
+      if Equals(carried, ApexGrappleGrabBrought()) {
+        ApexGrappleGrabSend(grab, person, now, scriptInterface);
+      }
+      return;
+    }
+    if grab.carried {
+      return;
+    }
   }
   if yank.thrownAt <= 0.0 {
     if now - yank.startedAt >= ApexGrappleYankThrowDelay() {
@@ -96,6 +113,9 @@ public func ApexGrappleEndYank(system: ref<ApexGrappleSystem>, reason: String, n
   // Let go in flight (second press, jump, key, out of range...): braked as at the goal, not left flying past V.
   if IsDefined(person) && yank.thrownAt > 0.0 && !yank.pushesOver {
     ApexGrappleYankLand(yank, person, system.anchor);
+  }
+  if IsDefined(system.grab) && system.grab.carried {
+    ApexGrappleGrabCarryEnd(system.grab, person, reason, now, scriptInterface);
   }
   ApexGrappleLog("person pulled to V ended: " + reason + " after " + ToString(now - yank.startedAt) + " s (" + ToString(flight) + " s of flight), from " + ToString(yank.startGap) + " m to " + ToString(Vector4.Length(ApexGrappleFlat(system.anchor - feet))) + " m from V, top speed " + ToString(yank.topSpeed) + ", correction " + (yank.skipped ? "skipped" : (yank.corrected ? "pushed" : "none")));
   ApexGrappleKeepSeen(scriptInterface.GetGame(), yank.personID, false, ApexGrappleYankSeenAfter());

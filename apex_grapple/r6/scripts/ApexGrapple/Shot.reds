@@ -116,6 +116,8 @@ private final func ApexGrappleShoot(system: ref<ApexGrappleSystem>, settings: re
   system.phase = ApexGrappleFlying();
   system.anchor = aim.anchor;
   ApexGrappleTakeTarget(system, settings, aim);
+  // The game's grab key counts from the shot to the bite (GrabKey.reds).
+  ApexGrappleGrabKeyRead(system, scriptInterface);
   system.firedAt = now;
   system.landsAt = now + aim.distance / ApexGrappleHookSpeedOf(settings);
   system.byHold = byHold;
@@ -144,6 +146,7 @@ private final func ApexGrappleFlyingFrame(system: ref<ApexGrappleSystem>, key: A
     ApexGrappleLog("hook cancelled after " + ToString(now - system.firedAt) + " s: " + reason);
     return;
   }
+  ApexGrappleGrabKeyRead(system, scriptInterface);
   if now >= system.landsAt {
     this.ApexGrappleAttach(system, settings, now, stateContext, scriptInterface);
   }
@@ -155,7 +158,8 @@ private final func ApexGrappleFlyingFrame(system: ref<ApexGrappleSystem>, key: A
 // pull, and put back as it was once V is on the ground again: the momentum is kept after the pull.
 @addMethod(LocomotionEventsTransition)
 private final func ApexGrappleAttach(system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, now: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  if system.comesToV && ApexGrappleStartYank(system, settings, now, ApexGrappleOnLadder(stateContext), scriptInterface) {
+  // A person comes to V: pulled ("Pull people to V"), or brought for the game's grab, its key seen (Grab.reds).
+  if (system.comesToV || system.grabKeySeen) && ApexGrappleStartYank(system, settings, now, ApexGrappleOnLadder(stateContext), scriptInterface) {
     return;
   }
   let feet: Vector4 = DefaultTransition.GetPlayerPosition(scriptInterface);

@@ -69,20 +69,26 @@ public func ApexGrappleAimAtVehicle(vehicle: ref<GameObject>, hit: TraceResult, 
 
 // Only humans and androids come, bosses never: drones, spider bots and mechs do not stand and walk as a person does, and
 // moving a boss could break a fight the game wrote.
-public func ApexGrappleComesToV(settings: ref<ApexGrappleSettings>, aim: ApexGrappleAim) -> Bool {
-  if !settings.pullPeople || !aim.person {
+public func ApexGrappleMayCome(aim: ApexGrappleAim) -> Bool {
+  if !aim.person {
     return false;
   }
   let puppet: ref<ScriptedPuppet> = aim.target as ScriptedPuppet;
   return IsDefined(puppet) && puppet.IsHumanoid() && !puppet.IsBoss();
 }
 
+// comesToV: "Pull people to V". mayGrab: "Grab people with the grapple", whatever the first says (Kevin, 12 November
+// 2026: "la saisie doit etre independante des deux facon d'utiliser le grapin sur les gens"); the game's grab key is
+// then read until the hook bites (GrabKey.reds).
 public func ApexGrappleTakeTarget(system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, aim: ApexGrappleAim) -> Void {
+  let mayCome: Bool = IsDefined(aim.target) && (settings.pullPeople || settings.grabPeople) && ApexGrappleMayCome(aim);
   system.target = aim.target;
   system.onTarget = IsDefined(aim.target);
   system.targetPerson = aim.person;
   system.targetLocal = aim.local;
-  system.comesToV = system.onTarget && ApexGrappleComesToV(settings, aim);
+  system.comesToV = mayCome && settings.pullPeople;
+  system.mayGrab = mayCome && settings.grabPeople;
+  system.grabKeySeen = false;
 }
 
 // For the shot's line.

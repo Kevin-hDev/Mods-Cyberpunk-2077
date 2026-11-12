@@ -82,6 +82,10 @@ public class ApexGrappleChinese extends ModLocalizationPackage {
     this.Text("ApexGrapple-PullDamage-Description", "需开启上面两项：被拉向 V 的人会被重重摔在 V 面前的地上，按游戏规则承受冲击伤害，可能因此死亡。关闭时，在其静止之前，坠落和撞击不会造成伤害；V 的射击仍会造成伤害。");
     this.Text("ApexGrapple-SteerPeople", "用准星控制被拉的人");
     this.Text("ApexGrapple-SteerPeople-Description", "在把人拉向 V 时生效：射出后抬高准星，被拉的人会被拉到更高处，最高 6 米；左右转动准星，会把人甩向那一侧，最远 8 米。偏差小于 5 度时不变。");
+    this.Text("ApexGrapple-GrabPeople", "用抓钩钳制人物");
+    this.Text("ApexGrapple-GrabPeople-Description", "需开启“抓钩可勾载具和人物”，无论是否把人拉向 V：对人射出抓钩时按住游戏的“钳制”键（交互键），被勾住的人会站着被带到 V 面前，V 像游戏中一样从背后将其钳制；之后可用游戏的按键击杀或非致命击倒。不按该键时，抓钩照常运作。首领、商贩、V 的盟友、载具上的人和街上行走的路人不会被钳制；在安全区内无法钳制任何人。使用手柄时，该键同时也是换弹键。");
+    this.Text("ApexGrapple-GrabSpeed", "钳制时拉人的速度");
+    this.Text("ApexGrapple-GrabSpeed-Description", "为钳制而把人带到 V 面前的速度，单位为米/秒。");
     this.Text("ApexGrapple-PunchWins", "敏捷近战优先于抓钩");
     this.Text("ApexGrapple-PunchWins-Description", "敏捷近战范围内有人或载具时，执行敏捷近战而不是抓钩。");
     this.Text("ApexGrapple-PunchRange", "敏捷近战范围");

@@ -49,6 +49,11 @@ public class ApexGrappleSystem extends ScriptableSystem {
   public let targetLocal: Vector4;
   public let comesToV: Bool;
   public let yank: ref<ApexGrappleYank>;
+  // The game's grab on a person brought to V (Grab.reds), made at the first one; the person this hook flies to may
+  // be grabbed (Target.reds), and the game's grab key was seen down since the shot (GrabKey.reds).
+  public let grab: ref<ApexGrappleGrab>;
+  public let mayGrab: Bool;
+  public let grabKeySeen: Bool;
   // People kept from the blows of their fall after a pull, until they have got up (YankShield.reds).
   public let shielded: array<ApexGrappleShielded>;
   // The pull.
@@ -175,6 +180,7 @@ public class ApexGrappleSystem extends ScriptableSystem {
   private func OnDetach() -> Void {
     ApexGrappleSettingsWatchStop(this.settingsWatch);
     this.settingsWatch = null;
+    ApexGrappleGrabSlideLeave(this.grab);
   }
 
   // A save made while the launcher is lent would keep it in V's inventory (Launcher.reds).

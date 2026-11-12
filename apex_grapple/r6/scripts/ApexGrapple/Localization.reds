@@ -101,6 +101,10 @@ public class ApexGrappleEnglish extends ModLocalizationPackage {
     this.Text("ApexGrapple-PullDamage-Description", "Works with the two settings above on: a person pulled to V is slammed to the ground in front of V and takes the blow, as the game counts it; it can kill. Off, the fall and what they hit do them no harm until they lie still; V's shots still hurt.");
     this.Text("ApexGrapple-SteerPeople", "Steer pulled people with the aim");
     this.Text("ApexGrapple-SteerPeople-Description", "Works when people are pulled to V: the aim raised after the shot brings the person back higher, up to 6 m; the aim turned sends them that way, up to 8 m. Under 5 degrees nothing changes.");
+    this.Text("ApexGrapple-GrabPeople", "Grab people with the grapple");
+    this.Text("ApexGrapple-GrabPeople-Description", "Works with “Grapple onto vehicles and people” on, whether they are pulled to V or not: the game's Grab button (the interaction button) held as the grapple fires at a person brings them standing to V, who grabs them from behind as in the game; the game's buttons then kill or knock them out. Without that button, the grapple does what it usually does. Bosses, vendors, V's allies, people on a vehicle and passers-by walking the street are never grabbed, and no one is in a safe zone. On a controller that button also reloads.");
+    this.Text("ApexGrapple-GrabSpeed", "Grab approach speed");
+    this.Text("ApexGrapple-GrabSpeed-Description", "How fast a person is brought to V for a grab, in metres a second.");
     this.Text("ApexGrapple-PunchWins", "Quick melee wins over grapple");
     this.Text("ApexGrapple-PunchWins-Description", "Someone or a vehicle within quick melee range gets the quick melee instead of the grapple.");
     this.Text("ApexGrapple-PunchRange", "Quick melee range");
@@ -191,6 +195,10 @@ public class ApexGrappleFrench extends ModLocalizationPackage {
     this.Text("ApexGrapple-PullDamage-Description", "Marche avec les deux réglages du dessus allumés : la personne tirée vers V est plaquée au sol devant V et prend le choc, comme le jeu le compte ; elle peut en mourir. Éteint, la chute et ce qu'elle heurte ne la blessent pas jusqu'à ce qu'elle soit immobile ; les tirs de V la blessent toujours.");
     this.Text("ApexGrapple-SteerPeople", "Diriger la personne au viseur");
     this.Text("ApexGrapple-SteerPeople-Description", "Marche quand les personnes sont tirées vers V : le viseur levé après le tir ramène la personne plus haut, jusqu'à 6 m ; le viseur tourné l'envoie de ce côté, jusqu'à 8 m. Sous 5 degrés, rien ne change.");
+    this.Text("ApexGrapple-GrabPeople", "Saisir les personnes au grappin");
+    this.Text("ApexGrapple-GrabPeople-Description", "Marche avec « Grappin sur les véhicules et les personnes » allumé, que les personnes soient tirées vers V ou non : le bouton « Saisir » du jeu (celui des interactions) tenu au moment où le grappin part sur une personne l'amène debout jusqu'à V, qui la saisit par derrière comme dans le jeu ; les boutons du jeu permettent ensuite de la tuer ou de la neutraliser. Sans ce bouton, le grappin fait ce qu'il fait d'habitude. Les boss, les vendeurs, les alliés de V, les personnes sur un véhicule et les passants qui marchent dans la rue ne sont jamais saisis, et personne ne l'est dans une zone sûre. À la manette, ce bouton recharge aussi l'arme.");
+    this.Text("ApexGrapple-GrabSpeed", "Vitesse d'amenée pour la saisie");
+    this.Text("ApexGrapple-GrabSpeed-Description", "La vitesse à laquelle la personne est amenée jusqu'à V pour être saisie, en mètres par seconde.");
     this.Text("ApexGrapple-PunchWins", "Le coup rapide passe avant le grappin");
     this.Text("ApexGrapple-PunchWins-Description", "Une personne ou un véhicule à portée du coup rapide le reçoit au lieu du grappin.");
     this.Text("ApexGrapple-PunchRange", "Portée du coup rapide");

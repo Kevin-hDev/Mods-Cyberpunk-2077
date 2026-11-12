@@ -269,6 +269,25 @@ public class ApexGrappleProfile2 {
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
   @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-GrabPeople")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-GrabPeople-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let grabPeople: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-GrabSpeed")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-GrabSpeed-Description")
+  @runtimeProperty("ModSettings.step", "1.0")
+  @runtimeProperty("ModSettings.min", "16.0")
+  @runtimeProperty("ModSettings.max", "32.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let grabSpeed: Float = 24.0;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile2")
+  @runtimeProperty("ModSettings.category.order", "9")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PunchWins")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PunchWins-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -367,6 +386,8 @@ public class ApexGrappleProfile2 {
     s.pullPeople = this.pullPeople;
     s.pullDamage = this.pullDamage;
     s.steerPeople = this.steerPeople;
+    s.grabPeople = this.grabPeople;
+    s.grabSpeed = this.grabSpeed;
     s.punchWins = this.punchWins;
     s.punchRange = this.punchRange;
     s.softLanding = this.softLanding;

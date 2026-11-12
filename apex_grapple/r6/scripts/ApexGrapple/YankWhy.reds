@@ -72,6 +72,11 @@ public func ApexGrappleWayBlock(from: Vector4, to: Vector4, scriptInterface: ref
   return "";
 }
 
+// The reason given when no spot is found by V, V on the ground: one text, for the log and for what reads it.
+public func ApexGrappleNoGroundByV() -> String {
+  return "no ground by V where they could stand";
+}
+
 // Why this person cannot be pulled to V; empty when they can. A person on a vehicle is taken off it first
 // (YankVehicle.reds), once the scenes are ruled out. Just taken off, they may still count as mounted this frame: the game
 // itself sets a rider falling while still on the motorcycle (vehicleComponent.script:3615).
@@ -104,7 +109,7 @@ public func ApexGrappleCannotYank(person: ref<GameObject>, feet: Vector4, hangin
     return "already by V";
   }
   if !ApexGrappleYankSpot(person, feet, hanging, scriptInterface, spot) {
-    return hanging ? "no ground within " + ToString(ApexGrappleYankGroundBelow()) + " m under V where they could stand" : "no ground by V where they could stand";
+    return hanging ? "no ground within " + ToString(ApexGrappleYankGroundBelow()) + " m under V where they could stand" : ApexGrappleNoGroundByV();
   }
   let block: String = ApexGrappleYankWayBlock(person, spot, scriptInterface);
   if StrLen(block) > 0 {
