@@ -298,6 +298,20 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let pullPeople: Bool = false;
 
+  // People came at the hook's own speed: a player, 13 November 2026, could only slow them down by slowing the hook,
+  // and every swing with it. Kevin, the same day: 40 m/s, the speed of all 17 trials of these moves; the hook's
+  // default, 50, was never tried with them. Motorcycles come at a share of it (YankBikeFlight.reds).
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Targets")
+  @runtimeProperty("ModSettings.category.order", "6")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-PulledSpeed")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-PulledSpeed-Description")
+  @runtimeProperty("ModSettings.step", "5.0")
+  @runtimeProperty("ModSettings.min", "10.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let pulledSpeed: Float = 40.0;
+
   // Kevin, 2 November 2026: "grappin qui fait dégâts au pull ou pas avec un toggle", a way to move about but also a
   // weapon. Off by default, as every setting added since 1.0.4: the person lands unhurt (YankShield.reds).
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
@@ -308,6 +322,18 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let pullDamage: Bool = false;
 
+  // Kevin, 13 November 2026, fifteenth trial: "on va remettre le plaquage au sol qu'on avait avant cetais mieux mais
+  // on va le mettre en option desactiver par defaut comme ça le joueur a le choix"; to throw a person in the air with
+  // it on, "il appuie sur la touche du grapin pour lacher la personne dans les airs". Until then the slam came with
+  // "Damage when pulling people" and could not be had or left apart from it.
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Targets")
+  @runtimeProperty("ModSettings.category.order", "6")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullSlam")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-PullSlam-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let pullSlam: Bool = false;
+
   // Kevin, 2 November 2026: the person pulled to V steered with the aim, as V's pull is ("oui part là-dessus"). Off by
   // default, as every setting added since 1.0.4: a person aimed at loosely keeps coming straight to V (YankSteer.reds).
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
@@ -317,6 +343,16 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.description", "ApexGrapple-SteerPeople-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let steerPeople: Bool = false;
+
+  // Kevin, 13 November 2026: "Les moto, est ce qu'on pourrait les tiré aussi ? avec ou sans motard". Off by default,
+  // as every setting added since 1.0.4: V is pulled to a motorcycle as to any vehicle (YankBike.reds).
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Targets")
+  @runtimeProperty("ModSettings.category.order", "6")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullBikes")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-PullBikes-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let pullBikes: Bool = false;
 
   // Kevin, 11 November 2026: the game's own grab on a pulled person, by hand, with the game's grab key (Grab.reds).
   // Off by default, as every setting added since 1.0.4: on a pad that key also reloads, and a reload during the

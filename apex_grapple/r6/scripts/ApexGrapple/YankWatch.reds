@@ -87,6 +87,9 @@ public func ApexGrappleYankWatchStart(yank: ref<ApexGrappleYank>, person: ref<Ga
   yank.watchFallen = ApexGrappleFallen(person);
   yank.watchJumps = 0;
   yank.watchAlive = ScriptedPuppet.IsAlive(person);
+  // The second brake (YankFlight.reds) is for a person braked by V: not for one slammed down, brought standing, or
+  // let go of anywhere else.
+  yank.brakedAgain = !yank.braked;
   if !yank.watchAlive {
     ApexGrappleLog("person pulled to V: dead at the pull's end, " + ApexGrappleWhoText(person));
     ApexGrappleLootLater(person);
@@ -108,6 +111,9 @@ public func ApexGrappleYankWatchMoves(system: ref<ApexGrappleSystem>, yank: ref<
   }
   if yank.watchFallen && !fallen {
     ApexGrappleLog("person pulled to V: got up " + ToString(after) + " s after, " + ToString(Vector4.Distance(chest, yank.endChest)) + " m from where it stopped, the AI can stand there " + ToString(ApexGrappleCanStandAt(person, chest, game)) + ", place " + ToString(Vector4.Length(ApexGrappleFlat(place - chest))) + " m from the chest, last point the AI stood " + ApexGrappleLastStandText(person, chest) + " away, on screen " + ToString(ApexGrappleOnScreen(person, game)));
+  }
+  if !yank.brakedAgain && after >= ApexGrappleYankBrakeAgainAfter() {
+    ApexGrappleYankBrakeAgain(yank, person, chest, after);
   }
   let alive: Bool = ScriptedPuppet.IsAlive(person);
   if yank.watchAlive && !alive {

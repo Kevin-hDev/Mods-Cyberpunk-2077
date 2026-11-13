@@ -20,6 +20,10 @@ private final func ApexGrapplePullFrame(system: ref<ApexGrappleSystem>, key: Ape
     this.ApexGrappleYankFrame(system, key, settings, now, stateContext, scriptInterface);
     return;
   }
+  if system.bikeComes {
+    this.ApexGrappleBikeFrame(system, key, settings, now, stateContext, scriptInterface);
+    return;
+  }
   if ApexGrappleOnLadder(stateContext) {
     this.ApexGrappleLadderWait(system, now, scriptInterface);
     return;
@@ -129,6 +133,10 @@ private final func ApexGrappleEndPull(system: ref<ApexGrappleSystem>, reason: St
   system.phase = ApexGrappleIdle();
   if system.comesToV {
     ApexGrappleEndYank(system, reason, now, scriptInterface);
+    return;
+  }
+  if system.bikeComes {
+    ApexGrappleEndBike(system, reason, now, scriptInterface);
     return;
   }
   let feet: Vector4 = DefaultTransition.GetPlayerPosition(scriptInterface);

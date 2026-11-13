@@ -74,7 +74,12 @@ public func ApexGrappleVerdictOf(sight: ApexGrappleSight, settings: ref<ApexGrap
         verdict.reason = ApexGrappleAimReason.Person;
         return verdict;
       }
-      let rider: ref<GameObject> = ApexGrappleRiderOf(way.object);
+      // With the motorcycles pulled to V, the ray that meets the motorcycle takes the motorcycle (YankBike.reds): its
+      // rider is not looked for.
+      let rider: ref<GameObject>;
+      if !(settings.pullBikes && way.byRay) {
+        rider = ApexGrappleRiderOf(way.object);
+      }
       if IsDefined(rider) {
         verdict.fires = true;
         verdict.reason = ApexGrappleAimReason.Rider;

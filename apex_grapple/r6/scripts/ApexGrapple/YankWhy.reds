@@ -1,58 +1,16 @@
 // Why a person cannot be pulled to V (Yank.reds): then V is pulled to them, and the log says why and who.
 
-// Nothing to pull: the person already stands about where a pull would leave them.
+// Nothing to pull: the person already stands about where a pull would leave them, at V's height too. Fourth height
+// trial (13 November 2026): a person 11 m under V and 2.3 m away along the ground counted as by V, and V was pulled
+// off the roof to them.
 public func ApexGrappleAlreadyByV(person: ref<GameObject>, feet: Vector4) -> Bool {
-  return Vector4.Length(ApexGrappleFlat(person.GetWorldPosition() - feet)) <= ApexGrappleYankStop() + 0.5;
-}
-
-// V hanging on a ladder or a wall: the ground under V is looked for this far down. Wall Climb holds V on a wall up to
-// 3.5 m above where the climb began (Kevin's setting); at V's own height the spot was in the air, and every person
-// shot from the wall in game pulled V instead (docs/apex-grapple/echelle/conception.md).
-public func ApexGrappleYankGroundBelow() -> Float {
-  return 5.0;
-}
-
-// The ground under a point, down to ApexGrappleYankGroundBelow(); the point itself when there is none.
-public func ApexGrappleGroundUnder(point: Vector4, scriptInterface: ref<StateGameScriptInterface>) -> Vector4 {
-  let below: Vector4 = point - DefaultTransition.GetUpVector() * ApexGrappleYankGroundBelow();
-  let hit: TraceResult = scriptInterface.RaycastWithASingleGroup(point, below, n"Static");
-  if !TraceResult.IsValid(hit) {
-    return point;
-  }
-  return Vector4.Vector3To4(hit.position);
-}
-
-// A spot by V on the person's side where the AI can stand: left off its navigation mesh, the game puts a person back
-// toward the last place they could stand (aiStatusEffectTask.script:272-343). None, and V is pulled to them instead.
-// `hanging`: V on a ladder, the spot is looked for at V's height first (a catwalk or a roof edge by V), then on the
-// ground under it.
-public func ApexGrappleYankSpot(person: ref<GameObject>, feet: Vector4, hanging: Bool, scriptInterface: ref<StateGameScriptInterface>, out spot: Vector4) -> Bool {
-  if ApexGrappleAlreadyByV(person, feet) {
-    return false;
-  }
-  let away: Vector4 = ApexGrappleFlat(person.GetWorldPosition() - feet);
-  let far: Float = Vector4.Length(away);
-  let navigation: ref<AINavigationSystem> = GameInstance.GetAINavigationSystem(scriptInterface.GetGame());
-  let extents: Vector4 = new Vector4(0.5, 0.5, 1.0, 1.0);
-  let distance: Float = ApexGrappleYankStop();
-  while distance <= ApexGrappleYankStop() + 2.0 && distance < far {
-    let candidate: Vector4 = feet + away / far * distance;
-    if navigation.IsPointOnNavmesh(person, candidate, extents, spot) {
-      return true;
-    }
-    if hanging {
-      if navigation.IsPointOnNavmesh(person, ApexGrappleGroundUnder(candidate, scriptInterface), extents, spot) {
-        return true;
-      }
-    }
-    distance += 1.0;
-  }
-  return false;
+  let gap: Vector4 = person.GetWorldPosition() - feet;
+  return Vector4.Length(ApexGrappleFlat(gap)) <= ApexGrappleYankStop() + 0.5 && AbsF(gap.Z) <= ApexGrappleYankWayHeight();
 }
 
 // A wall or a car between the person and V does not stop the pull: they crash into it, which is what the player aimed
 // at. Kevin, 9 November 2026: refused, V herself was pulled and crashed into it instead, "c'est encore pire". A body
-// stopped short ends the pull as late (YankFrame.reds), with no second push. What stood in the way goes to the log.
+// stopped short is pushed on until the pull ends as late (YankFrame.reds). What stood in the way goes to the log.
 public func ApexGrappleYankWayBlock(person: ref<GameObject>, spot: Vector4, scriptInterface: ref<StateGameScriptInterface>) -> String {
   let up: Vector4 = DefaultTransition.GetUpVector() * ApexGrappleYankChestUp();
   return ApexGrappleWayBlock(person.GetWorldPosition() + up, spot + up, scriptInterface);
@@ -70,11 +28,6 @@ public func ApexGrappleWayBlock(from: Vector4, to: Vector4, scriptInterface: ref
     }
   }
   return "";
-}
-
-// The reason given when no spot is found by V, V on the ground: one text, for the log and for what reads it.
-public func ApexGrappleNoGroundByV() -> String {
-  return "no ground by V where they could stand";
 }
 
 // Why this person cannot be pulled to V; empty when they can. A person on a vehicle is taken off it first
@@ -105,11 +58,8 @@ public func ApexGrappleCannotYank(person: ref<GameObject>, feet: Vector4, hangin
       return "sitting in a vehicle";
     }
   }
-  if ApexGrappleAlreadyByV(person, feet) {
-    return "already by V";
-  }
   if !ApexGrappleYankSpot(person, feet, hanging, scriptInterface, spot) {
-    return hanging ? "no ground within " + ToString(ApexGrappleYankGroundBelow()) + " m under V where they could stand" : ApexGrappleNoGroundByV();
+    return "already by V";
   }
   let block: String = ApexGrappleYankWayBlock(person, spot, scriptInterface);
   if StrLen(block) > 0 {

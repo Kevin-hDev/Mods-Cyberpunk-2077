@@ -145,3 +145,27 @@ private final func ProcessRagdollHit(hitEvent: ref<gameHitEvent>) -> Void {
   }
   wrappedMethod(hitEvent);
 }
+
+// A shielded person getting up where the AI cannot stand, with no place found near: the game then kills them. Fifth
+// height trial (13 November 2026): 3 people brought up to a roof with no navigation mesh died the frame they got up,
+// shielded, damage off (Kevin: "ils ne doivent pas mourir s'ils arrivent sur le toit"). The game's own test
+// (aiStatusEffectTask.script:280-342) is told they are where they can stand: they get up where they lie. Trial: what
+// the AI does of them there is not known.
+@wrapMethod(CheckRagdollOutOfNavmeshTask)
+protected func Activate(context: ScriptExecutionContext) -> Void {
+  wrappedMethod(context);
+  let owner: ref<NPCPuppet> = ScriptExecutionContext.GetOwner(context) as NPCPuppet;
+  if !IsDefined(owner) {
+    return;
+  }
+  let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(owner.GetGame());
+  if !IsDefined(system) || ArraySize(system.shielded) == 0 || !ApexGrappleIsShielded(system, owner.GetEntityID()) {
+    return;
+  }
+  let out: Bool = FromVariant<Bool>(ScriptExecutionContext.GetMappingValue(context, this.m_outStatusArgument));
+  let found: Bool = FromVariant<Bool>(ScriptExecutionContext.GetMappingValue(context, this.m_outPositionStatusArgument));
+  if out && !found {
+    ScriptExecutionContext.SetMappingValue(context, this.m_outStatusArgument, ToVariant(false));
+    ApexGrappleLog("person pulled to V: getting up where the AI cannot stand, no place found near; the game told they can stand there, not to be killed");
+  }
+}

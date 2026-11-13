@@ -162,6 +162,9 @@ private final func ApexGrappleAttach(system: ref<ApexGrappleSystem>, settings: r
   if (system.comesToV || system.grabKeySeen) && ApexGrappleStartYank(system, settings, now, ApexGrappleOnLadder(stateContext), scriptInterface) {
     return;
   }
+  if system.bikeComes && ApexGrappleStartBikePull(system, settings, now, scriptInterface) {
+    return;
+  }
   let feet: Vector4 = DefaultTransition.GetPlayerPosition(scriptInterface);
   let middle: Vector4 = feet + DefaultTransition.GetUpVector() * ApexGrappleMiddleHeight();
   let velocity: Vector4 = DefaultTransition.GetLinearVelocity(scriptInterface);

@@ -1,21 +1,17 @@
-// The flight of a person pulled to V (Yank.reds): one throw at the hook's speed toward the goal above the spot, one
-// correction halfway, and at the goal a brake (they land unhurt, YankShield.reds) or a slam into the ground ("Damage when
-// pulling people": the game counts the blow, 11 m/s or more kills, damageSystem.script:615). The first test threw people
-// this way and brought them 6 m in 0.3 s; it pushed every frame in another way and the bodies ran away to 3,483 m/s:
-// here, never more than two pushes in flight.
+// What moves a person pulled to V (Yank.reds): the push itself, sized by YankDrive.reds, and what is done when they
+// get to the goal: a brake, or, with "Slam at the end of the pull", a slam into the ground (with "Damage when pulling
+// people" the game counts the blow, 11 m/s or more kills, damageSystem.script:615). A hook that lets go before the
+// goal does nothing: the person keeps the speed they have. Kevin, 13 November 2026: "avec degat ce qui est projeter
+// senvole et se fait toujours plaquer au sol a la fin de la traction, on ne peut pas juste projeter un ennemies dans
+// les airs"; the slam was the damage setting's until then, and is a setting of its own since (Settings.reds).
 
-// The fall's own gravity, for the throw's arc.
-public func ApexGrappleYankGravity() -> Float {
-  return 9.81;
-}
-
-// From the fall to the throw, as the game's knockdown pushes a body 0.1 s after asking for its fall.
+// From the fall to the first push, as the game's knockdown pushes a body 0.1 s after asking for its fall.
 public func ApexGrappleYankThrowDelay() -> Float {
   return 0.1;
 }
 
 // Push per m/s wanted: pushes worked out at 110 to 117 sent the chest at about 30 m/s in the first test (0.28 m/s per
-// unit, 4 throws). The correction makes up for a body that answers otherwise.
+// unit, 4 throws). The pushes that follow make up for a body that answers otherwise.
 public func ApexGrappleImpulsePerSpeed() -> Float {
   return 3.6;
 }
@@ -25,22 +21,9 @@ public func ApexGrappleYankRadius() -> Float {
   return 5.0;
 }
 
-// The correction makes up this share of the gap between the speed wanted and the speed read, never more: a full share
-// on a body that answers twice as hard would overshoot as much.
-public func ApexGrappleYankGain() -> Float {
-  return 0.7;
-}
-
-// Share of the speed left by the brake at the goal.
+// Share of the speed left by the brake by V.
 public func ApexGrappleYankBrakeLeft() -> Float {
   return 0.1;
-}
-
-// The speed that carries the chest from where it is to the goal in `time`, against the fall.
-public func ApexGrappleThrowVelocity(chest: Vector4, goal: Vector4, time: Float) -> Vector4 {
-  let velocity: Vector4 = (goal - chest) / time;
-  velocity.Z = velocity.Z + 0.5 * ApexGrappleYankGravity() * time;
-  return velocity;
 }
 
 // Whether the body is in the game's fall: a push only moves a fallen body. Fifth test: 15 throws had not moved the
@@ -54,65 +37,45 @@ public func ApexGrappleYankPush(person: ref<GameObject>, chest: Vector4, change:
   person.QueueEvent(CreateRagdollApplyImpulseEvent(chest, change * ApexGrappleImpulsePerSpeed(), ApexGrappleYankRadius()));
 }
 
-public func ApexGrappleYankThrow(yank: ref<ApexGrappleYank>, person: ref<GameObject>, chest: Vector4, now: Float, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  ApexGrappleYankSteer(yank, chest, "at the throw", scriptInterface);
-  let time: Float = MaxF(Vector4.Distance(chest, yank.goal) / yank.speed, 0.08);
-  let wanted: Vector4 = ApexGrappleThrowVelocity(chest, yank.goal, time);
-  ApexGrappleYankPush(person, chest, wanted - yank.velocity);
-  yank.thrownAt = now;
-  yank.thrownSpeed = Vector4.Length(wanted);
-  yank.chestAtThrow = chest;
-  yank.line = Vector4.Normalize(ApexGrappleFlat(yank.goal - chest));
-  yank.arriveAt = now + time;
-  ApexGrappleLog("person pulled to V: thrown at " + ToString(now - yank.startedAt) + " s, " + ToString(Vector4.Distance(chest, yank.goal)) + " m in " + ToString(time) + " s, at " + ToString(Vector4.Length(wanted)) + " m/s, speed then " + ToString(Vector4.Length(yank.velocity)) + ", fallen " + ToString(ApexGrappleFallen(person)));
-}
-
-// Below this share of the throw's speed halfway, the throw has not taken yet. Fourth test: a correction pushed on a
-// body read at 4.97 m/s for 60 thrown, both pushes then added up, and the person was read at 1,012 m/s and ended 59 m
-// away; the bodies the throw moved were read at 0.42 of it or more, the others at 0.08 or less.
-public func ApexGrappleYankTaken() -> Float {
-  return 0.25;
-}
-
-// The speed the person was meant to fly at: the throw's, faster than the hook's on a long, slow throw, whose arc climbs.
-public func ApexGrappleYankMeant(yank: ref<ApexGrappleYank>) -> Float {
-  return MaxF(yank.speed, yank.thrownSpeed);
-}
-
-// The brake or the slam never changes the speed by more than this: a body read wrong must not be thrown by it.
-public func ApexGrappleYankMostChange(yank: ref<ApexGrappleYank>) -> Float {
-  return 2.0 * ApexGrappleYankMeant(yank);
-}
-
-public func ApexGrappleClamp(change: Vector4, most: Float) -> Vector4 {
-  let size: Float = Vector4.Length(change);
-  return size > most ? change / size * most : change;
-}
-
-// Halfway, the throw is set right once from the speed the body really took; not at all if it has not taken yet.
-public func ApexGrappleYankCorrect(yank: ref<ApexGrappleYank>, person: ref<GameObject>, chest: Vector4, now: Float, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  yank.corrected = true;
-  let read: Float = Vector4.Length(yank.velocity);
-  if read < ApexGrappleYankTaken() * yank.thrownSpeed {
-    ApexGrappleLog("person pulled to V: no correction at " + ToString(now - yank.thrownAt) + " s after the throw, speed read " + ToString(read) + ", the throw not taken yet, fallen " + ToString(ApexGrappleFallen(person)));
-    yank.skipped = true;
-    return;
-  }
-  ApexGrappleYankSteer(yank, chest, "halfway", scriptInterface);
-  let wanted: Vector4 = ApexGrappleThrowVelocity(chest, yank.goal, MaxF(yank.arriveAt - now, 0.05));
-  let change: Vector4 = ApexGrappleClamp((wanted - yank.velocity) * ApexGrappleYankGain(), ApexGrappleYankMeant(yank));
-  ApexGrappleYankPush(person, chest, change);
-  ApexGrappleLog("person pulled to V: corrected at " + ToString(now - yank.thrownAt) + " s after the throw, speed read " + ToString(read) + " for " + ToString(Vector4.Length(wanted)) + " wanted, push " + ToString(Vector4.Length(change)) + " m/s");
-}
-
-// At the goal, or when the pull ends early in flight: braked, or driven straight into the ground at full speed. Once.
+// At the goal: braked, or driven straight into the ground, at the pull's speed at least. Never by more than twice the
+// pull's speed: a body read wrong must not be thrown by it.
 public func ApexGrappleYankLand(yank: ref<ApexGrappleYank>, person: ref<GameObject>, chest: Vector4) -> Void {
-  yank.pushesOver = true;
+  let slam: Bool = yank.slams;
   let speed: Float = Vector4.Length(yank.velocity);
   let after: Vector4 = yank.velocity * ApexGrappleYankBrakeLeft();
-  if yank.hurts {
-    after = new Vector4(0.0, 0.0, -speed, 0.0);
+  if slam {
+    after = new Vector4(0.0, 0.0, -MaxF(speed, yank.drive.speed), 0.0);
   }
-  ApexGrappleYankPush(person, chest, ApexGrappleClamp(after - yank.velocity, ApexGrappleYankMostChange(yank)));
-  ApexGrappleLog("person pulled to V: " + (yank.hurts ? "slammed down" : "braked") + " at " + ToString(speed) + " m/s");
+  yank.braked = !slam;
+  ApexGrappleYankPush(person, chest, ApexGrappleClamp(after - yank.velocity, 2.0 * yank.drive.speed));
+  ApexGrappleLog("person pulled to V: " + (slam ? "slammed down" : "braked") + " at " + ToString(speed) + " m/s");
+}
+
+// The brake is given again this long after the first, from the way the body really went since.
+public func ApexGrappleYankBrakeAgainAfter() -> Float {
+  return 0.15;
+}
+
+// Slower than this along the ground, the body is left alone.
+public func ApexGrappleYankSlowEnough() -> Float {
+  return 2.0;
+}
+
+// The brake once more, after the pull's end: the first one left bodies sliding 2 to 11 m in the next second (sixth
+// height trial, 13 November 2026, braked at 28 to 55 m/s), and 3 people brought up to a roof slid off it. Along the
+// ground only: the fall is left to the game. Not after a slam, which goes down.
+public func ApexGrappleYankBrakeAgain(yank: ref<ApexGrappleYank>, person: ref<GameObject>, chest: Vector4, after: Float) -> Void {
+  yank.brakedAgain = true;
+  let going: Vector4 = ApexGrappleFlat(chest - yank.endChest) / after;
+  let speed: Float = Vector4.Length(going);
+  if speed < ApexGrappleYankSlowEnough() || !ApexGrappleFallen(person) {
+    return;
+  }
+  // A measure for the log, to go once a trial has read it: `going` counts the time the first brake had not taken
+  // yet, and the audit of 13 November 2026 supposes it well above the speed the body still has, here over the last
+  // frame watched (YankWatch.reds).
+  let step: Float = yank.watchFrom + after - yank.watchAt;
+  let lately: Float = step > ApexGrappleTiny() ? Vector4.Length(ApexGrappleFlat(chest - yank.watchChest)) / step : 0.0;
+  ApexGrappleYankPush(person, chest, ApexGrappleClamp(going * -1.0, yank.drive.speed));
+  ApexGrappleLog("person pulled to V: braked again " + ToString(after) + " s after, going " + ToString(speed) + " m/s along the ground since the pull's end, " + ToString(lately) + " m/s over the last frame");
 }

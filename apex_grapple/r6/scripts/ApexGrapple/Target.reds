@@ -88,6 +88,7 @@ public func ApexGrappleTakeTarget(system: ref<ApexGrappleSystem>, settings: ref<
   system.targetLocal = aim.local;
   system.comesToV = mayCome && settings.pullPeople;
   system.mayGrab = mayCome && settings.grabPeople;
+  system.bikeComes = settings.pullBikes && !aim.person && IsDefined(aim.target as BikeObject);
   system.grabKeySeen = false;
 }
 
@@ -96,7 +97,7 @@ public func ApexGrappleTargetText(system: ref<ApexGrappleSystem>) -> String {
   if !system.onTarget {
     return "";
   }
-  return system.comesToV ? ", pulled to V" : ", V pulled to it";
+  return system.comesToV || system.bikeComes ? ", pulled to V" : ", V pulled to it";
 }
 
 // Faster than this, the target was moved by the game, not by its own motion: a passer-by put back on their path, a
@@ -129,7 +130,7 @@ public func ApexGrappleFollowTarget(system: ref<ApexGrappleSystem>, middle: Vect
   // A person pulled to V is thrown by the grapple itself, faster than a jump: only once the pull has started. While
   // the hook flies, a jump lets go as for any target. The anchor is kept where it was, for the rope let go.
   let jump: Float = Vector4.Distance(system.anchor, moved);
-  let thrown: Bool = system.phase == ApexGrapplePulling() && system.comesToV;
+  let thrown: Bool = system.phase == ApexGrapplePulling() && (system.comesToV || system.bikeComes);
   if !thrown && frame >= ApexGrappleTargetShortestFrame() && jump / frame > ApexGrappleTargetJumpSpeed() {
     return "the target jumped " + ToString(jump) + " m in " + ToString(frame) + " s";
   }

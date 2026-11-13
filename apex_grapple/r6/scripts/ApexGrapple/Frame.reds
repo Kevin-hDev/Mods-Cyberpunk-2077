@@ -79,6 +79,7 @@ private final func ApexGrappleFrame(timeDelta: Float, stateContext: ref<StateCon
   ApexGrappleSoundsFrame(system, scriptInterface);
   this.ApexGrappleGrabFrame(system, now, stateContext, scriptInterface);
   ApexGrappleYankWatch(system, now, game);
+  ApexGrappleBikeWatch(system, now);
   // After the phase is settled: a pull that starts or stops this frame widens or brings back the view in this frame.
   ApexGrappleFovFrame(system, settings, now, timeDelta, stateContext, scriptInterface);
   // Last: the colour answers for the next press, once this frame's shot is settled.

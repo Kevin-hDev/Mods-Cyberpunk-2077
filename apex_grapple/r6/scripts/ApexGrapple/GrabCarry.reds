@@ -121,17 +121,18 @@ public func ApexGrappleGrabCarryTold(grab: ref<ApexGrappleGrab>, person: ref<Gam
 }
 
 // The slide did not bring the person: the pull goes on as a plain one from this frame, the person falls and is
-// thrown to V after the plain pull's own delay (YankFrame.reds, YankFlight.reds). No grab at its end. The throw's
-// goal is looked for again by where V is now: the one of the bite is where V was (twenty-third trial, V 60 m away
-// from it by then). False with no spot by V: nothing was done, the carry ends and the person is left to fall.
+// pushed to V after the plain pull's own delay (YankFrame.reds, YankDrive.reds). No grab at its end. The spot by V
+// is looked for again by where V is now: the one of the bite is where V was (twenty-third trial, V 60 m away
+// from it by then). False when the person already stands by V: nothing was done, the carry ends and the person is
+// left to fall.
 public func ApexGrappleGrabCarryToPull(grab: ref<ApexGrappleGrab>, yank: ref<ApexGrappleYank>, person: ref<GameObject>, why: String, now: Float, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
   let player: ref<GameObject> = scriptInterface.executionOwner;
+  let feet: Vector4 = DefaultTransition.GetPlayerPosition(scriptInterface);
   let spot: Vector4;
-  if !ApexGrappleYankSpot(person, DefaultTransition.GetPlayerPosition(scriptInterface), false, scriptInterface, spot) {
+  if !ApexGrappleYankSpot(person, feet, false, scriptInterface, spot) {
     return false;
   }
-  yank.baseGoal = spot + DefaultTransition.GetUpVector() * ApexGrappleYankChestUp();
-  yank.goal = yank.baseGoal;
+  ApexGrappleDriveSet(yank.drive, spot + DefaultTransition.GetUpVector() * ApexGrappleYankChestUp(), ApexGrappleYankChestUp(), feet, yank.drive.aimFrom, yank.drive.steers, yank.drive.speed);
   ApexGrappleGrabCarryTold(grab, person, player, why + ", the plain pull takes over", now);
   ApexGrappleGrabSlideEnd(grab, why);
   ApexGrappleGrabStunOff(grab, person);

@@ -164,14 +164,3 @@ public func ApexGrappleCannotGrab(system: ref<ApexGrappleSystem>, settings: ref<
   }
   return "";
 }
-
-// "No ground by V" (YankWhy.reds) does not stop a grab: the slide leaves navigation aside and V then holds the
-// person. Kevin, eighteenth trial: "quand V fais un grapin sur quelqu'un plus en hauteur ou qui est plus bas c'est V
-// qui se fais tire vers la personne" (the pull looks for a spot at V's own height only, and found none for a person
-// 4.9 m away and higher). A stand-in spot at the pull's stop toward the person, at V's feet: no one is thrown to it
-// (GrabCarry.reds).
-public func ApexGrappleGrabStandIn(person: ref<GameObject>, feet: Vector4) -> Vector4 {
-  let away: Vector4 = ApexGrappleFlat(person.GetWorldPosition() - feet);
-  let far: Float = Vector4.Length(away);
-  return feet + away / MaxF(far, ApexGrappleTiny()) * MinF(ApexGrappleYankStop(), far);
-}

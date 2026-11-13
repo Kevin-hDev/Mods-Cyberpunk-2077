@@ -49,6 +49,9 @@ public class ApexGrappleSystem extends ScriptableSystem {
   public let targetLocal: Vector4;
   public let comesToV: Bool;
   public let yank: ref<ApexGrappleYank>;
+  // A motorcycle pulled to V rather than V to it (YankBike.reds).
+  public let bikeComes: Bool;
+  public let bikePull: ref<ApexGrappleBikePull>;
   // The game's grab on a person brought to V (Grab.reds), made at the first one; the person this hook flies to may
   // be grabbed (Target.reds), and the game's grab key was seen down since the shot (GrabKey.reds).
   public let grab: ref<ApexGrappleGrab>;
@@ -189,9 +192,9 @@ public class ApexGrappleSystem extends ScriptableSystem {
   }
 }
 
-// A pull that moves V. While a person is pulled to V, V is left to the game.
+// A pull that moves V. While a person or a motorcycle is pulled to V, V is left to the game.
 public func ApexGrappleMovesV(system: ref<ApexGrappleSystem>) -> Bool {
-  return system.phase == ApexGrapplePulling() && !system.comesToV;
+  return system.phase == ApexGrapplePulling() && !system.comesToV && !system.bikeComes;
 }
 
 public func ApexGrappleSystemOf(game: GameInstance) -> ref<ApexGrappleSystem> {

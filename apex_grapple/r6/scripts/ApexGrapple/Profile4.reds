@@ -253,6 +253,17 @@ public class ApexGrappleProfile4 {
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile4")
   @runtimeProperty("ModSettings.category.order", "11")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-PulledSpeed")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-PulledSpeed-Description")
+  @runtimeProperty("ModSettings.step", "5.0")
+  @runtimeProperty("ModSettings.min", "10.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let pulledSpeed: Float = 40.0;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile4")
+  @runtimeProperty("ModSettings.category.order", "11")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullDamage")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PullDamage-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -261,10 +272,26 @@ public class ApexGrappleProfile4 {
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile4")
   @runtimeProperty("ModSettings.category.order", "11")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullSlam")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-PullSlam-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let pullSlam: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile4")
+  @runtimeProperty("ModSettings.category.order", "11")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-SteerPeople")
   @runtimeProperty("ModSettings.description", "ApexGrapple-SteerPeople-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let steerPeople: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile4")
+  @runtimeProperty("ModSettings.category.order", "11")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullBikes")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-PullBikes-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let pullBikes: Bool = false;
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile4")
@@ -384,8 +411,11 @@ public class ApexGrappleProfile4 {
     s.regainDoubleJump = this.regainDoubleJump;
     s.hookTargets = this.hookTargets;
     s.pullPeople = this.pullPeople;
+    s.pulledSpeed = this.pulledSpeed;
     s.pullDamage = this.pullDamage;
+    s.pullSlam = this.pullSlam;
     s.steerPeople = this.steerPeople;
+    s.pullBikes = this.pullBikes;
     s.grabPeople = this.grabPeople;
     s.grabSpeed = this.grabSpeed;
     s.punchWins = this.punchWins;
