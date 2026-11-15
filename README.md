@@ -10,7 +10,7 @@ Mods for Cyberpunk 2077 2.5, written in redscript: movement mods inspired by Ape
 | [Axle Slide](axle_slide/) | Steer your slides with the move keys, slide faster with a speed boost, and farther | 1.0.0 |
 | [Air Strafe](air_strafe/) | Steer your momentum in the air through 360 degrees with the move keys without losing speed, and tap strafe | 1.0.0 |
 | [Wall Climb](wall_climb/) | Climb any wall in Night City, sideways and upward | 1.0.0 |
-| [Apex Grapple](apex_grapple/) | A grappling hook: aim at a surface, the hook flies out, and the rope pulls you while your aim steers you | 1.1.4 |
+| [Apex Grapple](apex_grapple/) | A grappling hook: aim at a surface, the hook flies out, and the rope pulls you while your aim steers you | 1.1.5 |
 | [Mod Settings Navigator](mod_settings_navigator/) | Favourites and pages in the list of Mod Settings, foldable settings sections, and a menu that reopens on the mod and the line you were on | 1.0.1 |
 
 Each folder holds the mod exactly as it ships on Nexus Mods: its `r6` folder mirrors the game folder.
@@ -29,6 +29,8 @@ Report it in the Bugs tab of the mod's Nexus page, and say what you were doing w
 
 ## License
 
-Every mod in this repository is under the [Mozilla Public License 2.0](LICENSE). Copyright 2026 Kevin-hDev.
+Every mod in this repository is under the [Mozilla Public License 2.0](LICENSE), except Apex Grapple. Copyright 2026 Kevin-hDev.
 
-You may use, change and share this code, in your own mods too, as long as the files you take stay under the MPL-2.0 and you share your changes to them. Game assets, redscript, RED4ext, Codeware, TweakXL and Mod Settings are not relicensed by this repository.
+You may use, change and share the code of the MPL-2.0 mods, in your own mods too, as long as the files you take stay under the MPL-2.0 and you share your changes to them.
+
+Apex Grapple is under the [PolyForm Strict License 1.0.0](apex_grapple/r6/scripts/ApexGrapple/LICENSE) since version 1.1.5: you may use it for free to play, but you may not share it elsewhere, sell it or change its code without my permission. Its versions up to 1.1.4 stay under the MPL-2.0. Game assets, redscript, RED4ext, Codeware, TweakXL and Mod Settings are not relicensed by this repository.
