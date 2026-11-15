@@ -28,8 +28,9 @@ public class ApexGrapplePiecesSet extends IScriptable {
   // our own entities, which ApexGrapplePiecesAlive checks through weak pointers at each frame before any use; weak
   // pointers here would add more than 200 checks a frame for no risk seen either way.
   public let hook: ref<MeshComponent>;
-  public let rope: array<ref<MeshComponent>>;
-  public let shown: Int32;
+  // The rope's long pieces and its short ones (RopeStock.reds).
+  public let rope: ref<ApexGrappleRopeStock>;
+  public let ropeShort: ref<ApexGrappleRopeStock>;
   public let hookShown: Bool;
   public let shot: ref<ApexGrappleHookShot>;
   public let bends: ref<ApexGrappleRopeBends>;
@@ -39,6 +40,7 @@ public class ApexGrapplePiecesSet extends IScriptable {
   public let table: ref<ApexGrappleHangTable>;
   // For the log, over one shot.
   public let mostPieces: Int32;
+  public let mostShort: Int32;
   public let mostPushStep: Float;
   public let cut: Bool;
   public let lead: ref<ApexGrappleRopeLead>;
@@ -72,7 +74,8 @@ public func ApexGrappleAskForPieces(at: Vector4, now: Float) -> ref<ApexGrappleP
   pieces.set.lead = new ApexGrappleRopeLead();
   pieces.set.laid = new ApexGrappleRopeLaid();
   pieces.set.table = new ApexGrappleHangTable();
-  ArrayResize(pieces.set.rope, ApexGrappleRopePieces());
+  pieces.set.rope = ApexGrappleRopeStock.Create(ApexGrappleRopePieces(), ApexGrappleRopePieceLength());
+  pieces.set.ropeShort = ApexGrappleRopeStock.Create(ApexGrappleRopeShortPieces(), ApexGrappleRopeShortLength());
   if ApexGrappleAskNextPieces(pieces, statics) {
     ApexGrappleLog("pieces asked for: " + ToString(ApexGrapplePiecesFiles()) + " entity files, one at a time");
   }
@@ -112,12 +115,8 @@ public func ApexGrappleCollectPieces(set: ref<ApexGrapplePiecesSet>, entity: ref
         set.hook = mesh;
         found = found + 1;
       } else {
-        if StrBeginsWith(name, "rope_") {
-          let index: Int32 = StringToInt(StrAfterFirst(name, "rope_"), -1);
-          if index >= 0 && index < ApexGrappleRopePieces() {
-            set.rope[index] = mesh;
-            found = found + 1;
-          }
+        if ApexGrappleStockPiece(set.rope, mesh, name, "rope_") || ApexGrappleStockPiece(set.ropeShort, mesh, name, "short_") {
+          found = found + 1;
         }
       }
       mesh.Toggle(false);
@@ -149,9 +148,10 @@ public func ApexGrappleFindPieces(pieces: ref<ApexGrapplePieces>, now: Float) ->
     ApexGrappleAskNextPieces(pieces, statics);
     return;
   }
-  if ArraySize(set.entities) != files || set.found != ApexGrappleRopePieces() + 1 {
+  let expected: Int32 = 1 + ApexGrappleRopePieces() + ApexGrappleRopeShortPieces();
+  if ArraySize(set.entities) != files || set.found != expected {
     pieces.failed = true;
-    ApexGrappleLog("no pieces: " + ToString(ArraySize(set.entities)) + " of our " + ToString(files) + " entity files there and " + ToString(set.found) + " of the " + ToString(ApexGrappleRopePieces() + 1) + " pieces this mod expects (archive from another build?)");
+    ApexGrappleLog("no pieces: " + ToString(ArraySize(set.entities)) + " of our " + ToString(files) + " entity files there and " + ToString(set.found) + " of the " + ToString(expected) + " pieces this mod expects (archive from another build?)");
     return;
   }
   pieces.ready = true;
@@ -174,13 +174,8 @@ public func ApexGrappleHideSet(set: ref<ApexGrapplePiecesSet>) -> Void {
     set.hook.Toggle(false);
     set.hookShown = false;
   }
-  let i: Int32 = 0;
-  while i < set.shown {
-    let piece: ref<MeshComponent> = set.rope[i];
-    piece.Toggle(false);
-    i = i + 1;
-  }
-  set.shown = 0;
+  ApexGrappleStockHide(set.rope);
+  ApexGrappleStockHide(set.ropeShort);
 }
 
 // The last shot's hook is still out, flying, planted or coming back: a new shot waits until it is home, so that two

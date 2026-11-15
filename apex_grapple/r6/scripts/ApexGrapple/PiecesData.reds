@@ -13,6 +13,14 @@ public func ApexGrappleRopePieceLength() -> Float {
   return 0.547200;
 }
 
+public func ApexGrappleRopeShortPieces() -> Int32 {
+  return 35;
+}
+
+public func ApexGrappleRopeShortLength() -> Float {
+  return 0.034200;
+}
+
 public func ApexGrappleHookLength() -> Float {
   return 0.156800;
 }

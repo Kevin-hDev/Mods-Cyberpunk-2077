@@ -77,6 +77,7 @@ public func ApexGrappleFollowShot(system: ref<ApexGrappleSystem>, set: ref<ApexG
     set.bends = new ApexGrappleRopeBends();
     set.hang = new ApexGrappleRopeHangs();
     set.mostPieces = 0;
+    set.mostShort = 0;
     set.mostPushStep = 0.0;
     set.lead.led = 0;
     set.lead.afterMiss = 0;
@@ -99,7 +100,7 @@ public func ApexGrappleFollowShot(system: ref<ApexGrappleSystem>, set: ref<ApexG
 public func ApexGrappleDrawSet(system: ref<ApexGrappleSystem>, set: ref<ApexGrapplePiecesSet>, start: Vector4, view: Transform, now: Float, scriptInterface: ref<StateGameScriptInterface>) -> Void {
   let pose: ApexGrappleHookPose = ApexGrappleHookWhere(set.shot, start, system.anchor, now);
   if !pose.there {
-    ApexGrappleLog("hook home " + ToString(now - set.shot.firedAt) + " s after the shot, way back " + ToString(now - set.shot.releasedAt) + " s from " + ToString(set.shot.releasedLength) + " m of rope: " + ApexGrappleRopeBendsText(set.bends) + "; " + ApexGrappleRopeHangsText(set.hang) + "; at most " + ToString(set.mostPieces) + " pieces of rope" + (set.cut ? ", cut short: more than our pieces" : "") + "; the pull's push moved the rope's start on by at most " + FloatToStringPrec(set.mostPushStep, 3) + " m in a frame; " + ApexGrappleRopeLeadText(set.lead));
+    ApexGrappleLog("hook home " + ToString(now - set.shot.firedAt) + " s after the shot, way back " + ToString(now - set.shot.releasedAt) + " s from " + ToString(set.shot.releasedLength) + " m of rope: " + ApexGrappleRopeBendsText(set.bends) + "; " + ApexGrappleRopeHangsText(set.hang) + "; at most " + ToString(set.mostPieces) + " pieces of rope, " + ToString(set.mostShort) + " of them short" + (set.cut ? ", cut short: more than our pieces" : "") + "; the pull's push moved the rope's start on by at most " + FloatToStringPrec(set.mostPushStep, 3) + " m in a frame; " + ApexGrappleRopeLeadText(set.lead));
     ApexGrappleHideSet(set);
     set.shot = null;
     return;
@@ -140,57 +141,51 @@ public func ApexGrappleDrawSet(system: ref<ApexGrappleSystem>, set: ref<ApexGrap
     set.hookShown = true;
   }
   let shown: Float = ApexGrappleRopeSwing(pose.phase, pose.since);
-  let piece: Float = ApexGrappleRopePieceFor(line, ArraySize(set.rope));
-  ApexGrappleHungPlaces(scriptInterface, set.hang, set.laid, set.table, line, shown, now - set.shot.firedAt, piece);
+  let piece: Float = ApexGrappleRopePieceFor(line, ArraySize(set.rope.pieces));
+  ApexGrappleHungPlaces(scriptInterface, set.hang, set.laid, set.table, line, shown, now - set.shot.firedAt, piece, set.ropeShort.length, ArraySize(set.ropeShort.pieces));
   if IsDefined(system.cost) {
     system.cost.ropeRays = system.cost.ropeRays + set.bends.rays + set.hang.rays - raysBefore;
   }
   ApexGrappleLayRope(set, set.laid, start);
 }
 
-// Each piece from one place to the next, stretched alike to its span (visualScale along its length, +Y); pieces shown
-// or hidden only when their number changes. The pieces of a straight span lie one after the other on its line, all of
-// a length: they take the first one's turn and stretch rather than work their own out again, the gap left to Kevin's
-// eye (10 November 2026, audit B6: "oui").
+// Each piece from one place to the next, stretched alike to its span (visualScale along its length, +Y), long or short
+// as its span was laid (RopeHang.reds); pieces shown or hidden only when their number changes. The pieces of a straight
+// span lie one after the other on its line, all of a length: they take the first one's turn and stretch rather than
+// work their own out again, the gap left to Kevin's eye (10 November 2026, audit B6: "oui"). Where a stock runs out,
+// the rope stops there.
 @if(ModuleExists("Codeware"))
 public func ApexGrappleLayRope(set: ref<ApexGrapplePiecesSet>, laid: ref<ApexGrappleRopeLaid>, start: Vector4) -> Void {
-  let wanted: Int32 = ArraySize(laid.places) - 1;
-  let count: Int32 = Max(Min(wanted, ArraySize(set.rope)), 0);
-  if wanted > count {
-    set.cut = true;
-  }
-  let length: Float = ApexGrappleRopePieceLength();
+  let pieces: Int32 = ArraySize(laid.places) - 1;
+  let stock: ref<ApexGrappleRopeStock> = set.rope;
   let span: Int32 = 0;
   let sharedUntil: Int32 = 0;
   let turn: Quaternion;
   let stretch: Vector3;
+  let laying: Bool = true;
   let i: Int32 = 0;
-  while i < count {
+  while laying && i < pieces {
     let from: Vector4 = laid.places[i];
     let to: Vector4 = laid.places[i + 1];
     if i >= sharedUntil {
       while span < ArraySize(laid.spanEnds) - 1 && i >= laid.spanEnds[span] {
         span = span + 1;
       }
+      stock = laid.shortSpan[span] ? set.ropeShort : set.rope;
       turn = ApexGrappleFacing(to - from);
-      stretch = new Vector3(1.0, Vector4.Distance(from, to) / length, 1.0);
+      stretch = new Vector3(1.0, Vector4.Distance(from, to) / stock.length, 1.0);
       sharedUntil = laid.straight[span] ? laid.spanEnds[span] : i + 1;
     }
-    let piece: ref<MeshComponent> = set.rope[i];
-    piece.SetLocalTransform(ApexGrappleLocal(from, start), turn);
-    piece.visualScale = stretch;
-    if i >= set.shown {
-      piece.Toggle(true);
-    }
+    laying = ApexGrappleStockLay(stock, ApexGrappleLocal(from, start), turn, stretch);
     i = i + 1;
   }
-  while i < set.shown {
-    let extra: ref<MeshComponent> = set.rope[i];
-    extra.Toggle(false);
-    i = i + 1;
+  if !laying {
+    set.cut = true;
   }
-  set.shown = count;
-  set.mostPieces = Max(set.mostPieces, count);
+  set.mostPieces = Max(set.mostPieces, set.rope.taken + set.ropeShort.taken);
+  set.mostShort = Max(set.mostShort, set.ropeShort.taken);
+  ApexGrappleStockSettle(set.rope);
+  ApexGrappleStockSettle(set.ropeShort);
 }
 
 @if(!ModuleExists("Codeware"))

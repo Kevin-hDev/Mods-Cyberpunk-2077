@@ -62,6 +62,11 @@ public func ApexGrappleRopeCut(points: array<Vector4>, length: Float) -> array<V
   return cut;
 }
 
+// How many pieces `piece` long lie along `length`: as many as fit best, at least one.
+public func ApexGrappleRopePiecesOver(length: Float, piece: Float) -> Int32 {
+  return Max(1, RoundF(length / piece));
+}
+
 public func ApexGrappleRopePlaces(points: array<Vector4>, piece: Float) -> array<Vector4> {
   let places: array<Vector4>;
   let count: Int32 = ArraySize(points);
@@ -77,7 +82,7 @@ public func ApexGrappleRopePlaces(points: array<Vector4>, piece: Float) -> array
     total = total + one;
     i = i + 1;
   }
-  let pieces: Int32 = Max(1, RoundF(total / piece));
+  let pieces: Int32 = ApexGrappleRopePiecesOver(total, piece);
   ArrayPush(places, points[0]);
   let segment: Int32 = 0;
   let walked: Float = 0.0;

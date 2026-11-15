@@ -19,23 +19,33 @@ public func ApexGrappleImplantName(implant: ApexGrappleImplant) -> String {
   return Equals(implant, ApexGrappleImplant.ProjectileLauncher) ? "projectile launcher" : "none";
 }
 
-// True when V has a projectile launcher installed in the arm cyberware slot, as the game reads it for its launcher
-// wheel (quickSlotsManager.script, GetLauncher): every launcher, iconic ones included, has the item type Cyb_Launcher.
-public func ApexGrappleHasLauncher(player: ref<GameObject>) -> Bool {
+// Every projectile launcher, iconic ones included, has the item type Cyb_Launcher, as the game reads it for its launcher
+// wheel (quickSlotsManager.script, GetLauncher).
+public func ApexGrappleIsLauncherRecord(record: TweakDBID) -> Bool {
+  let item: ref<Item_Record> = TweakDBInterface.GetItemRecord(record);
+  return IsDefined(item) && Equals(item.ItemType().Type(), gamedataItemType.Cyb_Launcher);
+}
+
+// V's projectile launcher installed in the arm cyberware slot, or an invalid ID.
+public func ApexGrappleInstalledLauncher(player: ref<GameObject>) -> ItemID {
+  let none: ItemID;
   let puppet: ref<PlayerPuppet> = player as PlayerPuppet;
   if !IsDefined(puppet) {
-    return false;
+    return none;
   }
   let data: ref<EquipmentSystemPlayerData> = EquipmentSystem.GetData(puppet);
   if !IsDefined(data) {
-    return false;
+    return none;
   }
   let installed: ItemID = data.GetActiveItem(gamedataEquipmentArea.ArmsCW);
-  if !ItemID.IsValid(installed) {
-    return false;
+  if !ItemID.IsValid(installed) || !ApexGrappleIsLauncherRecord(ItemID.GetTDBID(installed)) {
+    return none;
   }
-  let record: ref<Item_Record> = TweakDBInterface.GetItemRecord(ItemID.GetTDBID(installed));
-  return IsDefined(record) && Equals(record.ItemType().Type(), gamedataItemType.Cyb_Launcher);
+  return installed;
+}
+
+public func ApexGrappleHasLauncher(player: ref<GameObject>) -> Bool {
+  return ItemID.IsValid(ApexGrappleInstalledLauncher(player));
 }
 
 // Why a shot is refused for the implant, or nothing. Refused, the press is not the grapple's: with the quick melee

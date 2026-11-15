@@ -17,17 +17,20 @@ public class ApexGrappleRopeHangs extends IScriptable {
   public let held: Int32;
 }
 
-// The rope's places this frame, and for each span the place it ends at and whether it runs straight, so that the
-// pieces of a straight span are turned and stretched once (PiecesDraw.reds, ApexGrappleLayRope).
+// The rope's places this frame, and for each span the place it ends at, whether it runs straight, so that the pieces
+// of a straight span are turned and stretched once, and whether it is laid with short pieces (PiecesDraw.reds,
+// ApexGrappleLayRope).
 public class ApexGrappleRopeLaid extends IScriptable {
   public let places: array<Vector4>;
   public let spanEnds: array<Int32>;
   public let straight: array<Bool>;
+  public let shortSpan: array<Bool>;
 }
 
-// A span shorter than half a piece is laid as one piece, hanging or not: its bow is at most 6 % of its line and its
-// wave a quarter of that, so its curve is at most 1.24 times its line, and ApexGrappleRopePlaces keeps only its two
-// ends. It is laid straight, with no bow worked out and no ray cast: the same places (audit of 10 November 2026, B1).
+// A span shorter than half a piece is laid straight, hanging or not: its bow is at most 6 % of its line and its wave a
+// quarter of that, so its curve is at most 1.24 times its line. No bow is worked out and no ray cast (audit of 10
+// November 2026, B1). Named when such a span took one long piece: it now takes short pieces, one turn of the twist each
+// (RopeStock.reds), while they last; past them, one long piece squashed to it, as before them.
 public func ApexGrappleOnePiece(distance: Float, piece: Float) -> Bool {
   return 2.0 * distance < piece;
 }
@@ -55,10 +58,12 @@ public func ApexGrappleHeldShare(scriptInterface: ref<StateGameScriptInterface>,
 // `laid`. Each span hangs on its own and is laid on its own, the place it shares with the last one once, so that a
 // bend is always between two pieces: one piece across a square corner would cut through it by up to a third of its
 // length. The places go straight into `laid` rather than through a copy of the whole rope for each span (B12).
-public func ApexGrappleHungPlaces(scriptInterface: ref<StateGameScriptInterface>, hangs: ref<ApexGrappleRopeHangs>, laid: ref<ApexGrappleRopeLaid>, table: ref<ApexGrappleHangTable>, line: array<Vector4>, shown: Float, clock: Float, piece: Float) -> Void {
+public func ApexGrappleHungPlaces(scriptInterface: ref<StateGameScriptInterface>, hangs: ref<ApexGrappleRopeHangs>, laid: ref<ApexGrappleRopeLaid>, table: ref<ApexGrappleHangTable>, line: array<Vector4>, shown: Float, clock: Float, piece: Float, shortPiece: Float, shortPieces: Int32) -> Void {
   ArrayClear(laid.places);
   ArrayClear(laid.spanEnds);
   ArrayClear(laid.straight);
+  ArrayClear(laid.shortSpan);
+  let shortsLeft: Int32 = shortPieces;
   let hanging: Bool = shown != 0.0;
   if hanging {
     hangs.frames = hangs.frames + 1;
@@ -72,10 +77,19 @@ public func ApexGrappleHungPlaces(scriptInterface: ref<StateGameScriptInterface>
     let across: ApexGrappleAcross;
     let slack: Float = 0.0;
     let held: Float = 0.0;
-    if hanging && !ApexGrappleOnePiece(distance, piece) {
-      across = ApexGrappleSpanAcross(from, to);
-      slack = ApexGrappleHangSlack(distance);
-      held = shown * ApexGrappleHeldShare(scriptInterface, hangs, from, to, across, slack, shown, table);
+    let short: Bool = false;
+    if ApexGrappleOnePiece(distance, piece) {
+      let shorts: Int32 = shortPiece > 0.0 ? ApexGrappleRopePiecesOver(distance, shortPiece) : shortsLeft + 1;
+      short = shorts <= shortsLeft;
+      if short {
+        shortsLeft = shortsLeft - shorts;
+      }
+    } else {
+      if hanging {
+        across = ApexGrappleSpanAcross(from, to);
+        slack = ApexGrappleHangSlack(distance);
+        held = shown * ApexGrappleHeldShare(scriptInterface, hangs, from, to, across, slack, shown, table);
+      }
     }
     let curve: array<Vector4>;
     if held != 0.0 {
@@ -84,7 +98,7 @@ public func ApexGrappleHungPlaces(scriptInterface: ref<StateGameScriptInterface>
       ArrayPush(curve, from);
       ArrayPush(curve, to);
     }
-    let more: array<Vector4> = ApexGrappleRopePlaces(curve, piece);
+    let more: array<Vector4> = ApexGrappleRopePlaces(curve, short ? shortPiece : piece);
     let n: Int32 = ArraySize(laid.places) == 0 ? 0 : 1;
     while n < ArraySize(more) {
       ArrayPush(laid.places, more[n]);
@@ -93,6 +107,7 @@ public func ApexGrappleHungPlaces(scriptInterface: ref<StateGameScriptInterface>
     let end: Int32 = ArraySize(laid.places) - 1;
     ArrayPush(laid.spanEnds, end);
     ArrayPush(laid.straight, held == 0.0);
+    ArrayPush(laid.shortSpan, short);
     i = i + 1;
   }
 }

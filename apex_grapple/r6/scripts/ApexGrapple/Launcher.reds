@@ -5,7 +5,8 @@
 // - A real item given to V and set in the left hand slot: a preview item never showed on V (8 shots of 8, 31 October
 //   2026). Its added event is flagged silent, else "Looted" showed in the activity log, and the game's "Removed" line
 //   for it is taken out of that log (LauncherNotice.reds). Its ID is made as the game
-//   makes the items it crafts (ItemID.FromTDBID), and it is taken back by that ID.
+//   makes the items it crafts (ItemID.FromTDBID), and it is taken back by that ID. It copies V's own launcher's record
+//   when one is installed, so that it shows its tier (LauncherStyle.reds), never with the ID of an item V owns.
 // - It carries a tag of our own, given with it as the game's HideInUI is: saving is refused while it is lent (Hook.reds,
 //   IsSavingLocked), as the game itself refuses it during an air dash (locomotionTransitions.script), and a save that
 //   kept it all the same is cleaned at the next load by that tag.
@@ -78,8 +79,14 @@ public func ApexGrappleLauncherLend(system: ref<ApexGrappleSystem>, arm: ref<Ape
     ApexGrappleLog("launcher not lent: V's left hand holds " + TDBID.ToStringDEBUG(ItemID.GetTDBID(before.GetItemID())));
     return;
   }
+  let installed: ItemID = ApexGrappleInstalledLauncher(player);
+  let id: ItemID = ItemID.FromTDBID(ApexGrappleLauncherRecordFor(installed));
+  // Never an ID V already owns: taken back by its ID, V's own launcher would leave with it.
+  if items.HasItem(player, id) || (ItemID.IsValid(installed) && id == installed) {
+    ApexGrappleLog("launcher not lent: its copy of " + TDBID.ToStringDEBUG(ItemID.GetTDBID(id)) + " has the ID of an item V owns");
+    return;
+  }
   let loan: ref<ApexGrappleLauncherLoan> = ApexGrappleLoanOf(system);
-  let id: ItemID = ItemID.FromTDBID(ApexGrappleLauncherRecord());
   // Known before it is given, so that its added event is recognised wherever the game sends it.
   loan.id = id;
   loan.shotAt = arm.shotAt;
@@ -93,7 +100,7 @@ public func ApexGrappleLauncherLend(system: ref<ApexGrappleSystem>, arm: ref<Ape
     return;
   }
   let placed: Bool = items.AddItemToSlot(player, ApexGrappleLauncherSlot(), id, true);
-  ApexGrappleLog("launcher lent " + ToString(now - loan.shotAt) + " s after the shot, set in the left hand " + ToString(placed));
+  ApexGrappleLog("launcher lent " + ToString(now - loan.shotAt) + " s after the shot, set in the left hand " + ToString(placed) + ", " + ApexGrappleLauncherLook(player, installed, id));
   ApexGrappleLauncherWatch(system, player.GetGame());
 }
 
@@ -122,6 +129,7 @@ public func ApexGrappleLauncherFrame(system: ref<ApexGrappleSystem>, arm: ref<Ap
   if ours {
     loan.seen = true;
     ApexGrappleLauncherHideHand(loan, true, now, player);
+    ApexGrappleLauncherStyle(player);
   }
 }
 
@@ -140,7 +148,12 @@ public func ApexGrappleLauncherTakeBack(system: ref<ApexGrappleSystem>, now: Flo
     fromHand = items.RemoveItemFromSlot(player, ApexGrappleLauncherSlot(), true);
   }
   loan.takenBack = id;
-  let removed: Bool = items.RemoveItem(player, id, 1);
+  // Only an item V still owns is removed: given an ID that is gone, the game's native removal might fall back on the
+  // record, now V's own implant's (LauncherStyle.reds). Audit of 15 November 2026.
+  let removed: Bool = false;
+  if items.HasItem(player, id) {
+    removed = items.RemoveItem(player, id, 1);
+  }
   let back: Int32 = ApexGrappleLauncherShowHand(loan);
   ApexGrappleLauncherCrosshairRestore(loan);
   ApexGrappleLog("launcher taken back " + ToString(now - loan.shotAt) + " s after the shot, " + why + ": from the hand " + ToString(fromHand) + ", from the inventory " + ToString(removed) + ", still owned " + ToString(items.HasItem(player, id)) + ", " + ToString(back) + " pieces of V's left arm switched back on");
@@ -172,7 +185,7 @@ public func ApexGrappleLauncherLeftInSave(system: ref<ApexGrappleSystem>, player
 }
 
 public func ApexGrappleLauncherIs(owner: ref<GameObject>, id: ItemID) -> Bool {
-  if ItemID.GetTDBID(id) != ApexGrappleLauncherRecord() || !IsDefined(owner) {
+  if !IsDefined(owner) || !ApexGrappleIsLauncherRecord(ItemID.GetTDBID(id)) {
     return false;
   }
   let system: ref<ApexGrappleSystem> = ApexGrappleSystemOf(owner.GetGame());
