@@ -1,0 +1,53 @@
+# The six ripperdocs of the 27 that exist only with Phantom Liberty (read in the game's data: in tweakdb_ep1.bin, not
+# in tweakdb.bin). TweakXL reads this file only when the expansion is installed, by the $dlc key at its root (TweakXL
+# 1.9.0 and later); without it, an entry on a ripperdoc that does not exist would be refused with an error in
+# TweakXL's log. The sales they add are in implants.yaml.
+$dlc: EP1
+
+Vendors.AdvancedCollectiveRipperDocDogtown:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.Ripperdoc_HUB:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.cz_con_ripdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.cz_monument_ripperdoc_anderson:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.cz_monument_ripperdoc_farida:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.cz_stadium_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary

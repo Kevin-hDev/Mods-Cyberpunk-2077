@@ -1,0 +1,145 @@
+// Made by fabrique/grapple.py from Apex Grapple's Fov.reds, never edited by hand: change it there,
+// then run python -I fabrique/grapple.py (fabrique/test_grapple.py fails while this file is out of date).
+// The field of view widens while a pull moves V and comes back when it stops (docs/apex-grapple/fov/conception.md),
+// through the first-person camera's SetFOV, the only way that showed in game. What the camera does with it, read in game
+// on 10 November 2026 (releves/apex-grapple/2026-11-10-fov-sonde and 2026-11-10-fov-sonde-2): each SetFOV starts the
+// game's own 1 s smoothing again from where the camera is, so a value written every frame is shown half a second late.
+// Each frame therefore writes the value that brings the camera onto the wanted curve one frame later, and the camera
+// shows the curve itself. This file holds the numbers; FovFrame.reds writes them.
+
+public class CyberGrappleFov {
+  // The camera is off the player's field of view because of us: widening, widened, or coming back.
+  public let on: Bool;
+  // Heading for the widened field of view, or back to the player's.
+  public let wide: Bool;
+  // Where the camera was when the current transition started, and when.
+  public let from: Float;
+  public let since: Float;
+  // The transition's end has been written to the log.
+  public let reached: Bool;
+  // Game time of the last frame the effect ran, and the last value written: once the curve has reached its end, the
+  // same value is not written again.
+  public let lastAt: Float;
+  public let written: Float;
+  // The player's field of view as the camera holds it, read from the game's setting each frame the effect is on.
+  public let home: Float;
+  // The settings of the profile whose pull widened it: the way back keeps them once that pull has let go.
+  public let widening: Float;
+  public let transition: Float;
+  // Why the current pull does not widen the view, as last written to the log, and whether there is one: at rest it is
+  // forgotten once, not written again each frame (audit of 10 November 2026, A16).
+  public let refused: String;
+  public let refusing: Bool;
+  // The setting the player's value was worked out from, and the setting and widening the widened value was worked out
+  // from: each is worked out again only when they change (A11).
+  public let homeFrom: Float;
+  public let wideFrom: Float;
+  public let wideWidening: Float;
+  public let wideValue: Float;
+  // Lines written this load (CyberGrappleLogUpTo): the grapple's system is made again at each load.
+  public let lines: Int32;
+}
+
+// Lines a load: Kevin's trial of 10 November 2026 wrote about 3 a pull, 125 for 41 pulls.
+public func CyberGrappleFovMostLines() -> Int32 {
+  return 300;
+}
+
+public func CyberGrappleFovLog(fov: ref<CyberGrappleFov>, const text: String) -> Void {
+  fov.lines = CyberGrappleLogUpTo(fov.lines, CyberGrappleFovMostLines(), "field of view", text);
+}
+
+// A line is made only while one can still be written; at the bound itself CyberGrappleLogUpTo writes its own (A16).
+public func CyberGrappleFovLogs(fov: ref<CyberGrappleFov>) -> Bool {
+  return fov.lines <= CyberGrappleFovMostLines();
+}
+
+// The player's field of view as the camera holds it, from the last setting that could be read.
+public func CyberGrappleFovHomeNow(fov: ref<CyberGrappleFov>, setting: Float) -> Void {
+  if setting > 0.0 && setting != fov.homeFrom {
+    fov.home = CyberGrappleFovCameraOf(setting);
+    fov.homeFrom = setting;
+  }
+}
+
+public func CyberGrappleFovWideNow(fov: ref<CyberGrappleFov>, setting: Float) -> Float {
+  if setting != fov.wideFrom || fov.widening != fov.wideWidening {
+    fov.wideValue = CyberGrappleFovWideOf(setting, fov.widening);
+    fov.wideFrom = setting;
+    fov.wideWidening = fov.widening;
+  }
+  return fov.wideValue;
+}
+
+// Kevin's upper bound for the widened field of view, in the degrees of the game's setting.
+public func CyberGrappleFovHighest() -> Float {
+  return 140.0;
+}
+
+// The game's smoothing, in seconds (fovSmoothingDuration of the game's first-person camera data).
+public func CyberGrappleFovSmoothing() -> Float {
+  return 1.0;
+}
+
+// The part of the way to the value written that the camera covers in dt seconds: the game's smoothing is the ease-out
+// 1 - (1 - t)², started again by each SetFOV (second probe: 19 % of the way at 0.1 s; written every frame, a time
+// constant of 0.5 s, up and down alike).
+public func CyberGrappleFovPart(dt: Float) -> Float {
+  let left: Float = 1.0 - ClampF(dt / CyberGrappleFovSmoothing(), 0.0, 1.0);
+  return 1.0 - left * left;
+}
+
+// The game's Field of View setting, in its menu's degrees; 0 when it cannot be read.
+public func CyberGrappleFovSetting(game: GameInstance) -> Float {
+  let settings: ref<UserSettings> = GameInstance.GetSettingsSystem(game);
+  if !IsDefined(settings) {
+    return 0.0;
+  }
+  let fov: ref<ConfigVarFloat> = settings.GetVar(n"/graphics/basic", n"FieldOfView") as ConfigVarFloat;
+  return IsDefined(fov) ? fov.GetValue() : 0.0;
+}
+
+// The setting is not the number the camera holds: 100 in the menu gave the camera 68.237984 (first probe). The other
+// values follow a horizontal angle turned into a vertical one, set on that point; this falls within 0.3 degrees of a
+// table measured by hand from 0 to 175, which gives the same 68.238 for 100.
+public func CyberGrappleFovCameraOf(setting: Float) -> Float {
+  let k: Float = TanF(Deg2Rad(68.237984 * 0.5)) / TanF(Deg2Rad(50.0));
+  return 2.0 * Rad2Deg(AtanF(k * TanF(Deg2Rad(setting * 0.5)), 1.0));
+}
+
+// The widened field of view as the camera holds it. A setting already past 140 (raised by another mod) is never
+// narrowed.
+public func CyberGrappleFovWideOf(setting: Float, widening: Float) -> Float {
+  return CyberGrappleFovCameraOf(MaxF(setting, MinF(setting + widening, CyberGrappleFovHighest())));
+}
+
+// A settings file edited by hand keeps the menu's bounds.
+public func CyberGrappleFovWideningOf(settings: ref<CyberGrappleSettings>) -> Float {
+  return ClampF(settings.fovWidening, 0.0, 40.0);
+}
+
+public func CyberGrappleFovTransitionOf(settings: ref<CyberGrappleSettings>) -> Float {
+  return ClampF(settings.fovTransition, 0.5, 3.0);
+}
+
+// The wanted field of view t seconds into a transition from `from` to `to`, slow at both ends.
+public func CyberGrappleFovCurve(from: Float, to: Float, length: Float, t: Float) -> Float {
+  let u: Float = ClampF(t / length, 0.0, 1.0);
+  return from + (to - from) * u * u * (3.0 - 2.0 * u);
+}
+
+// The value to write now so that the camera, on the curve now, is on it again a frame later: that frame's step divided
+// by the part of the way the camera covers in a frame. This frame's time stands for the next one's. From the curve's
+// end on, `to` itself. Simulated on the camera read in game: within 0.2 degrees of the curve at 30 frames a second
+// with frame times 30 % apart.
+public func CyberGrappleFovWritten(from: Float, to: Float, length: Float, t: Float, frame: Float) -> Float {
+  let now: Float = CyberGrappleFovCurve(from, to, length, t);
+  let next: Float = CyberGrappleFovCurve(from, to, length, t + frame);
+  return now + (next - now) / MaxF(CyberGrappleFovPart(frame), 0.001);
+}
+
+// Ahead of the curve, the value written leaves the range between the two ends: from 18 to 165 at 0.5 s and +40,
+// simulated. It is kept within what a camera can show.
+public func CyberGrappleFovSafe(value: Float) -> Float {
+  return ClampF(value, 10.0, 170.0);
+}

@@ -1,0 +1,94 @@
+// Made by fabrique/grapple.py from Apex Grapple's CrosshairPieces.reds, never edited by hand: change it there,
+// then run python -I fabrique/grapple.py (fabrique/test_grapple.py fails while this file is out of date).
+// The pieces the crosshairs are drawn with (Crosshair<Name>.reds, made by fabrique/crosshairs.py from the game's own
+// crosshair files). Each piece is placed with the 16 numbers its file gives it, in this order: anchor point x y, margin
+// left top right bottom, size x y, translation x y, rotation, scale x y, pivot x y, opacity. One list rather than
+// sixteen parameters keeps each piece on one line of the made files.
+
+public func CyberGrappleCrosshairPlace(w: ref<inkWidget>, parent: ref<inkCompoundWidget>, anchor: inkEAnchor, l: array<Float>) -> Void {
+  w.SetAnchor(anchor);
+  w.SetAnchorPoint(new Vector2(l[0], l[1]));
+  w.SetMargin(new inkMargin(l[2], l[3], l[4], l[5]));
+  w.SetSize(new Vector2(l[6], l[7]));
+  w.SetTranslation(new Vector2(l[8], l[9]));
+  w.SetRotation(l[10]);
+  w.SetScale(new Vector2(l[11], l[12]));
+  w.SetRenderTransformPivot(new Vector2(l[13], l[14]));
+  w.SetOpacity(l[15]);
+  w.Reparent(parent);
+}
+
+// Canvases are never tinted: a tint would multiply the colour of every piece they hold.
+public func CyberGrappleCrosshairCanvas(parent: ref<inkCompoundWidget>, anchor: inkEAnchor, l: array<Float>) -> ref<inkCanvas> {
+  let canvas: ref<inkCanvas> = new inkCanvas();
+  CyberGrappleCrosshairPlace(canvas, parent, anchor, l);
+  return canvas;
+}
+
+public func CyberGrappleCrosshairRect(parent: ref<inkCompoundWidget>, anchor: inkEAnchor, l: array<Float>, color: HDRColor) -> Void {
+  let rect: ref<inkRectangle> = new inkRectangle();
+  rect.SetTintColor(color);
+  CyberGrappleCrosshairPlace(rect, parent, anchor, l);
+}
+
+// segments: the number of sides the game's file gives the circle (6 for the simple crosshair's dot).
+public func CyberGrappleCrosshairCircle(parent: ref<inkCompoundWidget>, anchor: inkEAnchor, l: array<Float>, segments: Uint32, color: HDRColor) -> Void {
+  let circle: ref<inkCircle> = new inkCircle();
+  circle.segmentsNumber = segments;
+  circle.SetTintColor(color);
+  CyberGrappleCrosshairPlace(circle, parent, anchor, l);
+}
+
+// fit: the image takes the size of its part of the atlas, as the game's file asks for some.
+public func CyberGrappleCrosshairImage(parent: ref<inkCompoundWidget>, anchor: inkEAnchor, l: array<Float>, fit: Bool, atlas: ResRef, part: CName, mirror: inkBrushMirrorType, color: HDRColor) -> ref<inkImage> {
+  let image: ref<inkImage> = new inkImage();
+  image.SetAtlasResource(atlas);
+  image.SetTexturePart(part);
+  image.SetBrushMirrorType(mirror);
+  image.SetTintColor(color);
+  CyberGrappleCrosshairPlace(image, parent, anchor, l);
+  image.SetFitToContent(fit);
+  return image;
+}
+
+// An image whose borders keep their size as it stretches (nine-slice), with its file's margins: left top right bottom.
+public func CyberGrappleCrosshairSlicedImage(parent: ref<inkCompoundWidget>, anchor: inkEAnchor, l: array<Float>, fit: Bool, atlas: ResRef, part: CName, mirror: inkBrushMirrorType, nine: array<Float>, color: HDRColor) -> Void {
+  let image: ref<inkImage> = CyberGrappleCrosshairImage(parent, anchor, l, fit, atlas, part, mirror, color);
+  image.useNineSliceScale = true;
+  image.nineSliceScale = new inkMargin(nine[0], nine[1], nine[2], nine[3]);
+}
+
+// The pieces under parent that a colour may be given to, in the order of the drawing: canvases are walked, never
+// tinted. Listed once after each drawing (CrosshairRange.reds) rather than the whole drawing walked at each change of
+// colour (A15).
+public func CyberGrappleCrosshairListPieces(range: ref<CyberGrappleCrosshairRange>, parent: ref<inkCompoundWidget>) -> Void {
+  let count: Int32 = parent.GetNumChildren();
+  let i: Int32 = 0;
+  while i < count {
+    let child: ref<inkWidget> = parent.GetWidgetByIndex(i);
+    let inner: ref<inkCompoundWidget> = child as inkCompoundWidget;
+    if IsDefined(inner) {
+      CyberGrappleCrosshairListPieces(range, inner);
+    } else {
+      if IsDefined(child) {
+        ArrayPush(range.pieces, child);
+      }
+    }
+    i += 1;
+  }
+}
+
+// Gives the listed pieces of colour from the colour to, without drawing them again (the range indicator). A piece its
+// game file gives a fixed colour keeps it.
+public func CyberGrappleCrosshairRecolor(range: ref<CyberGrappleCrosshairRange>, from: HDRColor, to: HDRColor) -> Void {
+  for held in range.pieces {
+    let piece: ref<inkWidget> = held;
+    if IsDefined(piece) && CyberGrappleSameColor(piece.GetTintColor(), from) {
+      piece.SetTintColor(to);
+    }
+  }
+}
+
+public func CyberGrappleSameColor(a: HDRColor, b: HDRColor) -> Bool {
+  return a.Red == b.Red && a.Green == b.Green && a.Blue == b.Blue && a.Alpha == b.Alpha;
+}

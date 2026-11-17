@@ -1,0 +1,434 @@
+# The implant's records (docs/cyber-grapple/conception.md): the grapple fires only with one of them worn.
+# Names final since 17 November 2026 (D27) and never renamed again: they are written into the players' saves.
+
+# One line of the implant's card each: a package that does nothing, with a text. The game lays a record's packages
+# on V when the implant is fitted and, for an item of the launcher's type, never takes them back
+# (equipmentSystem.script, UnequipItem): none of ours may carry a stat.
+CyberGrapple.LineTravel:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Travel
+
+# One line a distance: the card tells how far the pull reaches, which grows with the tier (the table of pull
+# ranges in Tiers.reds, which test_source.py reads to check these lines and each tier's).
+CyberGrapple.LinePull20:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Pull20
+
+CyberGrapple.LinePull25:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Pull25
+
+CyberGrapple.LinePull30:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Pull30
+
+CyberGrapple.LinePull35:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Pull35
+
+CyberGrapple.LinePull40:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Pull40
+
+CyberGrapple.LineSeize:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Seize
+
+CyberGrapple.LineNext10:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Next10
+
+CyberGrapple.LineNext20:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Next20
+
+CyberGrapple.LineNext30:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Next30
+
+CyberGrapple.LineNext40:
+  $type: GameplayLogicPackage
+  UIData:
+    $type: GameplayLogicPackageUIData
+    localizedDescription: LocKey#CyberGrapple-Card-Next40
+
+# Everything the eleven tiers share. Copied from the game's launcher as it stands before any ammunition, stats shard
+# or damage line is added to it (arms_cyberware_advanced.tweak, AdvancedProjectileLauncherBase): the arm, the item
+# type the Glamdoc reads, the arm cyberware slot and the capacity cost of 8 come with it; of the explosive round
+# only the piece itself is put back below, for the arm's look. The icon is a prop's of the game, a broken cybernetic arm, picked by Kevin from the sheets of the game's icons and kept after a look in game (16 November 2026):
+# with the launcher's icon it could not be told from the game's launchers in a ripperdoc's list.
+Items.CyberGrappleBase:
+  $base: Items.AdvancedProjectileLauncherBase
+  displayName: LocKey#CyberGrapple-Card-Name
+  localizedDescription: LocKey#CyberGrapple-Card-Description
+  iconPath: undefined_int_toys_002__broken_arm_None_
+  tags:
+    - !append-once CyberGrapple
+  # The game's own round, as its launcher presets it. Without a round the arm lent for a shot never appeared in V's
+  # hand (tried in game, 16 November 2026, 40 shots: the item was set in the slot and never seen there), and the
+  # round is the one piece with a look that the bare base lacks. It never leaves: the gadget key starts no launcher's
+  # shot for the implant on it (GadgetQuickslot.reds, CheckItemCategoryInQuickWheel), the launcher's own question
+  # answers no with it worn (SlotCharges.reds, ProjectileLauncherHasCharge), and the shot itself is stopped
+  # (NoProjectile.reds).
+  slotPartListPreset:
+    - !append
+      slot: AttachmentSlots.ProjectileLauncherRound
+      itemPartPreset: Items.ExplosiveDamageRound
+
+# Tier 1 to 11, Common to LegendaryPlusPlus, each upgraded into the next. The tier is read from the worn implant's
+# own tag (Implant.reds). A card says what its tier unlocks, and the level of V the next full tier asks for: those
+# levels are the game's own sale rules (LootPrereqs.<quality>CWLevelAvailabilityAtVendor), which Upgrade.reds reads.
+Items.CyberGrappleCommon:
+  $base: Items.CyberGrappleBase
+  quality: Quality.Common
+  nextUpgradeItem: Items.CyberGrappleCommonPlus
+  tags:
+    - !append-once CyberGrappleTier1
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LineNext10
+
+Items.CyberGrappleCommonPlus:
+  $base: Items.CyberGrappleBase
+  quality: Quality.CommonPlus
+  nextUpgradeItem: Items.CyberGrappleUncommon
+  tags:
+    - !append-once CyberGrappleTier2
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LineNext10
+
+Items.CyberGrappleUncommon:
+  $base: Items.CyberGrappleBase
+  quality: Quality.Uncommon
+  nextUpgradeItem: Items.CyberGrappleUncommonPlus
+  tags:
+    - !append-once CyberGrappleTier3
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull20
+    - CyberGrapple.LineNext20
+
+Items.CyberGrappleUncommonPlus:
+  $base: Items.CyberGrappleBase
+  quality: Quality.UncommonPlus
+  nextUpgradeItem: Items.CyberGrappleRare
+  tags:
+    - !append-once CyberGrappleTier4
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull20
+    - CyberGrapple.LineNext20
+
+Items.CyberGrappleRare:
+  $base: Items.CyberGrappleBase
+  quality: Quality.Rare
+  nextUpgradeItem: Items.CyberGrappleRarePlus
+  tags:
+    - !append-once CyberGrappleTier5
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull20
+    - CyberGrapple.LineSeize
+    - CyberGrapple.LineNext30
+
+Items.CyberGrappleRarePlus:
+  $base: Items.CyberGrappleBase
+  quality: Quality.RarePlus
+  nextUpgradeItem: Items.CyberGrappleEpic
+  tags:
+    - !append-once CyberGrappleTier6
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull20
+    - CyberGrapple.LineSeize
+    - CyberGrapple.LineNext30
+
+Items.CyberGrappleEpic:
+  $base: Items.CyberGrappleBase
+  quality: Quality.Epic
+  nextUpgradeItem: Items.CyberGrappleEpicPlus
+  tags:
+    - !append-once CyberGrappleTier7
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull25
+    - CyberGrapple.LineSeize
+    - CyberGrapple.LineNext40
+
+Items.CyberGrappleEpicPlus:
+  $base: Items.CyberGrappleBase
+  quality: Quality.EpicPlus
+  nextUpgradeItem: Items.CyberGrappleLegendary
+  tags:
+    - !append-once CyberGrappleTier8
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull30
+    - CyberGrapple.LineSeize
+    - CyberGrapple.LineNext40
+
+Items.CyberGrappleLegendary:
+  $base: Items.CyberGrappleBase
+  quality: Quality.Legendary
+  nextUpgradeItem: Items.CyberGrappleLegendaryPlus
+  tags:
+    - !append-once CyberGrappleTier9
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull35
+    - CyberGrapple.LineSeize
+
+Items.CyberGrappleLegendaryPlus:
+  $base: Items.CyberGrappleBase
+  quality: Quality.LegendaryPlus
+  nextUpgradeItem: Items.CyberGrappleLegendaryPlusPlus
+  tags:
+    - !append-once CyberGrappleTier10
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull40
+    - CyberGrapple.LineSeize
+
+Items.CyberGrappleLegendaryPlusPlus:
+  $base: Items.CyberGrappleBase
+  quality: Quality.LegendaryPlusPlus
+  nextUpgradeItem: None
+  tags:
+    - !append-once CyberGrappleTier11
+  OnEquip:
+    - CyberGrapple.LineTravel
+    - CyberGrapple.LinePull40
+    - CyberGrapple.LineSeize
+
+# On sale at ripperdocs, one piece, each quality inside the game's own window of V's level, as the game sells its
+# launcher. The plus tiers are reached by upgrading only.
+CyberGrapple.SaleCommon:
+  $type: VendorItem
+  item: Items.CyberGrappleCommon
+  quantity:
+    - Vendors.Always_Present
+  generationPrereqs:
+    - LootPrereqs.CommonCWLevelAvailabilityAtVendor
+
+CyberGrapple.SaleUncommon:
+  $type: VendorItem
+  item: Items.CyberGrappleUncommon
+  quantity:
+    - Vendors.Always_Present
+  generationPrereqs:
+    - LootPrereqs.UncommonCWLevelAvailabilityAtVendor
+
+CyberGrapple.SaleRare:
+  $type: VendorItem
+  item: Items.CyberGrappleRare
+  quantity:
+    - Vendors.Always_Present
+  generationPrereqs:
+    - LootPrereqs.RareCWLevelAvailabilityAtVendor
+
+CyberGrapple.SaleEpic:
+  $type: VendorItem
+  item: Items.CyberGrappleEpic
+  quantity:
+    - Vendors.Always_Present
+  generationPrereqs:
+    - LootPrereqs.EpicCWLevelAvailabilityAtVendor
+
+CyberGrapple.SaleLegendary:
+  $type: VendorItem
+  item: Items.CyberGrappleLegendary
+  quantity:
+    - Vendors.Always_Present
+  generationPrereqs:
+    - LootPrereqs.LegendaryCWLevelAvailabilityAtVendor
+
+# The 27 ripperdocs where the game sells its launcher: these 21, and in implants_ep1.yaml the six that exist only with
+# Phantom Liberty.
+Vendors.AdvancedCollectiveRipperDoc:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.AdvancedCollectiveRipperDocGeneral:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.AdvancedCollectiveRipperDocVictor:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.EarlyGameRipperdoc:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.EndGameRipperdoc:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.MidGameRipperdoc:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.bls_ina_se1_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.bls_ina_se1_ripperdoc_02:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.cct_dtn_ripdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.hey_spr_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.pac_wwd_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.std_arr_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.std_rcr_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wat_kab_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wat_kab_ripperdoc_02:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wat_kab_ripperdoc_03:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wat_lch_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wat_nid_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wbr_hil_ripdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wbr_jpn_ripperdoc_01:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary
+
+Vendors.wbr_jpn_ripperdoc_02:
+  itemStock:
+    - !append-once CyberGrapple.SaleCommon
+    - !append-once CyberGrapple.SaleUncommon
+    - !append-once CyberGrapple.SaleRare
+    - !append-once CyberGrapple.SaleEpic
+    - !append-once CyberGrapple.SaleLegendary

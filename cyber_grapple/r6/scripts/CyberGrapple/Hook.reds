@@ -1,0 +1,223 @@
+// Made by fabrique/grapple.py from Apex Grapple's Hook.reds, never edited by hand: change it there,
+// then run python -I fabrique/grapple.py (fabrique/test_grapple.py fails while this file is out of date).
+// One grapple at a time: its phase and numbers, kept from frame to frame and from one locomotion state to the next.
+// A system attaches again at each load, so a grapple never survives a load.
+
+public func CyberGrappleIdle() -> Int32 {
+  return 0;
+}
+
+public func CyberGrappleFlying() -> Int32 {
+  return 1;
+}
+
+public func CyberGrapplePulling() -> Int32 {
+  return 2;
+}
+
+public class CyberGrappleSystem extends ScriptableSystem {
+  public let phase: Int32;
+  public let shots: Int32;
+  // When the grapple's frame last ran (Frame.reds), to see the game stop running it, and how many times this load.
+  public let lastFrameAt: Float;
+  public let frames: Int32;
+  // What the frame reads once and shares (FrameReads.reds), with the frame it was read in.
+  public let viewRead: Transform;
+  public let viewReadIn: Int32;
+  public let velocityRead: Vector4;
+  public let velocityReadIn: Int32;
+  public let eyesRead: Float;
+  public let eyesReadIn: Int32;
+  public let gadgetKeyRead: Bool;
+  public let gadgetKeyReadIn: Int32;
+  // This state's name, read once a frame (Frame.reds), and the decision's sight kept for the range indicator in the
+  // frame it was cast (CrosshairRange.reds).
+  public let stateName: CName;
+  public let sightKept: CyberGrappleSight;
+  public let sightKeptIn: Int32;
+  public let sightKeptLength: Float;
+  // What the mod did over the last minute, for its line in the log (Cost.reds).
+  public let cost: ref<CyberGrappleCost>;
+  // The shot.
+  public let anchor: Vector4;
+  public let firedAt: Float;
+  public let landsAt: Float;
+  // Fired by a hold: pulls all the way.
+  public let byHold: Bool;
+  // A vehicle or a person the hook follows (Target.reds); a person pulled to V rather than V to them (Yank.reds).
+  public let target: wref<GameObject>;
+  public let onTarget: Bool;
+  public let targetPerson: Bool;
+  public let targetLocal: Vector4;
+  public let comesToV: Bool;
+  public let yank: ref<CyberGrappleYank>;
+  // A motorcycle pulled to V rather than V to it (YankBike.reds).
+  public let bikeComes: Bool;
+  public let bikePull: ref<CyberGrappleBikePull>;
+  // The game's grab on a person brought to V (Grab.reds), made at the first one; the person this hook flies to may
+  // be grabbed (Target.reds), and the game's grab key was seen down since the shot (GrabKey.reds).
+  public let grab: ref<CyberGrappleGrab>;
+  public let mayGrab: Bool;
+  public let grabKeySeen: Bool;
+  // People kept from the blows of their fall after a pull, until they have got up (YankShield.reds).
+  public let shielded: array<CyberGrappleShielded>;
+  // The pull.
+  public let startedAt: Float;
+  public let startPosition: Vector4;
+  public let lastPosition: Vector4;
+  // The nearest V has come to the anchor, for the log.
+  public let closest: Float;
+  public let near: Float;
+  // V has moved toward the anchor during this pull: from then on, once past it, nothing pulls V back (Pull.reds).
+  public let cameToward: Bool;
+  // How far V has gone round the anchor, in degrees, for the log.
+  public let lastRope: Vector4;
+  public let turned: Float;
+  public let pullCap: Float;
+  // The mod's own velocity, written each frame without reading back what the game made of it: read back, the game's
+  // air control turned it before the mod could (Borderlands 4).
+  public let velocity: Vector4;
+  public let topSpeed: Float;
+  // Distance asked for and distance gone at the game's speed, over the last stretch of the pull (Release.reds).
+  public let stretchTime: Float;
+  public let stretchAsked: Float;
+  public let stretchWent: Float;
+  // The push written this frame and when, written again at the end of a frame in the air (Push.reds).
+  public let push: Vector4;
+  public let pushAt: Float;
+  public let pushesWrittenBack: Int32;
+  // The key.
+  public let keyDown: Bool;
+  public let pressedAt: Float;
+  public let releasedAt: Float;
+  public let waitingForHold: Bool;
+  // One place per profile, profile 1 first (OwnKey.reds).
+  public let ownPressesSeen: array<Int32>;
+  public let holdBackUntil: Float;
+  // Hold-backs begun and the last one the log told: several of the game's decisions ask in the frame (QuickMelee.reds).
+  public let holdBacks: Int32;
+  public let holdBackSaid: Int32;
+  // The settings as Mod Settings holds them (SettingsCopy.reds): each profile's, profile 1 first, whether it is on, its
+  // own key, whether any own key is set, a number that changes with them and the one the log last told.
+  public let profiles: array<ref<CyberGrappleSettings>>;
+  public let profilesOn: array<Bool>;
+  public let ownKeys: array<EInputKey>;
+  public let anyOwnKey: Bool;
+  public let settingsVersion: Int32;
+  public let settingsLoggedVersion: Int32;
+  public let settingsWatch: ref<CyberGrappleSettingsWatch>;
+  // The crosshair, told when the settings change (Crosshair.reds).
+  public let crosshairHost: wref<CrosshairGameControllerPersistentDot>;
+  // The profile whose key is read and its settings (KeyProfile.reds); the profile that fired the last grapple and its
+  // settings as they were at the shot (Profiles.reds).
+  public let keyProfile: Int32;
+  public let keySettings: ref<CyberGrappleSettings>;
+  public let profile: Int32;
+  public let settings: ref<CyberGrappleSettings>;
+  // The last press was of the game's quick melee button, whose strike the grapple may hold back (KeyBindings.reds).
+  public let keyIsQuickMelee: Bool;
+  // Our implant is the item on the game's gadget key: read at each press of that key and at each reading of the
+  // worn tier, never each frame. And the log's lines this load on presses of it left to the game
+  // (GadgetQuickslot.reds).
+  public let gadgetKeyOurs: Bool;
+  public let gadgetKeyLines: Int32;
+  // A press of the scanner's button, down until its release, when it began, and the shot decided at the press.
+  public let sharedDown: Bool;
+  public let sharedPressedAt: Float;
+  public let pendingShot: CyberGrappleShotCheck;
+  public let jumpLetGoAt: Float;
+  // This pull has asked the game to take V off a ladder (LadderExit.reds), for a single log line; it started on one.
+  public let ladderLeft: Bool;
+  public let fromLadder: Bool;
+  // A double jump after a shot, watched for its first moments (Jump.reds): when, V's vertical speed then, the highest.
+  public let doubleJumpWatched: Bool;
+  public let doubleJumpAt: Float;
+  public let doubleJumpBefore: Float;
+  public let doubleJumpTop: Float;
+  // From the shot until V has stood CyberGrappleSettleTime() on the ground: the soft landing (Landing.reds), the hidden
+  // fall effect (FallEffect.reds) and the ladder rule (Ladder.reds) cover it.
+  public let trajectory: Bool;
+  // The landing the game itself judged this air frame, before the soft landing wrote it back.
+  public let gameLanding: Int32;
+  // For the line once back on the ground: the hardest landing turned into a regular one, the fastest fall, the frames
+  // a ladder entry was refused (Ladder.reds).
+  public let landingRewritten: Int32;
+  public let fastestFall: Float;
+  public let ladderRefusals: Int32;
+  // The game's fall effect: let through once in this air state (option on), and how often it was held back.
+  public let fallEffectShown: Bool;
+  public let fallEffectsHeldBack: Int32;
+  // A rise in the fall shown as a jump (Fall.reds), since when, and the pull its rise was told for, by its start.
+  public let riseShown: Bool;
+  public let riseShownAt: Float;
+  public let riseFor: Float;
+  // On the ground since then, for CyberGrappleSettleTime().
+  public let onGroundBefore: Bool;
+  public let groundSince: Float;
+  public let speedLimitToRestore: Bool;
+  public let speedLimitBefore: Bool;
+  public let settingsLogged: String;
+  // Our pieces (Pieces.reds), kept as their base class so the field compiles without Codeware.
+  public let pieces: ref<IScriptable>;
+  // V's left arm (Arm.reds), the right-hand weapon (RightWeapon.reds), the sounds of this shot (Sounds.reds).
+  public let arm: ref<CyberGrappleArm>;
+  public let weapon: ref<CyberGrappleRightWeapon>;
+  public let sounds: ref<CyberGrappleSounds>;
+  // The launcher lent to V's left hand (Launcher.reds).
+  public let loan: ref<CyberGrappleLauncherLoan>;
+  // Where V's left hand is read (Wrist.reds), and whether its fallback was said this load.
+  public let handSlots: wref<SlotComponent>;
+  public let handMissSaid: Bool;
+  // Our crosshair's range indicator (CrosshairRange.reds), owned by the crosshair, which links it here as it attaches.
+  public let crosshairRange: wref<CyberGrappleCrosshairRange>;
+  // The field of view widened during a pull (Fov.reds), made the first time a pull moves V.
+  public let fov: ref<CyberGrappleFov>;
+
+  private func OnAttach() -> Void {
+    ArrayResize(this.ownPressesSeen, CyberGrappleProfileCount());
+    this.keyProfile = 1;
+    this.profile = 1;
+    CyberGrappleCopySettings(this);
+    this.settingsWatch = new CyberGrappleSettingsWatch();
+    this.settingsWatch.system = this;
+    CyberGrappleSettingsWatchStart(this.settingsWatch);
+    this.settingsLogged = CyberGrappleProfilesText(this);
+    this.settingsLoggedVersion = this.settingsVersion;
+    CyberGrappleLog("loaded; settings in use: " + this.settingsLogged);
+    CyberGrappleSayWhatCodewareGives();
+  }
+
+  private func OnDetach() -> Void {
+    CyberGrappleSettingsWatchStop(this.settingsWatch);
+    this.settingsWatch = null;
+    CyberGrappleGrabSlideLeave(this.grab);
+  }
+
+  // A save made while the launcher is lent would keep it in V's inventory (Launcher.reds).
+  private func IsSavingLocked() -> Bool {
+    return CyberGrappleLauncherOut(this);
+  }
+}
+
+// A pull that moves V. While a person or a motorcycle is pulled to V, V is left to the game.
+public func CyberGrappleMovesV(system: ref<CyberGrappleSystem>) -> Bool {
+  return system.phase == CyberGrapplePulling() && !system.comesToV && !system.bikeComes;
+}
+
+public func CyberGrappleSystemOf(game: GameInstance) -> ref<CyberGrappleSystem> {
+  return GameInstance.GetScriptableSystemsContainer(game).Get(n"CyberGrappleSystem") as CyberGrappleSystem;
+}
+
+// Settings change during play: each shot writes them again if they changed since the last line. The text is made only
+// when the copy has been made again since it was last made (A1).
+public func CyberGrappleLogSettingsIfChanged(system: ref<CyberGrappleSystem>) -> Void {
+  if system.settingsLoggedVersion == system.settingsVersion {
+    return;
+  }
+  system.settingsLoggedVersion = system.settingsVersion;
+  let text: String = CyberGrappleProfilesText(system);
+  if !Equals(text, system.settingsLogged) {
+    system.settingsLogged = text;
+    CyberGrappleLog("settings in use: " + text);
+  }
+}
