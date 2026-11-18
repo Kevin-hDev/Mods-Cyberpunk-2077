@@ -10,15 +10,29 @@ public func CyberGrappleGadgetKeyMostLines() -> Int32 {
   return 40;
 }
 
-// Whether our implant is the item on the game's gadget key, read as the game reads that key (EHotkey.RB,
-// defaultTransition.script:1021, scripts 2.5).
-public func CyberGrappleOursOnGadgetKey(player: ref<GameObject>) -> Bool {
+// Times a load the log tells of the gadget key given back to the game (CyberGrappleGadgetKeyGiveBack).
+public func CyberGrappleGadgetKeyBackMostLines() -> Int32 {
+  return 10;
+}
+
+// The item on the game's gadget key, read as the game reads that key (EHotkey.RB, defaultTransition.script:1021,
+// scripts 2.5), or ItemID.None().
+public func CyberGrappleGadgetKeyItem(player: ref<GameObject>) -> ItemID {
   let puppet: ref<PlayerPuppet> = player as PlayerPuppet;
   if !IsDefined(puppet) {
-    return false;
+    return ItemID.None();
   }
   let data: ref<EquipmentSystemPlayerData> = EquipmentSystem.GetData(puppet);
-  return IsDefined(data) && CyberGrappleIsImplant(data.GetItemIDFromHotkey(EHotkey.RB));
+  if !IsDefined(data) {
+    return ItemID.None();
+  }
+  return data.GetItemIDFromHotkey(EHotkey.RB);
+}
+
+// Whether our implant is the item on the game's gadget key, worn or not: the locks below must refuse an implant V no
+// longer wears that is still on the key (CyberGrappleGadgetKeyGiveBack), which the game would otherwise fire.
+public func CyberGrappleOursOnGadgetKey(player: ref<GameObject>) -> Bool {
+  return CyberGrappleIsImplant(CyberGrappleGadgetKeyItem(player));
 }
 
 // At a press of the gadget key with Own key off (Key.reds): the press is the grapple's only with our implant on the
@@ -55,6 +69,54 @@ public func CyberGrappleGadgetKeyRead(system: ref<CyberGrappleSystem>) -> Void {
   system.gadgetKeyOurs = IsDefined(player) && CyberGrappleOursOnGadgetKey(player);
 }
 
+// The game gives the gadget key to the next item, and puts the left hand's gadget away, only when a launcher-type item
+// leaves the active arm slot (equipmentSystem.script:2109-2113). Taken off another slot, which only a mod that adds arm
+// slots gives, it stays on the key though V wears it no more (:2123-2145). For an implant of ours the key is given to
+// the next item as the game forgets it: every unequip passes here (:2032, :764-769, :3907 the ripperdoc's, :4000 an
+// upgrade's). Anything else unequipped costs two reads and a comparison.
+@wrapMethod(EquipmentSystemPlayerData)
+private final func UnequipItem(equipAreaIndex: Int32, slotIndex: Int32, opt forceRemove: Bool) -> Void {
+  let removed: ItemID = this.GetItemInEquipSlot(equipAreaIndex, slotIndex);
+  let keyed: Bool = ItemID.IsValid(removed) && removed == this.GetItemIDFromHotkey(EHotkey.RB);
+  wrappedMethod(equipAreaIndex, slotIndex, forceRemove);
+  if keyed {
+    this.CyberGrappleGadgetKeyBack(removed, "taken off an arm slot");
+  }
+}
+
+// A save made before such an unequip was caught may keep on the key an implant of ours V no longer wears: looked at
+// once a load, at the first reading of the worn tier (SettingsCopy.reds), between grapples.
+public func CyberGrappleGadgetKeyGiveBack(system: ref<CyberGrappleSystem>) -> Void {
+  if !system.gadgetKeyBackDue {
+    return;
+  }
+  system.gadgetKeyBackDue = false;
+  let player: ref<PlayerPuppet> = GetPlayer(system.GetGameInstance());
+  if !IsDefined(player) {
+    return;
+  }
+  let data: ref<EquipmentSystemPlayerData> = EquipmentSystem.GetData(player);
+  if IsDefined(data) {
+    data.CyberGrappleGadgetKeyBack(data.GetItemIDFromHotkey(EHotkey.RB), "kept by the save");
+  }
+}
+
+// The game's own call, made only while the key holds this implant of ours and V wears it in no slot: grenades if V has
+// some, else nothing (equipmentSystem.script:1893-1930), as for the active slot.
+@addMethod(EquipmentSystemPlayerData)
+public func CyberGrappleGadgetKeyBack(held: ItemID, why: String) -> Void {
+  if !ItemID.IsValid(held) || this.GetItemIDFromHotkey(EHotkey.RB) != held || this.IsEquipped(held) || !CyberGrappleIsImplant(held) {
+    return;
+  }
+  this.AssignNextValidItemToHotkey(held);
+  let system: ref<CyberGrappleSystem> = CyberGrappleSystemOf(this.m_owner.GetGame());
+  if IsDefined(system) && system.gadgetKeyBackLines <= CyberGrappleGadgetKeyBackMostLines() {
+    let now: ItemID = this.GetItemIDFromHotkey(EHotkey.RB);
+    let after: String = ItemID.IsValid(now) ? TDBID.ToStringDEBUG(ItemID.GetTDBID(now)) : "nothing";
+    system.gadgetKeyBackLines = CyberGrappleLogUpTo(system.gadgetKeyBackLines, CyberGrappleGadgetKeyBackMostLines(), "gadget key given back", "gadget key given back to the game (" + why + "): it held " + TDBID.ToStringDEBUG(ItemID.GetTDBID(held)) + ", worn in no arm slot; it now holds " + after);
+  }
+}
+
 // Whether a press of the gadget key fires the grapple: Own key off and the grapple live (switch on, our implant worn,
 // not silenced: the copy of the settings, SettingsCopy.reds). The key's hint under the slot shows only then
 // (SlotCharges.reds): off or silenced, the key does nothing.
@@ -83,7 +145,7 @@ public func CyberGrappleRefusedSound(system: ref<CyberGrappleSystem>, settings: 
 // The game reads its gadget key in five places, the updates of the empty-handed, one-weapon, two-weapon, aiming and
 // temporary-unequip states (upperBodyTransitions.script:621, :805, :1002, :1727, :2171). In each, an item of the
 // cyberware category on the key, which this question tells, is asked of the equipment system (RequestGadget); the
-// first four play the "empty" sound instead when the launcher has no charge (SlotCharges.reds), the fifth asks nothing
+// first four play the "empty" sound instead when the launcher has no charge (LauncherCharges.reds), the fifth asks nothing
 // more. With our implant on the key, the key is the grapple's or does nothing: the answer is no for it, and none of
 // the five plays a sound or starts the launcher's shot. Any other category (the grenades' Gadget, asked here and by
 // combatGadgetTransitions.script:106, :272) or any other item: the game's own answer. Read live, not from the state the

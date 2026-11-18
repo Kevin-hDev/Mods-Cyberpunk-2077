@@ -2,8 +2,9 @@
 # Names final since 17 November 2026 (D27) and never renamed again: they are written into the players' saves.
 
 # One line of the implant's card each: a package that does nothing, with a text. The game lays a record's packages
-# on V when the implant is fitted and, for an item of the launcher's type, never takes them back
-# (equipmentSystem.script, UnequipItem): none of ours may carry a stat.
+# on V when the implant is fitted and, for an item of the launcher's type taken off the active arm slot, the only
+# slot the game has, does not take them back (equipmentSystem.script:2109-2114, UnequipItem): none of ours may carry
+# a stat.
 CyberGrapple.LineTravel:
   $type: GameplayLogicPackage
   UIData:
@@ -74,11 +75,21 @@ CyberGrapple.LineNext40:
 
 # Everything the eleven tiers share. Copied from the game's launcher as it stands before any ammunition, stats shard
 # or damage line is added to it (arms_cyberware_advanced.tweak, AdvancedProjectileLauncherBase): the arm, the item
-# type the Glamdoc reads, the arm cyberware slot and the capacity cost of 8 come with it; of the explosive round
-# only the piece itself is put back below, for the arm's look. The icon is a prop's of the game, a broken cybernetic arm, picked by Kevin from the sheets of the game's icons and kept after a look in game (16 November 2026):
-# with the launcher's icon it could not be told from the game's launchers in a ripperdoc's list.
+# type the Glamdoc reads, the arm cyberware slot and the capacity cost of 8 come with it; the launcher's family does
+# not (below). Of the explosive round only the piece itself is put back below, for the arm's look. The icon is a
+# prop's of the game, a broken cybernetic arm, picked by Kevin from the sheets of the game's icons and kept after a
+# look in game (16 November 2026): with the launcher's icon it could not be told from the game's launchers in a
+# ripperdoc's list.
 Items.CyberGrappleBase:
   $base: Items.AdvancedProjectileLauncherBase
+  # A family of its own: the game keeps one implant a family in the arm slots (equipmentSystem.script:765-771), and
+  # with the launcher's the implant and the game's launcher pushed each other out of a second arm slot (tried in game,
+  # 18 November 2026). Kevin, the same night: both worn together, each working. With the game's one arm slot the
+  # ripperdoc still fits it in that slot, emptied first (:764); a vendor's "new" mark (vendor.script:646-706,
+  # :1092-1107) and the ripperdoc's token-upgrade hint (ripperdocTokenManager.script:25-29) go by family, so ours are
+  # told apart from the launcher's there. The gadget slot reads this name too, and is told the launcher's for our
+  # implant (SlotCharges.reds). Written bare, as iconPath below: TweakXL knows both as names (its ExtraFlats.dat).
+  cyberwareType: CyberGrapple
   displayName: LocKey#CyberGrapple-Card-Name
   localizedDescription: LocKey#CyberGrapple-Card-Description
   iconPath: undefined_int_toys_002__broken_arm_None_
@@ -88,8 +99,8 @@ Items.CyberGrappleBase:
   # hand (tried in game, 16 November 2026, 40 shots: the item was set in the slot and never seen there), and the
   # round is the one piece with a look that the bare base lacks. It never leaves: the gadget key starts no launcher's
   # shot for the implant on it (GadgetQuickslot.reds, CheckItemCategoryInQuickWheel), the launcher's own question
-  # answers no with it worn (SlotCharges.reds, ProjectileLauncherHasCharge), and the shot itself is stopped
-  # (NoProjectile.reds).
+  # answers no when it is about the implant (LauncherCharges.reds, ProjectileLauncherHasCharge), and the shot itself is
+  # stopped (NoProjectile.reds).
   slotPartListPreset:
     - !append
       slot: AttachmentSlots.ProjectileLauncherRound

@@ -1,5 +1,6 @@
 // Our implant among the game's items. Its records keep the item type of the game's projectile launcher, the only
-// thing the Glamdoc reads (glamdoc.script), so only this tag of ours tells the two apart (r6/tweaks/CyberGrapple).
+// thing the Glamdoc reads (glamdoc.script). Their family is their own (implants.yaml), but the gadget slot is told the
+// launcher's for ours (SlotCharges.reds): our code tells the two apart by this tag of ours alone (r6/tweaks/CyberGrapple).
 
 public func CyberGrappleTag() -> CName {
   return n"CyberGrapple";
@@ -14,8 +15,9 @@ public func CyberGrappleIsImplant(id: ItemID) -> Bool {
 }
 
 // The tier of an implant of ours, 1 to 11, read from the tier tag of its own record; 0 for anything else. Read from
-// the item and not from a stat laid on V: the game never takes back what a launcher-type record lays on V when it
-// is fitted, so such a stat outlives the implant (tried in game, 16 November 2026).
+// the item and not from a stat laid on V: the game does not take back what a launcher-type record laid on V when the
+// item leaves the active arm slot (equipmentSystem.script:2109-2114), the only slot the game has, so such a stat
+// outlives the implant (tried in game, 16 November 2026).
 public func CyberGrappleTier(id: ItemID) -> Int32 {
   if !ItemID.IsValid(id) {
     return 0;
@@ -34,7 +36,12 @@ public func CyberGrappleTier(id: ItemID) -> Int32 {
   return 0;
 }
 
-// What V wears in the arm cyberware slot, or an invalid ID.
+// What V wears as arm cyberware, or an invalid ID: our implant when an arm slot holds it, else the active slot's item.
+// The game has one arm slot. With more of them (mods add some), the active slot is the arm drawn last, which may be
+// another arm while ours sits in the next slot: every slot is asked, the locked ones too, since an empty one costs
+// nothing. The active slot first: with ours active nothing more is read, with one slot only their number. With
+// several slots and another arm active, the crosshair's question (CyberGrappleImplantRefusalNow) reads each slot's
+// record each frame it judges.
 public func CyberGrappleWornArm(player: ref<GameObject>) -> ItemID {
   let none: ItemID;
   let puppet: ref<PlayerPuppet> = player as PlayerPuppet;
@@ -45,7 +52,59 @@ public func CyberGrappleWornArm(player: ref<GameObject>) -> ItemID {
   if !IsDefined(data) {
     return none;
   }
-  return data.GetActiveItem(gamedataEquipmentArea.ArmsCW);
+  let active: ItemID = data.GetActiveItem(gamedataEquipmentArea.ArmsCW);
+  if CyberGrappleIsImplant(active) {
+    return active;
+  }
+  let slots: Int32 = data.GetNumberOfSlots(gamedataEquipmentArea.ArmsCW, true);
+  if slots < 2 {
+    return active;
+  }
+  let i: Int32 = 0;
+  while i < slots {
+    let held: ItemID = data.GetItemInEquipSlot(gamedataEquipmentArea.ArmsCW, i);
+    if CyberGrappleIsImplant(held) {
+      return held;
+    }
+    i += 1;
+  }
+  return active;
+}
+
+// Whether an arm of the launcher's item type that is not ours is worn too: possible only with more arm slots than the
+// game's one, since our implant has a family of its own (implants.yaml). Asked once ours is worn, live: a menu lists
+// an implant fitted a moment ago. With one slot nothing is read past the count.
+public func CyberGrappleOtherLauncherWorn(player: ref<GameObject>) -> Bool {
+  let puppet: ref<PlayerPuppet> = player as PlayerPuppet;
+  if !IsDefined(puppet) {
+    return false;
+  }
+  let data: ref<EquipmentSystemPlayerData> = EquipmentSystem.GetData(puppet);
+  if !IsDefined(data) {
+    return false;
+  }
+  let slots: Int32 = data.GetNumberOfSlots(gamedataEquipmentArea.ArmsCW, true);
+  if slots < 2 {
+    return false;
+  }
+  let i: Int32 = 0;
+  while i < slots {
+    let held: ItemID = data.GetItemInEquipSlot(gamedataEquipmentArea.ArmsCW, i);
+    if ItemID.IsValid(held) && !CyberGrappleIsImplant(held) && Equals(RPGManager.GetItemType(held), gamedataItemType.Cyb_Launcher) {
+      return true;
+    }
+    i += 1;
+  }
+  return false;
+}
+
+// Our implant while a launcher-type arm of the game's is worn beside it, else ItemID.None().
+public func CyberGrappleWornBesideLauncher(player: ref<GameObject>) -> ItemID {
+  let worn: ItemID = CyberGrappleWornArm(player);
+  if !CyberGrappleIsImplant(worn) {
+    return ItemID.None();
+  }
+  return CyberGrappleOtherLauncherWorn(player) ? worn : ItemID.None();
 }
 
 // What follows answers the grapple's code, made from Apex Grapple's (fabrique/grapple.py), under the names it calls.
@@ -66,7 +125,7 @@ public func CyberGrappleIsLauncherRecord(record: TweakDBID) -> Bool {
   return IsDefined(item) && item.TagsContains(CyberGrappleTag());
 }
 
-// Our implant worn in the arm cyberware slot, or an invalid ID.
+// Our implant worn in an arm cyberware slot, or an invalid ID.
 public func CyberGrappleInstalledLauncher(player: ref<GameObject>) -> ItemID {
   let none: ItemID;
   let worn: ItemID = CyberGrappleWornArm(player);

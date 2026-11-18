@@ -11,7 +11,8 @@
 // which comes after the game has drawn it. Now a slot is known as soon as the game makes it, and it is drawn again
 // when the worn tier is read or changes.
 // The key fires the grapple, never the launcher (D31, GadgetQuickslot.reds): the game is kept from the launcher's shot
-// there, and here, behind that, the shot is refused before it starts; NoProjectile.reds stays as the net under both.
+// there, and behind that the shot is refused before it starts (LauncherCharges.reds); NoProjectile.reds stays as the
+// net under both. The number the game shows for our implant is told there too.
 // The key's hint shows only while the key fires the grapple, so the slot never shows a key that does nothing.
 // Until D24 the implant was kept off that key (GadgetKey.reds, removed): the slot then showed the grenades.
 
@@ -167,6 +168,26 @@ public final func UpdateChargeValue(newValue: Float, percToPoints: Float, valueC
   wrappedMethod(newValue, percToPoints, valueChanged);
 }
 
+// The family name a slot reads on its item (dpadHintItem.script:1050-1052) picks the charge pool it listens to, the
+// most charges, the recharge time, the charge threshold and the key hint's hold indicator. Our implant's own family
+// (implants.yaml) is one the slot does not know: its default branches would listen to the grenades' pool and drop the
+// hold indicator (:1318-1324, :1353-1375). The slot reads for our implant the launcher's family it read up to 1.0.0, so
+// it draws as then; any other item, and the other slots of this base (healing, cyberware, charge indicators), read
+// their own.
+@wrapMethod(ChargedHotkeyItemBaseController)
+protected final func GetItemType(itemID: ItemID, defaultValue: CName) -> CName {
+  let slot: ref<ChargedHotkeyItemGadgetController> = this as ChargedHotkeyItemGadgetController;
+  if IsDefined(slot) && itemID == this.m_currentItem.ID && slot.CyberGrappleShowsImplant() {
+    return slot.CyberGrappleLauncherFamily();
+  }
+  return wrappedMethod(itemID, defaultValue);
+}
+
+@addMethod(ChargedHotkeyItemGadgetController)
+public func CyberGrappleLauncherFamily() -> CName {
+  return this.c_projectileLauncherKey;
+}
+
 @wrapMethod(ChargedHotkeyItemGadgetController)
 protected func GetRechargeDuration() -> Float {
   if this.CyberGrappleShowsImplant() {
@@ -243,34 +264,4 @@ public func CyberGrappleSlotHints(system: ref<CyberGrappleSystem>) -> Void {
     }
     i += 1;
   }
-}
-
-// The number on the slot, in the inventory and in the quick wheel: the game shows V's launcher charges on any
-// launcher-type item. V wears one arm implant: with ours worn, there is no launcher those charges could be for. Judged
-// on the arm worn now, as the gadget key below: the tier kept is read from the grapple's frame, twice a second of the
-// game's clock at most, and a menu may list an implant fitted a moment ago before that.
-@wrapMethod(PlayerPuppet)
-public final func GetProjectileLauncherCharges() -> Int32 {
-  let worn: ItemID = CyberGrappleWornArm(this);
-  if CyberGrappleIsImplant(worn) {
-    let game: GameInstance = this.GetGame();
-    let system: ref<CyberGrappleSystem> = CyberGrappleSystemOf(game);
-    if IsDefined(system) {
-      CyberGrappleKeepTierOf(system, worn);
-      return CyberGrappleChargesLeft(system, CyberGrappleTime(game));
-    }
-  }
-  return wrappedMethod();
-}
-
-// The launcher's own question before its shot, in four of the five places that read the gadget key
-// (upperBodyTransitions.script:652, :836, :1033, :1756): no for our implant, and the game starts nothing. With our
-// implant on the key the game no longer gets this far (GadgetQuickslot.reds); kept behind that answer, in lock 2 of
-// "never a projectile" (docs/cyber-grapple/conception.md).
-@wrapMethod(LeftHandCyberwareHelper)
-public final static func ProjectileLauncherHasCharge(const scriptInterface: ref<StateGameScriptInterface>) -> Bool {
-  if CyberGrappleIsImplant(CyberGrappleWornArm(scriptInterface.executionOwner)) {
-    return false;
-  }
-  return wrappedMethod(scriptInterface);
 }

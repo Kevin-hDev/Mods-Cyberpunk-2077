@@ -20,6 +20,31 @@ public let wornTierReadAt: Float;
 @addField(CyberGrappleSystem)
 public let wornTierAskedIn: Int32;
 
+// Whether the gadget key is to be looked at for an implant of ours a save kept there (GadgetQuickslot.reds), and the
+// lines the log has told of a key given back.
+@addField(CyberGrappleSystem)
+public let gadgetKeyBackDue: Bool;
+
+@addField(CyberGrappleSystem)
+public let gadgetKeyBackLines: Int32;
+
+// The worn implant and the other launcher-type arm last written to the log (CyberGrappleWornTell), and its lines.
+@addField(CyberGrappleSystem)
+public let wornTold: Bool;
+
+@addField(CyberGrappleSystem)
+public let wornToldID: ItemID;
+
+@addField(CyberGrappleSystem)
+public let wornToldOther: Bool;
+
+@addField(CyberGrappleSystem)
+public let wornLines: Int32;
+
+public func CyberGrappleWornMostLines() -> Int32 {
+  return 20;
+}
+
 // The tier is read again at most this often, in seconds: an implant changes hands in a ripperdoc's screen, never
 // between two frames.
 public func CyberGrappleTierEvery() -> Float {
@@ -68,7 +93,7 @@ public func CyberGrappleSettingsChanged(system: ref<CyberGrappleSystem>) -> Void
 }
 
 // A new copy at once when the arm V wears is not the tier kept: for an answer that cannot wait for the next reading
-// (SlotCharges.reds). Never during a grapple, whose tier is not read again before it ends (below).
+// (LauncherCharges.reds). Never during a grapple, whose tier is not read again before it ends (below).
 public func CyberGrappleKeepTierOf(system: ref<CyberGrappleSystem>, worn: ItemID) -> Void {
   if system.phase == CyberGrappleIdle() && CyberGrappleTier(worn) != system.wornTier {
     CyberGrappleSettingsChanged(system);
@@ -114,6 +139,11 @@ public func CyberGrappleCopySettings(system: ref<CyberGrappleSystem>) -> Void {
   system.ownKeys = keys;
   system.anyOwnKey = base.ownKey;
   system.settingsVersion = system.settingsVersion + 1;
+  // The first reading of a load, with V there to read: no player before it, or the first copy. A removal later is
+  // caught as it happens (GadgetQuickslot.reds).
+  if tier >= 0 && (system.wornTier < 0 || system.settingsVersion == 1) {
+    system.gadgetKeyBackDue = true;
+  }
   system.wornTier = tier;
   system.wornCharges = charges;
   system.otherGrapple = other;
@@ -138,8 +168,9 @@ public func CyberGrappleLiveText(silent: String, tier: Int32, wanted: Bool) -> S
 
 // The one profile's settings, whatever the number asked. Called each frame by the key's reading (KeyProfile.reds), and
 // on the crosshair's events. Between grapples only (CyberGrappleWornTier), the worn implant is looked at again, with
-// the item on the gadget key (GadgetQuickslot.reds), and the player told why the mod stays silent (Silence.reds) or
-// that an upgrade's level could not be read (Upgrade.reds).
+// the item on the gadget key (GadgetQuickslot.reds), which is given back to the game if it holds an implant of ours V
+// no longer wears, and the player told why the mod stays silent (Silence.reds) or that an upgrade's level could not be
+// read (Upgrade.reds).
 public func CyberGrappleProfileSettings(system: ref<CyberGrappleSystem>, profile: Int32) -> ref<CyberGrappleSettings> {
   if ArraySize(system.profiles) != CyberGrappleProfileCount() {
     CyberGrappleCopySettings(system);
@@ -150,10 +181,36 @@ public func CyberGrappleProfileSettings(system: ref<CyberGrappleSystem>, profile
       CyberGrappleSettingsChanged(system);
     }
     CyberGrappleGadgetKeyRead(system);
+    CyberGrappleGadgetKeyGiveBack(system);
+    CyberGrappleWornTell(system);
     CyberGrappleSilentTell(system);
     CyberGrappleUpgradeTell(system);
   }
   return system.profiles[0];
+}
+
+// The proof for a trial with several arm slots: the family the game reads on the worn implant's record, which decides
+// whether the game's launcher fits beside it (equipmentSystem.script:765-771), and whether one is worn. Written when
+// the worn implant is first read in a load, and when it or the other launcher-type arm changes, which may leave the
+// tier as it was. Without an implant of ours, the copy's line says so (tier 0).
+public func CyberGrappleWornTell(system: ref<CyberGrappleSystem>) -> Void {
+  if system.wornTier <= 0 || system.wornLines > CyberGrappleWornMostLines() {
+    return;
+  }
+  let player: ref<PlayerPuppet> = GetPlayer(system.GetGameInstance());
+  let worn: ItemID = CyberGrappleWornArm(player);
+  if !CyberGrappleIsImplant(worn) {
+    return;
+  }
+  let other: Bool = CyberGrappleOtherLauncherWorn(player);
+  if system.wornTold && worn == system.wornToldID && Equals(other, system.wornToldOther) {
+    return;
+  }
+  system.wornTold = true;
+  system.wornToldID = worn;
+  system.wornToldOther = other;
+  let record: TweakDBID = ItemID.GetTDBID(worn);
+  system.wornLines = CyberGrappleLogUpTo(system.wornLines, CyberGrappleWornMostLines(), "worn implant", "worn implant read: " + TDBID.ToStringDEBUG(record) + ", tier " + ToString(system.wornTier) + ", family " + NameToString(TweakDBInterface.GetCName(record + t".cyberwareType", n"None")) + ", another launcher-type arm worn " + ToString(other));
 }
 
 // Whether the worn tier is to be read now: at once while it could not be read for want of a player; else at most
