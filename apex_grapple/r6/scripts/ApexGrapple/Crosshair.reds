@@ -4,8 +4,9 @@
 // frame's visibility in UpdateRootVisibility, which every change of its own goes through: the mod's rule
 // (CrosshairRule.reds) is applied right after it. While the crosshair shows, the frame is made visible and the game's
 // dot hidden; once it hides, both go back to the game's rule. Updated on events only: right-hand weapon, vehicle,
-// scene tier, scanner, the aim the game listens to, and Mod Settings (told by the grapple's system, SettingsCopy.reds);
-// only the range indicator's colour follows the aim each frame (CrosshairRange.reds), and not while a menu is open.
+// scene tier, scanner, the aim the game listens to, the aim key while "Only while aiming" is on (CrosshairAim.reds),
+// and Mod Settings (told by the grapple's system, SettingsCopy.reds); only the range indicator's colour follows the
+// aim each frame (CrosshairRange.reds), and not while a menu is open.
 // The game's boards are kept by weak pointers, checked before each use (optimisation.md, rule 3; A18).
 
 public class ApexGrappleCrosshairState extends IScriptable {
@@ -17,12 +18,18 @@ public class ApexGrappleCrosshairState extends IScriptable {
   // The settings the frame was drawn with (CrosshairDraw.reds), "" before it is drawn.
   public let drawnWith: String;
   public let armed: Bool;
+  // What arms V is the grapple's own launcher, lent for a shot (CrosshairRule.reds), judged as the hand changes.
+  public let armedByLoan: Bool;
   public let vehicle: Int32;
   public let sceneTier: Int32;
   public let vision: Int32;
   // The last line written to the log: one line at each change of what shows (hidden and why, or the settings it is
   // drawn with), none at each event.
   public let logLine: String;
+  // The aim key, heard only while "Only while aiming" is on (CrosshairAim.reds), and its log lines.
+  public let aim: ref<ApexGrappleCrosshairAim>;
+  public let hiddenByKey: Bool;
+  public let aimLines: Int32;
   public let weaponCallback: ref<CallbackHandle>;
   public let vehicleCallback: ref<CallbackHandle>;
   public let sceneCallback: ref<CallbackHandle>;
@@ -134,6 +141,7 @@ private func ApexGrappleCrosshairDetach() -> Void {
     ui.UnregisterListenerBool(defs.UI_System.IsInMenu, state.menuCallback);
   }
   ApexGrappleCrosshairRangeStop(state.range);
+  ApexGrappleCrosshairAimStop(state);
   this.apexGrapple = null;
   let frame: wref<inkCanvas> = state.frame;
   if IsDefined(frame) {
@@ -163,7 +171,11 @@ private func ApexGrappleCrosshairApply() -> Void {
     return;
   }
   let settings: ref<ApexGrappleCrosshairSettings> = new ApexGrappleCrosshairSettings();
+  ApexGrappleCrosshairAimFollow(state, settings, this);
   let why: String = ApexGrappleCrosshairHiddenWhy(state, settings);
+  if NotEquals(why, "") && NotEquals(why, ApexGrappleCrosshairNotAimingWhy()) && NotEquals(why, ApexGrappleCrosshairLoanWhy()) {
+    ApexGrappleCrosshairAimLetGo(state);
+  }
   if Equals(why, "") {
     let shown: ref<inkCanvas> = ApexGrappleCrosshairFrameOf(state, root);
     let wanted: String = ApexGrappleCrosshairSettingsText(settings);
@@ -186,8 +198,7 @@ private func ApexGrappleCrosshairApply() -> Void {
   }
   let line: String = Equals(why, "") ? "crosshair shown: " + state.drawnWith : "crosshair hidden: " + why;
   if NotEquals(line, state.logLine) {
-    state.logLine = line;
-    ApexGrappleLog(line);
+    ApexGrappleCrosshairWriteLine(state, line, why);
   }
 }
 

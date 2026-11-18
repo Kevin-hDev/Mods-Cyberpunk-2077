@@ -1,13 +1,15 @@
 // The range indicator (docs/apex-grapple/portee/conception.md): while our crosshair shows with its indicator on, each
-// frame of the grapple (Frame.reds, no clock of its own) asks the shot's rule (AimRule.reds) whether a press would
-// fire, for each profile that can fire, profile 1 first, and gives the crosshair its out of range colour when none
-// would. The rays are cast once, as far as the longest of those profiles' ranges. While the grapple is out (hook
-// flying, pull, hook on its way back), a press fires no grapple: out of range, without rays (Kevin, 10 November 2026,
-// after the audit; seen only with the arm implant set to None, the launcher hides the crosshair then). Left out: the
-// places where the grapple is refused (ApexGrappleBlockedHere), or the crosshair would flash red at each vault, for a
-// press no one makes. The launcher a profile asks for is kept (ApexGrappleImplantRefusal), read once a frame however
-// many profiles ask for it (A6). The pieces take a new colour only when it changes (CrosshairPieces.reds). With a menu
-// open (inventory, crafting, map...) nothing is judged: the colour waits for the menu to close (A2).
+// frame of the grapple (Frame.reds, no clock of its own) asks the shot's rule (AimRule.reds) whether a press of
+// profile 1's key would fire, and gives the crosshair its out of range colour when it would not. Profile 1 only
+// (Kevin, 16 November 2026): until then the colour stayed in range while any profile would fire, and with profile 2 on
+// a mouse button it told "in range" while his controller's key did not fire; following the last key pressed was
+// refused, since a player would have to fire at random to learn how far the other key reaches. While the grapple is
+// out (hook flying, pull, hook on its way back), a press fires no grapple: out of range, without rays (Kevin,
+// 10 November 2026, after the audit; seen only with the arm implant set to None, the launcher hides the crosshair
+// then). Left out: the places where the grapple is refused (ApexGrappleBlockedHere), or the crosshair would flash red
+// at each vault, for a press no one makes. The launcher profile 1 may ask for is kept (ApexGrappleImplantRefusal). The
+// pieces take a new colour only when it changes (CrosshairPieces.reds). With a menu open (inventory, crafting, map...)
+// nothing is judged: the colour waits for the menu to close (A2).
 
 public class ApexGrappleCrosshairRange extends IScriptable {
   // Our crosshair shows and the indicator is on: only then are rays cast. inMenu: a menu is open (Crosshair.reds).
@@ -18,11 +20,9 @@ public class ApexGrappleCrosshairRange extends IScriptable {
   // The pieces a colour may be given to, listed at the first change of colour after each drawing (A15).
   public let pieces: array<wref<inkWidget>>;
   public let piecesListed: Bool;
-  // The profiles that can fire and their numbers, read again at each event of the crosshair and each change of the
-  // settings (Crosshair.reds, SettingsCopy.reds), and the longest of their ranges.
-  public let profiles: array<ref<ApexGrappleSettings>>;
-  public let numbers: array<Int32>;
-  public let longest: Float;
+  // Profile 1's settings, read again at each event of the crosshair and each change of the settings (Crosshair.reds,
+  // SettingsCopy.reds).
+  public let profile: ref<ApexGrappleSettings>;
   public let inRange: HDRColor;
   public let outOfRange: HDRColor;
   // The colour the pieces have now.
@@ -73,7 +73,7 @@ public func ApexGrappleCrosshairRangeStart(range: ref<ApexGrappleCrosshairRange>
   // The same colour both ways would show nothing: no rays for it.
   range.on = settings.rangeIndicator && !ApexGrappleSameColor(range.inRange, range.outOfRange);
   if range.on {
-    ApexGrappleCrosshairRangeProfiles(range);
+    ApexGrappleCrosshairRangeProfile(range);
   }
 }
 
@@ -81,31 +81,15 @@ public func ApexGrappleCrosshairRangeStop(range: ref<ApexGrappleCrosshairRange>)
   range.on = false;
 }
 
-// Profile 1 always; the others while on and given a key (the copy keeps none otherwise) that no lower profile
-// has, since the lowest fires (ApexGrappleFirstWithKey), and only while own keys are heard (Codeware).
-public func ApexGrappleCrosshairRangeProfiles(range: ref<ApexGrappleCrosshairRange>) -> Void {
-  ArrayClear(range.profiles);
-  ArrayClear(range.numbers);
-  range.longest = 0.0;
+public func ApexGrappleCrosshairRangeProfile(range: ref<ApexGrappleCrosshairRange>) -> Void {
+  range.profile = null;
   let system: ref<ApexGrappleSystem> = range.system;
-  if !IsDefined(system) {
-    return;
-  }
-  let keys: array<EInputKey> = system.ownKeys;
-  let heard: Bool = ApexGrappleOwnKeysHeard();
-  let p: Int32 = 1;
-  while p <= ApexGrappleProfileCount() {
-    if p == 1 || (heard && NotEquals(keys[p - 1], EInputKey.IK_None) && ApexGrappleFirstWithKey(keys, p - 1)) {
-      let settings: ref<ApexGrappleSettings> = ApexGrappleProfileSettings(system, p);
-      ArrayPush(range.profiles, settings);
-      ArrayPush(range.numbers, p);
-      range.longest = MaxF(range.longest, settings.range);
-    }
-    p += 1;
+  if IsDefined(system) {
+    range.profile = ApexGrappleProfileSettings(system, 1);
   }
 }
 
-// Each frame of the grapple (Frame.reds): the profiles are judged in order until one would fire.
+// Each frame of the grapple (Frame.reds): profile 1 judged on the rays cast as far as its range.
 public func ApexGrappleCrosshairRangeFrame(system: ref<ApexGrappleSystem>, now: Float, scriptInterface: ref<StateGameScriptInterface>) -> Void {
   let range: ref<ApexGrappleCrosshairRange> = system.crosshairRange;
   if !IsDefined(range) || !range.on || range.inMenu {
@@ -116,41 +100,31 @@ public func ApexGrappleCrosshairRangeFrame(system: ref<ApexGrappleSystem>, now: 
     ApexGrappleCrosshairTintTo(range, range.outOfRange);
     return;
   }
+  // Not read yet: no colour that could tell "in range" for a key not judged.
+  let settings: ref<ApexGrappleSettings> = range.profile;
+  if !IsDefined(settings) {
+    ApexGrappleCrosshairTintTo(range, range.outOfRange);
+    return;
+  }
   if IsDefined(system.cost) {
     system.cost.indicatorFrames = system.cost.indicatorFrames + 1;
   }
   let sight: ApexGrappleSight;
-  if system.sightKeptIn == system.frames && system.sightKeptLength == range.longest {
+  if system.sightKeptIn == system.frames && system.sightKeptLength == settings.range {
     sight = system.sightKept;
   } else {
-    sight = ApexGrappleLookFor(system, scriptInterface, range.longest);
+    sight = ApexGrappleLookFor(system, scriptInterface, settings.range);
   }
-  let player: ref<GameObject> = scriptInterface.executionOwner;
-  let firing: Int32 = 0;
-  // Profile 1's reason when none would fire, for the log; it may ask for the launcher while V has none.
+  let fires: Bool = false;
+  // Why it would not fire, for the log: profile 1 may ask for the launcher while V has none.
   let reason: Int32 = ApexGrappleRangeLauncherRequired();
-  // The launcher read at the first profile that asks for it (-1: not yet).
-  let launcher: Int32 = -1;
-  let i: Int32 = 0;
-  while i < ArraySize(range.profiles) && firing == 0 {
-    let settings: ref<ApexGrappleSettings> = range.profiles[i];
-    if settings.requireLauncher && launcher < 0 {
-      launcher = ApexGrappleHasLauncher(player) ? 1 : 0;
-    }
-    if !settings.requireLauncher || launcher == 1 {
-      let verdict: ApexGrappleVerdict = ApexGrappleVerdictOf(sight, settings);
-      if verdict.fires {
-        firing = range.numbers[i];
-      } else {
-        if i == 0 {
-          reason = EnumInt(verdict.reason);
-        }
-      }
-    }
-    i += 1;
+  if !settings.requireLauncher || ApexGrappleHasLauncher(scriptInterface.executionOwner) {
+    let verdict: ApexGrappleVerdict = ApexGrappleVerdictOf(sight, settings);
+    fires = verdict.fires;
+    reason = EnumInt(verdict.reason);
   }
-  ApexGrappleCrosshairRangeLog(range, firing, firing > 0 ? 0 : reason, now);
-  ApexGrappleCrosshairTintTo(range, firing > 0 ? range.inRange : range.outOfRange);
+  ApexGrappleCrosshairRangeLog(range, fires ? 1 : 0, fires ? 0 : reason, now);
+  ApexGrappleCrosshairTintTo(range, fires ? range.inRange : range.outOfRange);
 }
 
 public func ApexGrappleCrosshairTintTo(range: ref<ApexGrappleCrosshairRange>, color: HDRColor) -> Void {

@@ -84,6 +84,33 @@ public class ApexGrappleSystem extends ScriptableSystem {
   public let push: Vector4;
   public let pushAt: Float;
   public let pushesWrittenBack: Int32;
+  // "Stay hooked" (Swing.reds): the hook stayed in, the stage the rope is in, its length (V's distance until it comes
+  // back in), the length V hangs on in the end, when the hook stayed in, and since when V stands on the ground (below
+  // zero: in the air).
+  public let swinging: Bool;
+  public let swingStage: Int32;
+  public let ropeLength: Float;
+  public let swingHangs: Float;
+  public let swingStartedAt: Float;
+  public let swingGroundSince: Float;
+  // For the log (SwingLog.reds): V's distance as the hook stayed in, when the rope began to hold, the frames at the
+  // rope's end, the times the game's velocity was taken against a wall, what the rope took while paying out and what
+  // was lost at its end, the hardest slowing of a frame, the farthest V went from the anchor, the pushes written back
+  // before the swing, and the ground: the times V touched it, the frames V stood on it, those on an unsecure edge.
+  public let swingKeptAt: Float;
+  public let swingHeldAt: Float;
+  public let swingTaut: Int32;
+  public let swingAdopted: Int32;
+  public let swingPaidTook: Float;
+  public let swingRopeTook: Float;
+  public let swingHardest: Float;
+  public let swingFarthest: Float;
+  public let swingPushesBefore: Int32;
+  public let swingGroundTouches: Int32;
+  public let swingGroundFrames: Int32;
+  public let swingEdgeFrames: Int32;
+  // The impact effect's file is missing from the game (Impact.reds): switched off, the player told once.
+  public let impactLost: Bool;
   // The key.
   public let keyDown: Bool;
   public let pressedAt: Float;
@@ -186,9 +213,15 @@ public class ApexGrappleSystem extends ScriptableSystem {
     ApexGrappleGrabSlideLeave(this.grab);
   }
 
-  // A save made while the launcher is lent would keep it in V's inventory (Launcher.reds).
+  // A save made while the launcher is lent would keep it in V's inventory (Launcher.reds). None either while V hangs
+  // on a kept rope (Swing.reds, decision 12): loaded, V would fall from there with no grapple. Only while the
+  // grapple's frame runs: stopped by the game (a drive, a scene), it would never end the swing, and saving would stay
+  // refused until a load.
   private func IsSavingLocked() -> Bool {
-    return ApexGrappleLauncherOut(this);
+    if ApexGrappleLauncherOut(this) {
+      return true;
+    }
+    return this.swinging && this.phase == ApexGrapplePulling() && ApexGrappleTime(this.GetGameInstance()) - this.lastFrameAt <= ApexGrappleLongestGap();
   }
 }
 

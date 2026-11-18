@@ -52,7 +52,8 @@ public func ApexGrappleFovForgetRefusal(system: ref<ApexGrappleSystem>) -> Void 
 }
 
 public func ApexGrappleFovFrame(system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, now: Float, timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-  let moves: Bool = ApexGrappleMovesV(system);
+  // The swing keeps the rope but not the widening, which is for the speed of the pull (Swing.reds, decision 11).
+  let moves: Bool = ApexGrappleMovesV(system) && !system.swinging;
   let on: Bool = IsDefined(system.fov) && system.fov.on;
   if !moves && !on {
     ApexGrappleFovForgetRefusal(system);

@@ -40,6 +40,8 @@ public class ApexGrappleCrosshairEnglish extends ModLocalizationPackage {
     this.Text("ApexGrapple-CrosshairShape-MantisBlades", "Mantis Blades");
     this.Text("ApexGrapple-CrosshairShape-HeavyMachineGun", "Heavy Machine Gun");
     this.Text("ApexGrapple-CrosshairShape-Dot", "Center of screen dot");
+    this.Text("ApexGrapple-CrosshairOnlyWhileAiming", "Only while aiming");
+    this.Text("ApexGrapple-CrosshairOnlyWhileAiming-Description", "The crosshair shows only while the aim button is held down, with empty hands or Fists. As in the game, aiming zooms with empty hands and blocks with Fists. The game's toggle aim option is not followed: the button must be held. Off: the crosshair shows as soon as V's hands are empty or V fights with Fists.");
     this.Text("ApexGrapple-CrosshairColor", "Colour");
     this.Text("ApexGrapple-CrosshairColor-Description", "The crosshair's colour. Turquoise is the colour of the game's crosshairs.");
     this.Text("ApexGrapple-CrosshairColor-Yellow", "Yellow");
@@ -50,7 +52,7 @@ public class ApexGrappleCrosshairEnglish extends ModLocalizationPackage {
     this.Text("ApexGrapple-CrosshairSize", "Size");
     this.Text("ApexGrapple-CrosshairSize-Description", "The crosshair's size, in per cent of the game's.");
     this.Text("ApexGrapple-CrosshairRange", "Range indicator");
-    this.Text("ApexGrapple-CrosshairRange-Description", "The crosshair takes the out of range colour while a press would not fire the grapple: nothing within range, the sky, someone or a vehicle in the way while Grapple onto vehicles and people is off, someone within quick melee range while Quick melee wins over grapple is on, the Projectile Launch System required and not installed, or the grapple still out. With several profiles, it keeps its colour while at least one of them would fire.");
+    this.Text("ApexGrapple-CrosshairRange-Description", "The crosshair takes the out of range colour while a press would not fire the grapple: nothing within range, the sky, someone or a vehicle in the way while Grapple onto vehicles and people is off, someone within quick melee range while Quick melee wins over grapple is on, the Projectile Launch System required and not installed, or the grapple still out. It answers for profile 1's key only: the other profiles' keys are not shown.");
     this.Text("ApexGrapple-CrosshairOutOfRangeColor", "Out of range colour");
     this.Text("ApexGrapple-CrosshairOutOfRangeColor-Description", "The crosshair's colour while the grapple would not fire. Pick one other than the crosshair's colour: with the same colour, the indicator is off.");
   }
@@ -73,6 +75,8 @@ public class ApexGrappleCrosshairFrench extends ModLocalizationPackage {
     this.Text("ApexGrapple-CrosshairShape-MantisBlades", "Lames Mantis");
     this.Text("ApexGrapple-CrosshairShape-HeavyMachineGun", "Mitrailleuse lourde");
     this.Text("ApexGrapple-CrosshairShape-Dot", "Point au milieu de l'écran");
+    this.Text("ApexGrapple-CrosshairOnlyWhileAiming", "Seulement en visant");
+    this.Text("ApexGrapple-CrosshairOnlyWhileAiming-Description", "Le réticule ne s'affiche que pendant que la touche de visée est maintenue, mains vides ou avec les Poings. Comme dans le jeu, viser fait le zoom mains vides et la garde avec les Poings. L'option du jeu pour viser d'un seul appui n'est pas suivie : il faut garder la touche enfoncée. Désactivé : le réticule s'affiche dès que V a les mains vides ou se bat avec les Poings.");
     this.Text("ApexGrapple-CrosshairColor", "Couleur");
     this.Text("ApexGrapple-CrosshairColor-Description", "La couleur du réticule. Le turquoise est celle des réticules du jeu.");
     this.Text("ApexGrapple-CrosshairColor-Yellow", "Jaune");
@@ -83,7 +87,7 @@ public class ApexGrappleCrosshairFrench extends ModLocalizationPackage {
     this.Text("ApexGrapple-CrosshairSize", "Taille");
     this.Text("ApexGrapple-CrosshairSize-Description", "La taille du réticule, en pour cent de celle du jeu.");
     this.Text("ApexGrapple-CrosshairRange", "Indicateur de portée");
-    this.Text("ApexGrapple-CrosshairRange-Description", "Le réticule prend la couleur hors de portée quand un appui ne lancerait pas le grappin : rien à portée, le ciel, une personne ou un véhicule devant quand « Grappin sur les véhicules et les personnes » est éteint, quelqu'un à portée du coup rapide quand « Le coup rapide passe avant le grappin » est allumé, le lance-projectile exigé et non installé, ou le grappin encore sorti. Avec plusieurs profils, il garde sa couleur tant qu'au moins l'un d'eux tirerait.");
+    this.Text("ApexGrapple-CrosshairRange-Description", "Le réticule prend la couleur hors de portée quand un appui ne lancerait pas le grappin : rien à portée, le ciel, une personne ou un véhicule devant quand « Grappin sur les véhicules et les personnes » est éteint, quelqu'un à portée du coup rapide quand « Le coup rapide passe avant le grappin » est allumé, le lance-projectile exigé et non installé, ou le grappin encore sorti. Il ne répond que pour la touche du profil 1 : les touches des autres profils n'y sont pas montrées.");
     this.Text("ApexGrapple-CrosshairOutOfRangeColor", "Couleur hors de portée");
     this.Text("ApexGrapple-CrosshairOutOfRangeColor-Description", "La couleur du réticule quand le grappin ne partirait pas. À choisir différente de celle du réticule : avec la même couleur, l'indicateur est éteint.");
   }
@@ -106,6 +110,8 @@ public class ApexGrappleCrosshairChinese extends ModLocalizationPackage {
     this.Text("ApexGrapple-CrosshairShape-MantisBlades", "螳螂刀");
     this.Text("ApexGrapple-CrosshairShape-HeavyMachineGun", "重机枪");
     this.Text("ApexGrapple-CrosshairShape-Dot", "画面正中圆点");
+    this.Text("ApexGrapple-CrosshairOnlyWhileAiming", "仅在瞄准时显示");
+    this.Text("ApexGrapple-CrosshairOnlyWhileAiming-Description", "空手或使用徒手时，只在按住瞄准键期间显示准星。与游戏相同，空手时瞄准会放大视野，使用徒手时会格挡。不跟随游戏的单击瞄准选项：需要按住按键。关闭时：V 空手或使用徒手战斗时即显示准星。");
     this.Text("ApexGrapple-CrosshairColor", "颜色");
     this.Text("ApexGrapple-CrosshairColor-Description", "准星的颜色。青色是游戏准星的颜色。");
     this.Text("ApexGrapple-CrosshairColor-Yellow", "黄色");
@@ -116,7 +122,7 @@ public class ApexGrappleCrosshairChinese extends ModLocalizationPackage {
     this.Text("ApexGrapple-CrosshairSize", "大小");
     this.Text("ApexGrapple-CrosshairSize-Description", "准星的大小，以游戏准星的百分比计。");
     this.Text("ApexGrapple-CrosshairRange", "射程指示");
-    this.Text("ApexGrapple-CrosshairRange-Description", "按下按键也不会发射抓钩时，准星变为超出射程颜色：射程内没有目标、瞄准天空、关闭“抓钩可勾载具和人物”时前方有人或载具、开启“敏捷近战优先于抓钩”时有人在敏捷近战范围内，要求射弹发射系统但未安装，或钩子尚未收回。有多个配置时，只要至少一个配置可以发射，准星就保持原来的颜色。");
+    this.Text("ApexGrapple-CrosshairRange-Description", "按下按键也不会发射抓钩时，准星变为超出射程颜色：射程内没有目标、瞄准天空、关闭“抓钩可勾载具和人物”时前方有人或载具、开启“敏捷近战优先于抓钩”时有人在敏捷近战范围内，要求射弹发射系统但未安装，或钩子尚未收回。准星只针对配置 1 的按键，不显示其他配置的按键。");
     this.Text("ApexGrapple-CrosshairOutOfRangeColor", "超出射程颜色");
     this.Text("ApexGrapple-CrosshairOutOfRangeColor-Description", "抓钩不会发射时准星的颜色。请选择与准星颜色不同的颜色：颜色相同时，射程指示关闭。");
   }

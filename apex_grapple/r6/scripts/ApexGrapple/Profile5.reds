@@ -79,7 +79,7 @@ public class ApexGrappleProfile5 {
   @runtimeProperty("ModSettings.min", "5.0")
   @runtimeProperty("ModSettings.max", "150.0")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let range: Float = 150.0;
+  public let range: Float = 120.0;
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
@@ -106,6 +106,28 @@ public class ApexGrappleProfile5 {
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
   @runtimeProperty("ModSettings.category.order", "12")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-ImpactEffect")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-ImpactEffect-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let impactEffect: Bool = true;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
+  @runtimeProperty("ModSettings.category.order", "12")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-ImpactKind")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-ImpactKind-Description")
+  @runtimeProperty("ModSettings.displayValues.ConcreteBullet", "ApexGrapple-ImpactKind-ConcreteBullet")
+  @runtimeProperty("ModSettings.displayValues.ConcreteLargeCalibre", "ApexGrapple-ImpactKind-ConcreteLargeCalibre")
+  @runtimeProperty("ModSettings.displayValues.ConcreteHammer", "ApexGrapple-ImpactKind-ConcreteHammer")
+  @runtimeProperty("ModSettings.displayValues.MetalHammer", "ApexGrapple-ImpactKind-MetalHammer")
+  @runtimeProperty("ModSettings.displayValues.Monowire", "ApexGrapple-ImpactKind-Monowire")
+  @runtimeProperty("ModSettings.displayValues.DefaultBullet", "ApexGrapple-ImpactKind-DefaultBullet")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let impactKind: ApexGrappleImpactKind = ApexGrappleImpactKind.MetalHammer;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
+  @runtimeProperty("ModSettings.category.order", "12")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PullStrength")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PullStrength-Description")
   @runtimeProperty("ModSettings.step", "0.1")
@@ -123,7 +145,7 @@ public class ApexGrappleProfile5 {
   @runtimeProperty("ModSettings.min", "2.0")
   @runtimeProperty("ModSettings.max", "50.0")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let pullSpeedCap: Float = 25.0;
+  public let pullSpeedCap: Float = 35.0;
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
@@ -221,6 +243,14 @@ public class ApexGrappleProfile5 {
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
   @runtimeProperty("ModSettings.category.order", "12")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-StayHooked")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-StayHooked-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let stayHooked: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
+  @runtimeProperty("ModSettings.category.order", "12")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-PreserveJump")
   @runtimeProperty("ModSettings.description", "ApexGrapple-PreserveJump-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
@@ -232,7 +262,7 @@ public class ApexGrappleProfile5 {
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-RegainDoubleJump")
   @runtimeProperty("ModSettings.description", "ApexGrapple-RegainDoubleJump-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let regainDoubleJump: Bool = false;
+  public let regainDoubleJump: Bool = true;
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
@@ -240,7 +270,7 @@ public class ApexGrappleProfile5 {
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-HookTargets")
   @runtimeProperty("ModSettings.description", "ApexGrapple-HookTargets-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let hookTargets: Bool = false;
+  public let hookTargets: Bool = true;
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
@@ -364,7 +394,7 @@ public class ApexGrappleProfile5 {
   @runtimeProperty("ModSettings.min", "0.0")
   @runtimeProperty("ModSettings.max", "40.0")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let fovWidening: Float = 15.0;
+  public let fovWidening: Float = 10.0;
 
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile5")
@@ -396,6 +426,8 @@ public class ApexGrappleProfile5 {
     s.range = this.range;
     s.hookSpeed = this.hookSpeed;
     s.hookReturn = this.hookReturn;
+    s.impactEffect = this.impactEffect;
+    s.impactKind = this.impactKind;
     s.pullStrength = this.pullStrength;
     s.pullSpeedCap = this.pullSpeedCap;
     s.steerStrength = this.steerStrength;
@@ -407,6 +439,7 @@ public class ApexGrappleProfile5 {
     s.letGoPastAnchor = this.letGoPastAnchor;
     s.longestPull = this.longestPull;
     s.letGoOnLanding = this.letGoOnLanding;
+    s.stayHooked = this.stayHooked;
     s.preserveJump = this.preserveJump;
     s.regainDoubleJump = this.regainDoubleJump;
     s.hookTargets = this.hookTargets;

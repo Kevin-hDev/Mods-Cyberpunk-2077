@@ -97,7 +97,8 @@ public class ApexGrappleSettings {
   public let requireLauncher: Bool = false;
 
   // 150 m since 2 November 2026 (Kevin: "augmenter la distance du grappin, passer de 100 à 150 max"); the rope's
-  // pieces stretch to cover it (ApexGrappleRopePieceFor, RopeShape.reds).
+  // pieces stretch to cover it (ApexGrappleRopePieceFor, RopeShape.reds). 120 m by default since 16 November 2026, with
+  // the five other new defaults (Kevin: "porté du grapin on va mettre 120m"), chosen for the console version too.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Hook")
   @runtimeProperty("ModSettings.category.order", "3")
@@ -107,7 +108,7 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.min", "5.0")
   @runtimeProperty("ModSettings.max", "150.0")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let range: Float = 150.0;
+  public let range: Float = 120.0;
 
   // A starting point in Borderlands 4, measured nowhere.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
@@ -136,6 +137,32 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let hookReturn: Float = 2.5;
 
+  // The game's impact effect where the hook bites (Impact.reds). A player asked for it on Cyber Grapple's page; Kevin
+  // picked the effects and the default there in game (18 November 2026: "on part sur 4 par defaut", the hammer on
+  // metal), then the same here, on by default ("il doit etre allumer par defaut"), in each profile ("pourquoi il sont
+  // pas dans le profil ?": the effect belongs to a grapple, and a grapple to its profile).
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Hook")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-ImpactEffect")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-ImpactEffect-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let impactEffect: Bool = true;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Hook")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-ImpactKind")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-ImpactKind-Description")
+  @runtimeProperty("ModSettings.displayValues.ConcreteBullet", "ApexGrapple-ImpactKind-ConcreteBullet")
+  @runtimeProperty("ModSettings.displayValues.ConcreteLargeCalibre", "ApexGrapple-ImpactKind-ConcreteLargeCalibre")
+  @runtimeProperty("ModSettings.displayValues.ConcreteHammer", "ApexGrapple-ImpactKind-ConcreteHammer")
+  @runtimeProperty("ModSettings.displayValues.MetalHammer", "ApexGrapple-ImpactKind-MetalHammer")
+  @runtimeProperty("ModSettings.displayValues.Monowire", "ApexGrapple-ImpactKind-Monowire")
+  @runtimeProperty("ModSettings.displayValues.DefaultBullet", "ApexGrapple-ImpactKind-DefaultBullet")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let impactKind: ApexGrappleImpactKind = ApexGrappleImpactKind.MetalHammer;
+
   // 1.7 times 19.6 m/s². Titanfall 2 measures 1.8 times its own gravity; a little softer felt better.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Pull")
@@ -149,7 +176,8 @@ public class ApexGrappleSettings {
   public let pullStrength: Float = 33.3;
 
   // At 20 too much speed was lost. Up to 50: the engine holds V to the extended limits of speed_cap.yaml, 50 m/s, and
-  // a higher cap would not show.
+  // a higher cap would not show. 35 by default since 16 November 2026 (Kevin: "vitesse max de traction on va mettre
+  // 35"); without TweakXL the game still stops V at 30 m/s.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Pull")
   @runtimeProperty("ModSettings.category.order", "4")
@@ -159,7 +187,7 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.min", "2.0")
   @runtimeProperty("ModSettings.max", "50.0")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let pullSpeedCap: Float = 25.0;
+  public let pullSpeedCap: Float = 35.0;
 
   // Borderlands 4 had 39.2 for the stick (2.0 times 19.6 m/s²); with the aim, 120 felt right: at 25 m/s, looking
   // square across the motion turns it about 275 degrees a second (120 / 25 radians), with no speed cap (Pull.reds).
@@ -262,6 +290,15 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let letGoOnLanding: Bool = true;
 
+  // Off by default: Kevin, 16 November 2026 (docs/apex-grapple/balancement/conception.md, Swing.reds).
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-LetGo")
+  @runtimeProperty("ModSettings.category.order", "5")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-StayHooked")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-StayHooked-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let stayHooked: Bool = false;
+
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-LetGo")
   @runtimeProperty("ModSettings.category.order", "5")
@@ -270,24 +307,26 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let preserveJump: Bool = true;
 
-  // Off by default: Kevin wanted it "activable", and 1.0.3 gave no jump back (docs/apex-grapple/double-saut).
+  // Off by default until 16 November 2026: Kevin wanted it "activable", and 1.0.3 gave no jump back (docs/apex-grapple/
+  // double-saut). On by default since (Kevin: "Double saut rendu a chaque grapin on va mettre sur oui").
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-LetGo")
   @runtimeProperty("ModSettings.category.order", "5")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-RegainDoubleJump")
   @runtimeProperty("ModSettings.description", "ApexGrapple-RegainDoubleJump-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let regainDoubleJump: Bool = false;
+  public let regainDoubleJump: Bool = true;
 
-  // Off by default: up to 1.0.4 a person or a vehicle in the way took the quick melee (docs/apex-grapple/
-  // vehicules-et-personnes).
+  // Off by default until 16 November 2026: up to 1.0.4 a person or a vehicle in the way took the quick melee
+  // (docs/apex-grapple/vehicules-et-personnes). On by default since (Kevin: "Grapin sur vehicule on va mettre oui");
+  // the settings under it stay off.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Targets")
   @runtimeProperty("ModSettings.category.order", "6")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-HookTargets")
   @runtimeProperty("ModSettings.description", "ApexGrapple-HookTargets-Description")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let hookTargets: Bool = false;
+  public let hookTargets: Bool = true;
 
   // Behind the fold line, not behind hookTargets: Mod Settings hides a line behind one switch only.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
@@ -428,7 +467,7 @@ public class ApexGrappleSettings {
 
   // In the degrees of the game's Field of View setting; the total stops at 140 (Fov.reds). +15 and 2 s below: Kevin's
   // choice after his trial of 10 November 2026 ("par defaut on va changer les reglage, on va mettre 15 de fov pour 2 de
-  // temp de transition").
+  // temp de transition"). +10 since 16 November 2026 (Kevin: "Champ de vision on va mettre a 10"), 2 s kept.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Fov")
   @runtimeProperty("ModSettings.category.order", "8")
@@ -438,7 +477,7 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.min", "0.0")
   @runtimeProperty("ModSettings.max", "40.0")
   @runtimeProperty("ModSettings.dependency", "showSettings")
-  public let fovWidening: Float = 15.0;
+  public let fovWidening: Float = 10.0;
 
   // The same both ways.
   @runtimeProperty("ModSettings.mod", "Apex Grapple")

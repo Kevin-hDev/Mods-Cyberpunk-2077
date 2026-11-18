@@ -184,6 +184,7 @@ private final func ApexGrappleAttach(system: ref<ApexGrappleSystem>, settings: r
   system.lastRope = rope;
   system.turned = 0.0;
   system.cameToward = false;
+  system.swinging = false;
   system.near = ApexGrappleArrivalForShot(settings.arrivalDistance, gap);
   system.pullCap = MaxF(carried, 0.0) + settings.pullSpeedCap;
   system.velocity = velocity;
@@ -201,5 +202,6 @@ private final func ApexGrappleAttach(system: ref<ApexGrappleSystem>, settings: r
   }
   stateContext.SetPermanentBoolParameter(n"TemporarySpeedLimitIgnore", true, true);
   let jumps: String = ApexGrappleGiveDoubleJumpBack(settings, stateContext);
-  ApexGrappleLog("hook set after " + ToString(now - system.firedAt) + " s: " + ToString(gap) + " m to the anchor, rope " + ToString(tilt) + " deg above flat, speed " + ToString(Vector4.Length(velocity)) + " (" + ToString(carried) + " along the rope), arrival " + ToString(system.near) + " m, on the ground " + ToString(scriptInterface.IsOnGround()) + ", state " + NameToString(this.GetStateName()) + jumps);
+  let impact: String = ApexGrappleShowImpact(system, settings, middle, scriptInterface.GetGame());
+  ApexGrappleLog("hook set after " + ToString(now - system.firedAt) + " s: " + ToString(gap) + " m to the anchor, rope " + ToString(tilt) + " deg above flat, speed " + ToString(Vector4.Length(velocity)) + " (" + ToString(carried) + " along the rope), arrival " + ToString(system.near) + " m, on the ground " + ToString(scriptInterface.IsOnGround()) + ", state " + NameToString(this.GetStateName()) + jumps + impact);
 }

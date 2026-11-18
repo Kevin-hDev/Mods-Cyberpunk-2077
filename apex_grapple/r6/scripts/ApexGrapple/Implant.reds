@@ -26,22 +26,54 @@ public func ApexGrappleIsLauncherRecord(record: TweakDBID) -> Bool {
   return IsDefined(item) && Equals(item.ItemType().Type(), gamedataItemType.Cyb_Launcher);
 }
 
-// V's projectile launcher installed in the arm cyberware slot, or an invalid ID.
-public func ApexGrappleInstalledLauncher(player: ref<GameObject>) -> ItemID {
-  let none: ItemID;
+public func ApexGrappleIsLauncher(id: ItemID) -> Bool {
+  return ItemID.IsValid(id) && ApexGrappleIsLauncherRecord(ItemID.GetTDBID(id));
+}
+
+public func ApexGrappleArmData(player: ref<GameObject>) -> ref<EquipmentSystemPlayerData> {
   let puppet: ref<PlayerPuppet> = player as PlayerPuppet;
   if !IsDefined(puppet) {
-    return none;
+    return null;
   }
-  let data: ref<EquipmentSystemPlayerData> = EquipmentSystem.GetData(puppet);
+  return EquipmentSystem.GetData(puppet);
+}
+
+// V's projectile launcher installed in an arm cyberware slot, or an invalid ID. The game has one arm slot. With more
+// of them (mods add some) the active slot is the arm drawn last, and the launcher sits in another: the grapple was
+// refused with the launcher required while V had one installed (Kevin, 18 November 2026, 18 shots refused in game).
+// Every slot is asked, as the game does to draw the launcher (equipmentSystem.script, GetActiveCyberware), the locked
+// ones too, since an empty one costs nothing. The active slot first: with one slot, or the launcher active, nothing
+// more is read.
+public func ApexGrappleInstalledLauncher(player: ref<GameObject>) -> ItemID {
+  let none: ItemID;
+  let data: ref<EquipmentSystemPlayerData> = ApexGrappleArmData(player);
   if !IsDefined(data) {
     return none;
   }
-  let installed: ItemID = data.GetActiveItem(gamedataEquipmentArea.ArmsCW);
-  if !ItemID.IsValid(installed) || !ApexGrappleIsLauncherRecord(ItemID.GetTDBID(installed)) {
+  let active: ItemID = data.GetActiveItem(gamedataEquipmentArea.ArmsCW);
+  if ApexGrappleIsLauncher(active) {
+    return active;
+  }
+  let slots: Int32 = data.GetNumberOfSlots(gamedataEquipmentArea.ArmsCW, true);
+  if slots < 2 {
     return none;
   }
-  return installed;
+  let i: Int32 = 0;
+  while i < slots {
+    let held: ItemID = data.GetItemInEquipSlot(gamedataEquipmentArea.ArmsCW, i);
+    if ApexGrappleIsLauncher(held) {
+      return held;
+    }
+    i += 1;
+  }
+  return none;
+}
+
+// Whether the launcher is the arm V wears now, the active slot's: the only arm a Glamdoc style is known to fit
+// (LauncherStyle.reds). With one arm slot, the same as having one installed.
+public func ApexGrappleLauncherIsActiveArm(player: ref<GameObject>) -> Bool {
+  let data: ref<EquipmentSystemPlayerData> = ApexGrappleArmData(player);
+  return IsDefined(data) && ApexGrappleIsLauncher(data.GetActiveItem(gamedataEquipmentArea.ArmsCW));
 }
 
 public func ApexGrappleHasLauncher(player: ref<GameObject>) -> Bool {

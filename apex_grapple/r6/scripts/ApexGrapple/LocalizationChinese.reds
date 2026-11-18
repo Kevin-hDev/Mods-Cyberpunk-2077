@@ -65,11 +65,13 @@ public class ApexGrappleChinese extends ModLocalizationPackage {
     this.Text("ApexGrapple-ArrivalDistance", "到达距离");
     this.Text("ApexGrapple-ArrivalDistance-Description", "牵引在距钩子此距离处停止，单位为米；较短的发射会在半途停止。");
     this.Text("ApexGrapple-LetGoPastAnchor", "越过锚点后脱钩");
-    this.Text("ApexGrapple-LetGoPastAnchor-Description", "一旦你飞越锚点，绳索就不再把你往回拉，并在越过锚点此距离后脱钩，单位为米。");
+    this.Text("ApexGrapple-LetGoPastAnchor-Description", "一旦你飞越锚点，绳索就不再把你往回拉，并在越过锚点此距离后脱钩，单位为米。开启「保持勾住」时，牵引在此结束，绳索保持勾住。");
     this.Text("ApexGrapple-LongestPull", "最长牵引时间");
-    this.Text("ApexGrapple-LongestPull-Description", "单位为秒。0 表示不限制。");
+    this.Text("ApexGrapple-LongestPull-Description", "单位为秒。0 表示不限制。开启「保持勾住」后，仅结束勾住载具或人物的牵引。");
     this.Text("ApexGrapple-LetGoOnLanding", "落地时脱钩");
     this.Text("ApexGrapple-LetGoOnLanding-Description", "接触地面会结束牵引。");
+    this.Text("ApexGrapple-StayHooked", "保持勾住");
+    this.Text("ApexGrapple-StayHooked-Description", "在牵引本会于空中结束的地方（到达、从锚点旁飞过、撞到物体），绳索保持勾住，除非你撞到的物体位于你与锚点之间。只要你还在上升或仍在接近锚点，就保持自己的飞行。之后绳索会轻柔地拉住你并把你带回，你在绳端摆荡，直到在锚点下方静止悬挂，除非先落地。再次按键、跳跃或落地即可脱钩；开启「按住以持续牵引」时，松开按住的按键也会脱钩。最长牵引时间不再结束勾住表面的牵引。仅限勾住表面：勾住载具或人物时，牵引照常结束。");
     this.Text("ApexGrapple-PreserveJump", "脱钩时保留跳跃");
     this.Text("ApexGrapple-PreserveJump-Description", "跳跃脱钩不消耗跳跃次数。");
     this.Text("ApexGrapple-RegainDoubleJump", "每次抓钩恢复二段跳");

@@ -11,3 +11,19 @@ public func ApexGrappleRopeRay(scriptInterface: ref<StateGameScriptInterface>, f
   spatial.SyncRaycastByQueryFilter(from, to, filter, hit);
   return hit;
 }
+
+// How near the anchor the ray must come to have reached it: the anchor lies on the surface the ray ends on.
+public func ApexGrappleRopeClearSlack() -> Float {
+  return 0.5;
+}
+
+// Nothing solid between a point and the anchor. Asked once, when a blow stops a pull with "Stay hooked" on (in game, V
+// stopped under a slab 21 m below the anchor was kept there by a rope going through the slab; Kevin, 18 November
+// 2026), and once for the last line of a swing (SwingLog.reds).
+public func ApexGrappleRopeClear(system: ref<ApexGrappleSystem>, scriptInterface: ref<StateGameScriptInterface>, from: Vector4, anchor: Vector4) -> Bool {
+  if IsDefined(system.cost) {
+    system.cost.ropeRays = system.cost.ropeRays + 1;
+  }
+  let at: Float = ApexGrappleHitDistance(ApexGrappleRopeRay(scriptInterface, from, anchor), from);
+  return at < 0.0 || at >= Vector4.Distance(from, anchor) - ApexGrappleRopeClearSlack();
+}

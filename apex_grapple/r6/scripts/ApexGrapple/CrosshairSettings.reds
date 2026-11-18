@@ -2,7 +2,7 @@
 // their own above them, because the crosshair shows before any key is pressed. Without Mod Settings the fields keep
 // the values written here. A field is never renamed: Mod Settings keeps the player's value under its name.
 // Defaults (Kevin, 9 November 2026): shown, simple crosshair, yellow, at the game's size; the range indicator on, red
-// out of range (10 November 2026).
+// out of range (10 November 2026); shown without the aim key (17 November 2026).
 
 enum ApexGrappleCrosshairShape {
   Off = 0,
@@ -45,6 +45,13 @@ public class ApexGrappleCrosshairSettings {
   @runtimeProperty("ModSettings.displayValues.Dot", "ApexGrapple-CrosshairShape-Dot")
   public let shape: ApexGrappleCrosshairShape = ApexGrappleCrosshairShape.Simple;
 
+  // Shown only while the aim key is held (CrosshairAim.reds). Off by default: Kevin, 17 November 2026.
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Crosshair")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-CrosshairOnlyWhileAiming")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-CrosshairOnlyWhileAiming-Description")
+  public let onlyWhileAiming: Bool = false;
+
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Crosshair")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-CrosshairColor")
@@ -56,7 +63,8 @@ public class ApexGrappleCrosshairSettings {
   @runtimeProperty("ModSettings.displayValues.Turquoise", "ApexGrapple-CrosshairColor-Turquoise")
   public let color: ApexGrappleCrosshairColor = ApexGrappleCrosshairColor.Yellow;
 
-  // In per cent of the game's crosshairs: the game's dot is too small (Kevin, 9 November 2026).
+  // In per cent of the game's crosshairs: the game's dot is too small (Kevin, 9 November 2026). 60 by default since
+  // 16 November 2026 (Kevin: "Taille du reticule on va mettre 60%").
   @runtimeProperty("ModSettings.mod", "Apex Grapple")
   @runtimeProperty("ModSettings.category", "ApexGrapple-Crosshair")
   @runtimeProperty("ModSettings.displayName", "ApexGrapple-CrosshairSize")
@@ -64,7 +72,7 @@ public class ApexGrappleCrosshairSettings {
   @runtimeProperty("ModSettings.step", "10.0")
   @runtimeProperty("ModSettings.min", "50.0")
   @runtimeProperty("ModSettings.max", "200.0")
-  public let size: Float = 100.0;
+  public let size: Float = 60.0;
 
   // The range indicator (CrosshairRange.reds). Its colour is red: a change of colour is seen at a glance, even in
   // daylight (docs/apex-grapple/portee/conception.md, decision 2).

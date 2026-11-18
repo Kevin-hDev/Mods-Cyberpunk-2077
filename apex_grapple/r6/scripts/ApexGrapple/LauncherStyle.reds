@@ -30,8 +30,9 @@ public func ApexGrappleLauncherLook(player: ref<GameObject>, installed: ItemID, 
 // saved style again (cyberwareCustomizationSystem.script, RestoreCyberwareCustomization, forced as after a purchase at
 // a Glamdoc), once the copy is seen in the hand, showed it right in game the same day (17 shots). A style only fits the
 // arm implant V wears: the Glamdoc sells it for that implant (glamdoc.script, CheckIfCanApply) and the ripperdoc clears
-// it when V changes the type of arm implant (ripperdoc.script, UnequipCyberwareStyle). Without a launcher installed,
-// the saved style is another implant's, left alone.
+// it when V changes the type of arm implant (ripperdoc.script, UnequipCyberwareStyle). Unless the launcher is the arm
+// V wears now, the saved style is another implant's, left alone: with several arm slots too, where the launcher may
+// be installed while another arm is worn (Implant.reds), a case never seen with a style.
 public func ApexGrappleLauncherStyle(player: ref<GameObject>) -> Void {
   let systems: ref<ScriptableSystemsContainer> = GameInstance.GetScriptableSystemsContainer(player.GetGame());
   let system: ref<CyberwareCustomizationSystem> = systems.Get(n"CyberwareCustomizationSystem") as CyberwareCustomizationSystem;
@@ -40,10 +41,10 @@ public func ApexGrappleLauncherStyle(player: ref<GameObject>) -> Void {
     return;
   }
   let saved: CyberwareCustomizationPersistentData = system.GetSavedData();
-  let launcher: Bool = ApexGrappleHasLauncher(player);
-  let laid: Bool = saved.enabled && launcher;
+  let worn: Bool = ApexGrappleLauncherIsActiveArm(player);
+  let laid: Bool = saved.enabled && worn;
   if laid {
     system.RestoreCyberwareCustomization(true);
   }
-  ApexGrappleLog("launcher style: saved " + ToString(saved.enabled) + ", switcher " + NameToString(saved.switcherName) + " " + ToString(saved.switcherIndex) + ", V's launcher installed " + ToString(launcher) + ", laid again " + ToString(laid));
+  ApexGrappleLog("launcher style: saved " + ToString(saved.enabled) + ", switcher " + NameToString(saved.switcherName) + " " + ToString(saved.switcherIndex) + ", V's launcher the arm worn " + ToString(worn) + ", laid again " + ToString(laid));
 }

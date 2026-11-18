@@ -118,8 +118,8 @@ public struct ApexGrappleSight {
   let lookedAt: Float;
 }
 
-// Six rays and one question to the targeting. length: the range of the profile that shoots, or the longest range of
-// the profiles that can fire, for the crosshair (CrosshairRange.reds). The rays for vehicles and people go only as far
+// Six rays and one question to the targeting. length: the range of the profile that shoots, or profile 1's range for
+// the crosshair (CrosshairRange.reds). The rays for vehicles and people go only as far
 // as the surface found, the whole length without one: the rule keeps them only nearer than the surface (AimRule.reds).
 // Until the audit of 10 November 2026 they went the whole length (A3, Kevin's trial of 10 November 2026: 27 shots and
 // 22 212 verdicts of the range indicator alike, no distance more than 1 mm apart; releves/apex-grapple/

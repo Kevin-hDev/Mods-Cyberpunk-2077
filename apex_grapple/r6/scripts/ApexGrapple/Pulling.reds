@@ -3,7 +3,8 @@
 // the game has, written as the state's impulse each frame (the lever of Air Strafe and Axle Slide); it acts once: in
 // game the game's vertical speed followed the wanted one a frame of gravity behind, never beyond. V's velocity stays the
 // mod's own from frame to frame, so the move keys, which reach V only through the game's own control, do nothing
-// during a pull; the view steers it (Pull.reds).
+// during a pull; the view steers it (Pull.reds). With "Stay hooked", an arrival, a flight past the anchor or a blow
+// leaves the hook in while V is in the air (Swing.reds); where it cannot stay, the last line of those ends says why.
 
 // The angle between two directions, in degrees, for the log.
 public func ApexGrappleAngle(a: Vector4, b: Vector4) -> Float {
@@ -24,6 +25,10 @@ private final func ApexGrapplePullFrame(system: ref<ApexGrappleSystem>, key: Ape
     this.ApexGrappleBikeFrame(system, key, settings, now, stateContext, scriptInterface);
     return;
   }
+  if system.swinging {
+    this.ApexGrappleSwingFrame(system, key, settings, now, timeDelta, stateContext, scriptInterface);
+    return;
+  }
   if ApexGrappleOnLadder(stateContext) {
     this.ApexGrappleLadderWait(system, now, scriptInterface);
     return;
@@ -36,23 +41,19 @@ private final func ApexGrapplePullFrame(system: ref<ApexGrappleSystem>, key: Ape
   let held: Float = now - system.startedAt;
   let onGround: Bool = scriptInterface.IsOnGround();
   let takingOff: Bool = ApexGrappleTakingOff(held, settings.takeOffTime);
-  let reason: String = this.ApexGrappleBlockedHere(system.stateName, stateContext, scriptInterface);
-  if !settings.enabled {
-    reason = "the mod was switched off";
-  }
-  if ApexGrappleLetGoByKey(settings.holdToKeepPulling, system.byHold, system.keyDown, system.releasedAt - system.pressedAt) {
-    reason = "key released";
-  }
-  if key.pressed {
-    reason = "a second press";
-    ApexGrappleTakeKey(system, settings, now);
-  }
-  if scriptInterface.IsActionJustPressed(n"Jump") {
-    reason = "jump";
-    system.jumpLetGoAt = now;
-  }
+  let reason: String = this.ApexGrappleLetGoWhy(system, key, settings, now, stateContext, scriptInterface);
   if StrLen(reason) == 0 && this.ApexGrappleStuck(system, game, takingOff, timeDelta) {
-    reason = "hit something";
+    let hitHang: Int32 = ApexGrappleNoHang(system, settings, onGround);
+    if hitHang == 0 && !ApexGrappleRopeClear(system, scriptInterface, middle, system.anchor) {
+      hitHang = ApexGrappleNoHangBehind();
+    }
+    if hitHang == 0 {
+      // V hangs where the blow stopped V, never reeled in toward it, and never nearer than an arrival: stopped
+      // against the underside the hook is in, V would hang pressed to it.
+      this.ApexGrappleSwingStart(system, "hit something", game, middle, MaxF(Vector4.Distance(middle, system.anchor), system.near), now);
+      return;
+    }
+    reason = "hit something" + ApexGrappleNoHangText(hitHang);
   }
   if StrLen(reason) > 0 {
     this.ApexGrappleEndPull(system, reason, now, scriptInterface);
@@ -82,24 +83,58 @@ private final func ApexGrapplePullFrame(system: ref<ApexGrappleSystem>, key: Ape
   system.closest = MinF(system.closest, gap);
   system.turned = system.turned + ApexGrappleAngle(system.lastRope, toAnchor);
   system.lastRope = toAnchor;
+  let ends: String = "";
   if ApexGrappleArrived(gap, system.near, stride) {
-    reason = "arrived";
+    ends = "arrived";
   } else {
     if ApexGrapplePassedBy(system.cameToward, ApexGrapplePastAnchor(wanted, middle, system.anchor), settings.letGoPastAnchor) {
-      reason = "past the anchor";
+      ends = "past the anchor";
+    }
+  }
+  if StrLen(ends) > 0 {
+    // "Stay hooked": the pull is over, the hook stays in and V flies on (Swing.reds). Where it cannot stay, the end
+    // says why; nothing with the setting off.
+    let noHang: Int32 = ApexGrappleNoHang(system, settings, onGround);
+    if noHang == 0 {
+      this.ApexGrappleSwingStart(system, ends, wanted, middle, system.near, now);
+      return;
+    }
+    reason = ends + ApexGrappleNoHangText(noHang);
+  } else {
+    // "Stay hooked" on a surface: no longest pull, a swing round the anchor with the view takes long.
+    if ApexGrappleOutOfTime(held, settings.longestPull) && (!settings.stayHooked || system.onTarget) {
+      reason = "longest pull";
     } else {
-      if ApexGrappleOutOfTime(held, settings.longestPull) {
-        reason = "longest pull";
-      } else {
-        if settings.letGoOnLanding && onGround && !takingOff {
-          reason = "landed";
-        }
+      if settings.letGoOnLanding && onGround && !takingOff {
+        reason = "landed";
       }
     }
   }
   if StrLen(reason) > 0 {
     this.ApexGrappleEndPull(system, reason, now, scriptInterface);
   }
+}
+
+// What lets go of the grapple whatever V is doing at the rope: the game taking V, the mod switched off, the key, a
+// jump. Shared with the swing (SwingFrame.reds). The last one found is told.
+@addMethod(LocomotionEventsTransition)
+private final func ApexGrappleLetGoWhy(system: ref<ApexGrappleSystem>, key: ApexGrappleKey, settings: ref<ApexGrappleSettings>, now: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> String {
+  let reason: String = this.ApexGrappleBlockedHere(system.stateName, stateContext, scriptInterface);
+  if !settings.enabled {
+    reason = "the mod was switched off";
+  }
+  if ApexGrappleLetGoByKey(settings.holdToKeepPulling, system.byHold, system.keyDown, system.releasedAt - system.pressedAt) {
+    reason = "key released";
+  }
+  if key.pressed {
+    reason = "a second press";
+    ApexGrappleTakeKey(system, settings, now);
+  }
+  if scriptInterface.IsActionJustPressed(n"Jump") {
+    reason = "jump";
+    system.jumpLetGoAt = now;
+  }
+  return reason;
 }
 
 // Over each stretch of the pull after the take-off, the distance the pull asked for against the one V went at the
@@ -145,5 +180,6 @@ private final func ApexGrappleEndPull(system: ref<ApexGrappleSystem>, reason: St
   // The grapple's flight goes on until V has stood on the ground a while, even if V is on it now: a pull that ends
   // "landed" may stand on a ledge or a wall's foot, high up.
   system.onGroundBefore = false;
-  ApexGrappleLog("pull ended: " + reason + " after " + ToString(now - system.startedAt) + " s, " + ToString(Vector4.Distance(middle, system.startPosition)) + " m travelled, top speed " + ToString(system.topSpeed) + ", speed now " + ToString(Vector4.Length(DefaultTransition.GetLinearVelocity(scriptInterface))) + ", " + ToString(Vector4.Distance(middle, system.anchor)) + " m from the anchor (closest " + ToString(system.closest) + "), turned " + ToString(system.turned) + " deg round it, pushes written back " + ToString(system.pushesWrittenBack) + ", on the ground " + ToString(onGround) + ", state " + NameToString(this.GetStateName()));
+  ApexGrappleLog("pull ended: " + reason + " after " + ToString(now - system.startedAt) + " s, " + ToString(Vector4.Distance(middle, system.startPosition)) + " m travelled, top speed " + ToString(system.topSpeed) + ", speed now " + ToString(Vector4.Length(DefaultTransition.GetLinearVelocity(scriptInterface))) + ", " + ToString(Vector4.Distance(middle, system.anchor)) + " m from the anchor (closest " + ToString(system.closest) + "), turned " + ToString(system.turned) + " deg round it, pushes written back " + ToString(system.pushesWrittenBack) + ", on the ground " + ToString(onGround) + ", state " + NameToString(this.GetStateName()) + ApexGrappleSwingText(system, middle, now, scriptInterface));
+  system.swinging = false;
 }

@@ -1,5 +1,6 @@
 // When the crosshair shows (conception, « Ce que voit le joueur »): only with empty hands or fists, nowhere the game
-// hides its crosshairs (vehicle, scanner, scenes), and only while a grapple key would fire.
+// hides its crosshairs (vehicle, scanner, scenes), only while a grapple key would fire, and, with "Only while aiming",
+// while the aim key is held (CrosshairAim.reds).
 
 // The last scene tier the game shows its crosshair without a weapon in (CrosshairGameController_NoWeapon.OnState_Safe:
 // Default, SceneTier1, SceneTier2).
@@ -54,7 +55,7 @@ public func ApexGrappleCrosshairHiddenWhy(state: ref<ApexGrappleCrosshairState>,
   if Equals(settings.shape, ApexGrappleCrosshairShape.Off) {
     return "its setting is off";
   }
-  if state.armed {
+  if state.armed && !state.armedByLoan {
     return "V holds a weapon or arm cyberware";
   }
   if state.vehicle != 0 {
@@ -73,5 +74,30 @@ public func ApexGrappleCrosshairHiddenWhy(state: ref<ApexGrappleCrosshairState>,
   if !ApexGrappleCrosshairCanFire(player) {
     return "no profile can fire";
   }
+  // After every reason of the game's: alone, the grapple's own launcher does not let go of the aim key.
+  if state.armed {
+    return ApexGrappleCrosshairLoanWhy();
+  }
+  // Last: any other reason comes first, and lets go of the key (Crosshair.reds, decision 5).
+  if settings.onlyWhileAiming && !ApexGrappleCrosshairAimHeld(state) {
+    return ApexGrappleCrosshairNotAimingWhy();
+  }
   return "";
+}
+
+// The grapple's own launcher, lent to V's hand for a shot seen from the eyes (Launcher.reds), hides the crosshair as
+// any weapon does. It is no reason to count the aim key as released: the keys stay those of a V on foot, and a key
+// held through the shot brings the crosshair back by itself once the launcher is home (audit of 17 November 2026,
+// V1; before, the key had to be released and pressed again).
+public func ApexGrappleCrosshairLoanWhy() -> String {
+  return "the grapple's own launcher is in V's hand";
+}
+
+public func ApexGrappleCrosshairLoanOut(state: ref<ApexGrappleCrosshairState>) -> Bool {
+  let range: ref<ApexGrappleCrosshairRange> = state.range;
+  if !IsDefined(range) {
+    return false;
+  }
+  let system: ref<ApexGrappleSystem> = range.system;
+  return IsDefined(system) && ApexGrappleLauncherOut(system);
 }
