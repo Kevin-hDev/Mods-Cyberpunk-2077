@@ -1,8 +1,8 @@
 // Made by fabrique/grapple.py from Apex Grapple's Settings.reds, never edited by hand: change it there,
 // then run python -I fabrique/grapple.py (fabrique/test_grapple.py fails while this file is out of date).
-// The grapple's settings as its code reads them. In the menu (Mod Settings): the master switch, the key and the
-// view, which change nothing of what the implant does. Every other field is set by the mod itself: by the tier
-// of the worn implant (Tiers.reds) or fixed (fabrique/grapple_spec.py).
+// The grapple's settings as its code reads them. In the menu (Mod Settings): the master switch, the key, the
+// view, the hook's impact effect and V's voice lines, which change nothing of what the implant does. Every other
+// field is set by the mod itself: by the tier of the worn implant (Tiers.reds) or fixed (fabrique/grapple_spec.py).
 public class CyberGrappleSettings {
   @runtimeProperty("ModSettings.mod", "Cyber Grapple")
   @runtimeProperty("ModSettings.displayName", "CyberGrapple-Enabled")
@@ -140,4 +140,83 @@ public class CyberGrappleSettings {
 
   // Added by this mod (ADDED in fabrique/grapple_spec.py): the settings this class is made from have no such field.
   public let pullRange: Float = 0.0;
+
+  // Added by this mod and shown in its menu (MENU_ADDED in fabrique/grapple_spec.py).
+  @runtimeProperty("ModSettings.mod", "Cyber Grapple")
+  @runtimeProperty("ModSettings.category", "CyberGrapple-Impact")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "CyberGrapple-ImpactEffect")
+  @runtimeProperty("ModSettings.description", "CyberGrapple-ImpactEffect-Description")
+  public let impactEffect: Bool = true;
+
+  // Added by this mod and shown in its menu (MENU_ADDED in fabrique/grapple_spec.py).
+  @runtimeProperty("ModSettings.mod", "Cyber Grapple")
+  @runtimeProperty("ModSettings.category", "CyberGrapple-Impact")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "CyberGrapple-ImpactStyle")
+  @runtimeProperty("ModSettings.description", "CyberGrapple-ImpactStyle-Description")
+  @runtimeProperty("ModSettings.displayValues.ConcreteBullet", "CyberGrapple-ImpactStyle-ConcreteBullet")
+  @runtimeProperty("ModSettings.displayValues.ConcreteLargeCaliber", "CyberGrapple-ImpactStyle-ConcreteLargeCaliber")
+  @runtimeProperty("ModSettings.displayValues.ConcreteHammer", "CyberGrapple-ImpactStyle-ConcreteHammer")
+  @runtimeProperty("ModSettings.displayValues.MetalHammer", "CyberGrapple-ImpactStyle-MetalHammer")
+  @runtimeProperty("ModSettings.displayValues.Monowire", "CyberGrapple-ImpactStyle-Monowire")
+  @runtimeProperty("ModSettings.displayValues.DefaultBullet", "CyberGrapple-ImpactStyle-DefaultBullet")
+  @runtimeProperty("ModSettings.dependency", "impactEffect")
+  public let impactStyle: CyberGrappleImpactStyle = CyberGrappleImpactStyle.MetalHammer;
+
+  // Added by this mod and shown in its menu (MENU_ADDED in fabrique/grapple_spec.py).
+  @runtimeProperty("ModSettings.mod", "Cyber Grapple")
+  @runtimeProperty("ModSettings.category", "CyberGrapple-Voice")
+  @runtimeProperty("ModSettings.category.order", "10")
+  @runtimeProperty("ModSettings.displayName", "CyberGrapple-VoiceLines")
+  @runtimeProperty("ModSettings.description", "CyberGrapple-VoiceLines-Description")
+  public let voiceLines: Bool = true;
+
+  // Added by this mod and shown in its menu (MENU_ADDED in fabrique/grapple_spec.py).
+  @runtimeProperty("ModSettings.mod", "Cyber Grapple")
+  @runtimeProperty("ModSettings.category", "CyberGrapple-Voice")
+  @runtimeProperty("ModSettings.category.order", "10")
+  @runtimeProperty("ModSettings.displayName", "CyberGrapple-VoiceGender")
+  @runtimeProperty("ModSettings.description", "CyberGrapple-VoiceGender-Description")
+  @runtimeProperty("ModSettings.displayValues.Auto", "CyberGrapple-VoiceGender-Auto")
+  @runtimeProperty("ModSettings.displayValues.Female", "CyberGrapple-VoiceGender-Female")
+  @runtimeProperty("ModSettings.displayValues.Male", "CyberGrapple-VoiceGender-Male")
+  @runtimeProperty("ModSettings.dependency", "voiceLines")
+  public let voiceGender: CyberGrappleVoiceGender = CyberGrappleVoiceGender.Auto;
+
+  // Added by this mod and shown in its menu (MENU_ADDED in fabrique/grapple_spec.py).
+  @runtimeProperty("ModSettings.mod", "Cyber Grapple")
+  @runtimeProperty("ModSettings.category", "CyberGrapple-Voice")
+  @runtimeProperty("ModSettings.category.order", "10")
+  @runtimeProperty("ModSettings.displayName", "CyberGrapple-VoicePullChance")
+  @runtimeProperty("ModSettings.description", "CyberGrapple-VoicePullChance-Description")
+  @runtimeProperty("ModSettings.step", "10.0")
+  @runtimeProperty("ModSettings.min", "30.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  @runtimeProperty("ModSettings.dependency", "voiceLines")
+  public let voicePullChance: Float = 50.0;
+
+  // Added by this mod and shown in its menu (MENU_ADDED in fabrique/grapple_spec.py).
+  @runtimeProperty("ModSettings.mod", "Cyber Grapple")
+  @runtimeProperty("ModSettings.category", "CyberGrapple-Voice")
+  @runtimeProperty("ModSettings.category.order", "10")
+  @runtimeProperty("ModSettings.displayName", "CyberGrapple-VoiceKillChance")
+  @runtimeProperty("ModSettings.description", "CyberGrapple-VoiceKillChance-Description")
+  @runtimeProperty("ModSettings.step", "10.0")
+  @runtimeProperty("ModSettings.min", "30.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  @runtimeProperty("ModSettings.dependency", "voiceLines")
+  public let voiceKillChance: Float = 50.0;
+
+  // Added by this mod and shown in its menu (MENU_ADDED in fabrique/grapple_spec.py).
+  @runtimeProperty("ModSettings.mod", "Cyber Grapple")
+  @runtimeProperty("ModSettings.category", "CyberGrapple-Voice")
+  @runtimeProperty("ModSettings.category.order", "10")
+  @runtimeProperty("ModSettings.displayName", "CyberGrapple-VoiceKillStyle")
+  @runtimeProperty("ModSettings.description", "CyberGrapple-VoiceKillStyle-Description")
+  @runtimeProperty("ModSettings.displayValues.Normal", "CyberGrapple-VoiceKillStyle-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "CyberGrapple-VoiceKillStyle-Whisper")
+  @runtimeProperty("ModSettings.displayValues.Both", "CyberGrapple-VoiceKillStyle-Both")
+  @runtimeProperty("ModSettings.dependency", "voiceLines")
+  public let voiceKillStyle: CyberGrappleVoiceKillStyle = CyberGrappleVoiceKillStyle.Both;
 }

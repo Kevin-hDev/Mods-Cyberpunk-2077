@@ -1,6 +1,7 @@
 // What needs Codeware: our hook and rope (Pieces.reds), the own keys of every profile (OwnKey.reds), the impact effect
 // (Impact.reds) and the menu's texts (Localization.reds). Without it the grapple still works on the quick melee key,
-// and the log says once a load what is missing rather than leaving the player to guess.
+// and the log says once a load what is missing rather than leaving the player to guess. V's voice lines need
+// Audioware, which itself needs Codeware: the log says once a load when Audioware is missing (VoicePlay.reds).
 
 @if(ModuleExists("Codeware"))
 public func ApexGrappleSayWhatCodewareGives() -> Void {}

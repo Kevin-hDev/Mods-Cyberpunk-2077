@@ -40,6 +40,33 @@ public class CyberGrappleSystem extends ScriptableSystem {
   public let cost: ref<CyberGrappleCost>;
   // The shot.
   public let anchor: Vector4;
+  // The log's lines this load on the hook's impact effect (Impact.reds): effects made,
+  // then bites left without one.
+  public let impactLines: Int32;
+  public let impactNoneLines: Int32;
+  // V's voice lines (Voice.reds): the execution line said last, so that neither
+  // it nor its phrase comes twice in a row when another can; the log's lines this load, of lines asked, of
+  // lines left out, then of draws missed, which at the menu's default come once in two occasions, then of people
+  // dead or out, as normal as pulling bodies to hide them, then of executions left to Execution Lines, one at each
+  // while it is installed: none of them must silence the other reasons.
+  public let voiceLast: CName;
+  public let voiceLines: Int32;
+  public let voiceNoneLines: Int32;
+  public let voiceMissLines: Int32;
+  public let voiceDeadLines: Int32;
+  public let voiceHandedLines: Int32;
+  // The bags of ten of a pull and of an execution (Voice.reds): the occasions left in the bag, the lines left
+  // in it, and the chance it was filled for. At nothing at a load: the first occasion fills it.
+  public let voicePullLeft: Int32;
+  public let voicePullSays: Int32;
+  public let voicePullFor: Float;
+  public let voiceKillLeft: Int32;
+  public let voiceKillSays: Int32;
+  public let voiceKillFor: Float;
+  // The Get over here said last (Voice.reds), so that the same one never comes twice in a row.
+  public let voicePullLast: CName;
+  // Which voice V says the lines in, told to the log this load (VoiceGender.reds): once, as soon as V exists.
+  public let voiceTold: Bool;
   public let firedAt: Float;
   public let landsAt: Float;
   // Fired by a hold: pulls all the way.

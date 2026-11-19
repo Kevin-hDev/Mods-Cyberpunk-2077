@@ -164,6 +164,7 @@ private final func CyberGrappleFlyingFrame(system: ref<CyberGrappleSystem>, key:
 private final func CyberGrappleAttach(system: ref<CyberGrappleSystem>, settings: ref<CyberGrappleSettings>, now: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
   // A person comes to V: pulled ("Pull people to V"), or brought for the game's grab, its key seen (Grab.reds).
   if (system.comesToV || system.grabKeySeen) && CyberGrappleStartYank(system, settings, now, CyberGrappleOnLadder(stateContext), scriptInterface) {
+    CyberGrappleVoicePull(system, settings, scriptInterface.executionOwner, system.target);
     return;
   }
   if system.bikeComes && CyberGrappleStartBikePull(system, settings, now, scriptInterface) {
@@ -171,6 +172,7 @@ private final func CyberGrappleAttach(system: ref<CyberGrappleSystem>, settings:
   }
   let feet: Vector4 = DefaultTransition.GetPlayerPosition(scriptInterface);
   let middle: Vector4 = feet + DefaultTransition.GetUpVector() * CyberGrappleMiddleHeight();
+  CyberGrappleImpact(system, settings, middle);
   let velocity: Vector4 = DefaultTransition.GetLinearVelocity(scriptInterface);
   let rope: Vector4 = system.anchor - middle;
   let gap: Float = Vector4.Length(rope);

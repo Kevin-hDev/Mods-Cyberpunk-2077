@@ -16,6 +16,7 @@ public class ApexGrappleChinese extends ModLocalizationPackage {
     this.Text("ApexGrapple-Profile1-Targets", "配置 1：载具和人物");
     this.Text("ApexGrapple-Profile1-Landing", "配置 1：着陆");
     this.Text("ApexGrapple-Profile1-Fov", "配置 1：视野");
+    this.Text("ApexGrapple-Profile1-Voice", "配置 1：V 的语音");
     this.Text("ApexGrapple-Profile2", "配置 2");
     this.Text("ApexGrapple-Profile3", "配置 3");
     this.Text("ApexGrapple-Profile4", "配置 4");

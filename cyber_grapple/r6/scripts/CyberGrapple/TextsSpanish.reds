@@ -80,5 +80,33 @@ public class CyberGrappleSpanish extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "Juego");
     this.Text("CyberGrapple-CrosshairPick", "Forma de la mira");
     this.Text("CyberGrapple-CrosshairPick-Description", "La forma de la mira de este mod. Se oculta en cuanto V sostiene un arma o ciberware de los brazos, que tienen su propia mira, y también en vehículos, con el escáner y durante las escenas.");
+    this.Text("CyberGrapple-Impact", "Impacto del gancho");
+    this.Text("CyberGrapple-ImpactEffect", "Efecto de impacto");
+    this.Text("CyberGrapple-ImpactEffect-Description", "Uno de los efectos de impacto del juego, que se muestra una vez donde el gancho golpea una superficie o un vehículo. Ninguno sobre una persona ni sobre una moto. Desactivado: no aparece nada donde golpea el gancho.");
+    this.Text("CyberGrapple-ImpactStyle", "Estilo del efecto de impacto");
+    this.Text("CyberGrapple-ImpactStyle-Description", "Qué efecto de impacto del juego se muestra. Cada uno lleva el nombre de lo que lo produce en el juego: la superficie golpeada y el arma.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Hormigón, bala");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Hormigón, gran calibre");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Hormigón, martillo");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "Metal, martillo");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Monocable");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "Genérico, bala");
+    this.Text("CyberGrapple-Voice", "Voz de V");
+    this.Text("CyberGrapple-VoiceLines", "Frases");
+    this.Text("CyberGrapple-VoiceLines-Description", "V dice una frase cuando el gancho empieza a tirar de una persona hacia V, y otra cuando V mata o deja inconsciente a una persona que el gancho ha traído y agarrado. Requiere Audioware, que reproduce las frases. Desactivado: V no dice nada.");
+    this.Text("CyberGrapple-VoiceGender", "Tono de voz");
+    this.Text("CyberGrapple-VoiceGender-Description", "La voz que dice las frases. Automática: la de tu V. Femenina o Masculina: siempre esa voz.");
+    this.Text("CyberGrapple-VoiceGender-Auto", "Automática");
+    this.Text("CyberGrapple-VoiceGender-Female", "Femenina");
+    this.Text("CyberGrapple-VoiceGender-Male", "Masculina");
+    this.Text("CyberGrapple-VoicePullChance", "Frecuencia de la frase al atraer");
+    this.Text("CyberGrapple-VoicePullChance-Description", "En porcentaje, exacto en cada serie de 10: la frecuencia con la que V dice una frase cuando el gancho empieza a tirar de una persona hacia V.");
+    this.Text("CyberGrapple-VoiceKillChance", "Frecuencia de la frase al derribar");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "En porcentaje, exacto en cada serie de 10: la frecuencia con la que V dice una frase cuando V mata o deja inconsciente a una persona que el gancho ha traído y agarrado.");
+    this.Text("CyberGrapple-VoiceKillStyle", "Estilo de las frases al derribar");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "Cómo dice V las frases al derribar. Normal: en voz alta. Susurro: V las susurra. Normal + Susurro: ambas, mezcladas al azar.");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "Normal");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "Susurro");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "Normal + Susurro");
   }
 }

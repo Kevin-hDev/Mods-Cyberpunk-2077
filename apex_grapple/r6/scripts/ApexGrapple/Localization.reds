@@ -35,6 +35,7 @@ public class ApexGrappleEnglish extends ModLocalizationPackage {
     this.Text("ApexGrapple-Profile1-Targets", "Profile 1: vehicles and people");
     this.Text("ApexGrapple-Profile1-Landing", "Profile 1: landing");
     this.Text("ApexGrapple-Profile1-Fov", "Profile 1: field of view");
+    this.Text("ApexGrapple-Profile1-Voice", "Profile 1: V's voice");
     this.Text("ApexGrapple-Profile2", "Profile 2");
     this.Text("ApexGrapple-Profile3", "Profile 3");
     this.Text("ApexGrapple-Profile4", "Profile 4");
@@ -137,6 +138,7 @@ public class ApexGrappleFrench extends ModLocalizationPackage {
     this.Text("ApexGrapple-Profile1-Targets", "Profil 1 : véhicules et personnes");
     this.Text("ApexGrapple-Profile1-Landing", "Profil 1 : atterrissage");
     this.Text("ApexGrapple-Profile1-Fov", "Profil 1 : champ de vision");
+    this.Text("ApexGrapple-Profile1-Voice", "Profil 1 : voix de V");
     this.Text("ApexGrapple-Profile2", "Profil 2");
     this.Text("ApexGrapple-Profile3", "Profil 3");
     this.Text("ApexGrapple-Profile4", "Profil 4");

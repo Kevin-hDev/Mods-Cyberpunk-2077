@@ -7,7 +7,7 @@
 // November 2026: one long list was hard to find one's way in); "Show settings" stays, for players without it. Profiles 2
 // to 5 stay one folded block each, in the same field order: Mod Settings shows a section's title even when all its lines
 // are hidden, so split they would leave 28 empty titles on the page. Every field gives its section's order, whichever
-// field Mod Settings reads it from. The orders follow on: crosshair 0, profile 1 from 1 to 8, then profiles 2 to 5.
+// field Mod Settings reads it from. The orders follow on: crosshair 0, profile 1 from 1 to 9, then profiles 2 to 5.
 //
 // Defaults: the author's, set by hand over an hour and 380 pulls of the Borderlands 4 version, converted to metres
 // (1 unit = 1 cm). Its forces were multiples of a doubled gravity (19.6 m/s²); here they are in m/s², the force felt,
@@ -490,4 +490,61 @@ public class ApexGrappleSettings {
   @runtimeProperty("ModSettings.max", "3.0")
   @runtimeProperty("ModSettings.dependency", "showSettings")
   public let fovTransition: Float = 2.0;
+
+  // V's voice lines (Voice.reds), the same as Cyber Grapple's (Kevin, 18 November 2026: "fasse exactement la meme
+  // chose pour apex grapple"). On, each line said five times in ten, the execution lines spoken and whispered mixed at
+  // random: "oui 50%", "deux curseur", "On part sur Normal + Whisper, c'est bien pour decouvrir". The voice is V's own
+  // unless the player picks one (Kevin, 19 November 2026). Each field keeps the profile's fold as its one condition, as
+  // the impact effect's type does: the help of each says it acts while Voice lines is on.
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Voice")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-VoiceLines")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-VoiceLines-Description")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let voiceLines: Bool = true;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Voice")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-VoiceGender")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-VoiceGender-Description")
+  @runtimeProperty("ModSettings.displayValues.Auto", "ApexGrapple-VoiceGender-Auto")
+  @runtimeProperty("ModSettings.displayValues.Female", "ApexGrapple-VoiceGender-Female")
+  @runtimeProperty("ModSettings.displayValues.Male", "ApexGrapple-VoiceGender-Male")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let voiceGender: ApexGrappleVoiceGender = ApexGrappleVoiceGender.Auto;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Voice")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-VoicePullChance")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-VoicePullChance-Description")
+  @runtimeProperty("ModSettings.step", "10.0")
+  @runtimeProperty("ModSettings.min", "30.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let voicePullChance: Float = 50.0;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Voice")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-VoiceKillChance")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-VoiceKillChance-Description")
+  @runtimeProperty("ModSettings.step", "10.0")
+  @runtimeProperty("ModSettings.min", "30.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let voiceKillChance: Float = 50.0;
+
+  @runtimeProperty("ModSettings.mod", "Apex Grapple")
+  @runtimeProperty("ModSettings.category", "ApexGrapple-Profile1-Voice")
+  @runtimeProperty("ModSettings.category.order", "9")
+  @runtimeProperty("ModSettings.displayName", "ApexGrapple-VoiceKillStyle")
+  @runtimeProperty("ModSettings.description", "ApexGrapple-VoiceKillStyle-Description")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ApexGrapple-VoiceKillStyle-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ApexGrapple-VoiceKillStyle-Whisper")
+  @runtimeProperty("ModSettings.displayValues.Both", "ApexGrapple-VoiceKillStyle-Both")
+  @runtimeProperty("ModSettings.dependency", "showSettings")
+  public let voiceKillStyle: ApexGrappleVoiceKillStyle = ApexGrappleVoiceKillStyle.Both;
 }

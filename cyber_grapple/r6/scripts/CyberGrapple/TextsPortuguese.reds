@@ -80,5 +80,33 @@ public class CyberGrapplePortuguese extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "Jogo");
     this.Text("CyberGrapple-CrosshairPick", "Forma da mira");
     this.Text("CyberGrapple-CrosshairPick-Description", "A forma da mira deste mod. Ela fica oculta assim que V segura uma arma ou uma cibernética dos braços, que têm miras próprias, e em veículos, com o escâner e durante cenas.");
+    this.Text("CyberGrapple-Impact", "Impacto do gancho");
+    this.Text("CyberGrapple-ImpactEffect", "Efeito de impacto");
+    this.Text("CyberGrapple-ImpactEffect-Description", "Um dos efeitos de impacto do jogo, mostrado uma vez onde o gancho atinge uma superfície ou um veículo. Nenhum em uma pessoa nem em uma motocicleta. Desligado: nada aparece onde o gancho atinge.");
+    this.Text("CyberGrapple-ImpactStyle", "Estilo do efeito de impacto");
+    this.Text("CyberGrapple-ImpactStyle-Description", "Qual efeito de impacto do jogo é mostrado. Cada um tem o nome do que o produz no jogo: a superfície atingida e a arma.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Concreto, bala");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Concreto, alto calibre");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Concreto, martelo");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "Metal, martelo");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Monofio");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "Genérico, bala");
+    this.Text("CyberGrapple-Voice", "Voz de V");
+    this.Text("CyberGrapple-VoiceLines", "Falas");
+    this.Text("CyberGrapple-VoiceLines-Description", "V diz uma fala quando o arpéu começa a puxar uma pessoa até V, e outra quando V mata ou nocauteia uma pessoa que o arpéu trouxe e agarrou. Requer Audioware, que reproduz as falas. Desligado: V não diz nada.");
+    this.Text("CyberGrapple-VoiceGender", "Voz");
+    this.Text("CyberGrapple-VoiceGender-Description", "A voz que diz as falas. Automática: a do seu V. Feminina ou Masculina: sempre essa voz.");
+    this.Text("CyberGrapple-VoiceGender-Auto", "Automática");
+    this.Text("CyberGrapple-VoiceGender-Female", "Feminina");
+    this.Text("CyberGrapple-VoiceGender-Male", "Masculina");
+    this.Text("CyberGrapple-VoicePullChance", "Frequência da fala ao puxar");
+    this.Text("CyberGrapple-VoicePullChance-Description", "Em porcentagem, exata a cada 10 vezes: a frequência com que V diz uma fala quando o arpéu começa a puxar uma pessoa até V.");
+    this.Text("CyberGrapple-VoiceKillChance", "Frequência da fala na neutralização");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "Em porcentagem, exata a cada 10 vezes: a frequência com que V diz uma fala quando V mata ou nocauteia uma pessoa que o arpéu trouxe e agarrou.");
+    this.Text("CyberGrapple-VoiceKillStyle", "Estilo das falas na neutralização");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "Como V diz as falas na neutralização. Normal: em voz alta. Sussurro: V as sussurra. Normal + Sussurro: as duas, misturadas ao acaso.");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "Normal");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "Sussurro");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "Normal + Sussurro");
   }
 }

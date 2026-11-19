@@ -80,5 +80,33 @@ public class CyberGrappleJapanese extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "ゲーム");
     this.Text("CyberGrapple-CrosshairPick", "クロスヘアの形");
     this.Text("CyberGrapple-CrosshairPick-Description", "このMODのクロスヘアの形。Vが武器や腕のサイバーウェアを手にするとすぐに非表示になる。これらには専用のクロスヘアがあるため。乗り物の中、スキャナー使用中、シーン中も非表示になる。");
+    this.Text("CyberGrapple-Impact", "フックの衝撃");
+    this.Text("CyberGrapple-ImpactEffect", "衝撃エフェクト");
+    this.Text("CyberGrapple-ImpactEffect-Description", "ゲーム本来の衝撃エフェクトのひとつ。フックが面や乗り物に当たった位置に一度だけ表示される。人物やオートバイに当たったときは表示されない。オフ：フックが当たった位置には何も表示されない。");
+    this.Text("CyberGrapple-ImpactStyle", "衝撃エフェクトのスタイル");
+    this.Text("CyberGrapple-ImpactStyle-Description", "表示するゲームの衝撃エフェクト。それぞれ、ゲーム内でそれを生むもの、つまり当たった面と武器の名前が付いている。");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "コンクリート（弾丸）");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "コンクリート（大口径）");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "コンクリート（ハンマー）");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "金属（ハンマー）");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "モノワイヤー");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "汎用（弾丸）");
+    this.Text("CyberGrapple-Voice", "Vの声");
+    this.Text("CyberGrapple-VoiceLines", "セリフ");
+    this.Text("CyberGrapple-VoiceLines-Description", "グラップリングフックが人物をVのもとへ引き寄せ始めたとき、Vがセリフを言う。グラップリングフックで引き寄せてグラップルした人物をVが殺したときや気絶させたときにも、別のセリフを言う。セリフを再生するにはAudiowareが必要。オフ：Vは何も言わない。");
+    this.Text("CyberGrapple-VoiceGender", "声");
+    this.Text("CyberGrapple-VoiceGender-Description", "セリフを言う声。自動：自分のVの声。女声または男声：常にその声。");
+    this.Text("CyberGrapple-VoiceGender-Auto", "自動");
+    this.Text("CyberGrapple-VoiceGender-Female", "女声");
+    this.Text("CyberGrapple-VoiceGender-Male", "男声");
+    this.Text("CyberGrapple-VoicePullChance", "引き寄せ時のセリフの頻度");
+    this.Text("CyberGrapple-VoicePullChance-Description", "グラップリングフックが人物をVのもとへ引き寄せ始めたときに、Vがセリフを言う頻度（パーセント、10回ごとに正確）。");
+    this.Text("CyberGrapple-VoiceKillChance", "テイクダウン時のセリフの頻度");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "グラップリングフックで引き寄せてグラップルした人物をVが殺したときや気絶させたときに、Vがセリフを言う頻度（パーセント、10回ごとに正確）。");
+    this.Text("CyberGrapple-VoiceKillStyle", "テイクダウン時のセリフのスタイル");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "Vがテイクダウン時のセリフを言う方法。ノーマル：声に出して言う。ささやき：Vがささやく。ノーマル＋ささやき：両方をランダムに混ぜる。");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "ノーマル");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "ささやき");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "ノーマル＋ささやき");
   }
 }

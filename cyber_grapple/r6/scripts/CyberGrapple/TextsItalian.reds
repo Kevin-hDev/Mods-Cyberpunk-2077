@@ -80,5 +80,33 @@ public class CyberGrappleItalian extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "Gioco");
     this.Text("CyberGrapple-CrosshairPick", "Forma del mirino");
     this.Text("CyberGrapple-CrosshairPick-Description", "La forma del mirino di questo mod. Viene nascosto non appena V impugna un'arma o un cyberware per le braccia, che hanno un mirino proprio, e nei veicoli, con lo scanner e durante le scene.");
+    this.Text("CyberGrapple-Impact", "Impatto del gancio");
+    this.Text("CyberGrapple-ImpactEffect", "Effetto d'impatto");
+    this.Text("CyberGrapple-ImpactEffect-Description", "Uno degli effetti d'impatto del gioco, mostrato una volta dove il gancio colpisce una superficie o un veicolo. Nessuno su una persona né su una moto. Disattivato: non appare nulla dove colpisce il gancio.");
+    this.Text("CyberGrapple-ImpactStyle", "Stile dell'effetto d'impatto");
+    this.Text("CyberGrapple-ImpactStyle-Description", "Quale effetto d'impatto del gioco viene mostrato. Ognuno prende il nome da ciò che lo produce nel gioco: la superficie colpita e l'arma.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Cemento, proiettile");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Cemento, grosso calibro");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Cemento, martello");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "Metallo, martello");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Monocavo");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "Generico, proiettile");
+    this.Text("CyberGrapple-Voice", "Voce di V");
+    this.Text("CyberGrapple-VoiceLines", "Battute");
+    this.Text("CyberGrapple-VoiceLines-Description", "V dice una battuta quando il rampino inizia a tirare una persona verso V, e un'altra quando V uccide o mette K.O. una persona che il rampino ha portato e afferrato. Richiede Audioware, che riproduce le battute. Disattivato: V non dice nulla.");
+    this.Text("CyberGrapple-VoiceGender", "Tono della voce");
+    this.Text("CyberGrapple-VoiceGender-Description", "La voce che dice le battute. Auto: quella del tuo V. Femminile o Maschile: sempre quella voce.");
+    this.Text("CyberGrapple-VoiceGender-Auto", "Auto");
+    this.Text("CyberGrapple-VoiceGender-Female", "Femminile");
+    this.Text("CyberGrapple-VoiceGender-Male", "Maschile");
+    this.Text("CyberGrapple-VoicePullChance", "Frequenza battuta: persona tirata");
+    this.Text("CyberGrapple-VoicePullChance-Description", "In percentuale, esatta su ogni serie di 10: quanto spesso V dice una battuta quando il rampino inizia a tirare una persona verso V.");
+    this.Text("CyberGrapple-VoiceKillChance", "Frequenza battuta: uccisione o K.O.");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "In percentuale, esatta su ogni serie di 10: quanto spesso V dice una battuta quando V uccide o mette K.O. una persona che il rampino ha portato e afferrato.");
+    this.Text("CyberGrapple-VoiceKillStyle", "Stile delle battute di uccisione o K.O.");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "Come V dice le battute di uccisione o K.O. Normale: ad alta voce. Sussurro: V le sussurra. Normale + Sussurro: entrambe, mescolate a caso.");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "Normale");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "Sussurro");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "Normale + Sussurro");
   }
 }

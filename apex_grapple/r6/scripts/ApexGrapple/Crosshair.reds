@@ -110,6 +110,7 @@ private func ApexGrappleCrosshairAttach(player: ref<GameObject>) -> Void {
   }
   ApexGrappleLog("crosshair host found: the game's dot " + (IsDefined(dot) ? "found" : "not found") + ", its option " + (IsDefined(option) && option.GetValue() ? "on" : "off") + ", weapons " + ToString(IsDefined(weapons)) + ", player states " + ToString(IsDefined(psm)) + ", menus " + ToString(IsDefined(ui)) + ", range indicator linked " + ToString(IsDefined(system)));
   this.UpdateRootVisibility();
+  ApexGrappleVoiceTell(system, player);
 }
 
 // Gives the frame and the game's dot back to the game's rule.

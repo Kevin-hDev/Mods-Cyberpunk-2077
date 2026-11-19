@@ -1,5 +1,5 @@
 // Latin American Spanish, for the game's es-mx language: derived from CyberGrappleSpanish, it holds only the texts
-// where the game uses another word in Latin America.
+// where Latin America uses another word: the game's own where it has one (Nanocable), else the region's (concreto).
 
 @if(ModuleExists("Codeware.Localization"))
 import Codeware.Localization.*
@@ -13,5 +13,9 @@ public class CyberGrappleSpanishLatin extends CyberGrappleSpanish {
     this.Text("CyberGrapple-Silent-OtherUnread", "El implante de gancho está desactivado: Apex Grapple está instalado y no se pudo leer su interruptor. Mueve Apex Grapple fuera de la carpeta del juego para usar el implante. Tu partida guardada no se modifica.");
     this.Text("CyberGrapple-Silent-NoRecords", "Cyber Grapple: no se pudo añadir el implante Sistema de gancho a esta versión del juego. El mod no hace nada hasta que se actualice.");
     this.Text("CyberGrapple-Upgrade-Waiting", "Cyber Grapple: no se pudo leer, en esta versión del juego, el nivel del personaje que piden algunas mejoras del Sistema de gancho. Esas mejoras no piden ningún nivel del personaje hasta que se actualice el mod.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Concreto, bala");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Concreto, gran calibre");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Concreto, martillo");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Nanocable");
   }
 }

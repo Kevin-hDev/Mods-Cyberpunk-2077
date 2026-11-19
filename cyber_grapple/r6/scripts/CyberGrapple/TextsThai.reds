@@ -80,5 +80,33 @@ public class CyberGrappleThai extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "เกม");
     this.Text("CyberGrapple-CrosshairPick", "รูปทรงเป้าเล็ง");
     this.Text("CyberGrapple-CrosshairPick-Description", "รูปทรงของเป้าเล็งจากม็อดนี้ เป้าเล็งนี้จะถูกซ่อนทันทีที่ V ถืออาวุธหรือไซเบอร์แวร์แขน ซึ่งมีเป้าเล็งของตัวเอง และจะซ่อนเมื่ออยู่ในพาหนะ ขณะใช้สแกนเนอร์ และในฉากต่างๆ");
+    this.Text("CyberGrapple-Impact", "แรงกระแทกของตะขอ");
+    this.Text("CyberGrapple-ImpactEffect", "เอฟเฟกต์แรงกระแทก");
+    this.Text("CyberGrapple-ImpactEffect-Description", "หนึ่งในเอฟเฟกต์แรงกระแทกของเกม แสดงหนึ่งครั้งตรงจุดที่ตะขอกระทบพื้นผิวหรือพาหนะ ไม่แสดงเมื่อกระทบคนหรือมอเตอร์ไซค์ ปิด: จะไม่มีสิ่งใดปรากฏตรงจุดที่ตะขอกระทบ");
+    this.Text("CyberGrapple-ImpactStyle", "รูปแบบเอฟเฟกต์แรงกระแทก");
+    this.Text("CyberGrapple-ImpactStyle-Description", "เอฟเฟกต์แรงกระแทกของเกมที่จะแสดง แต่ละแบบตั้งชื่อตามสิ่งที่ทำให้เกิดในเกม คือพื้นผิวที่ถูกกระทบและอาวุธ");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "คอนกรีต (กระสุน)");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "คอนกรีต (กระสุนทำลายล้างสูง)");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "คอนกรีต (ค้อน)");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "โลหะ (ค้อน)");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "โมโนไวร์");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "ทั่วไป (กระสุน)");
+    this.Text("CyberGrapple-Voice", "เสียงของ V");
+    this.Text("CyberGrapple-VoiceLines", "บทพูด");
+    this.Text("CyberGrapple-VoiceLines-Description", "V จะพูดหนึ่งประโยคเมื่อตะขอเกี่ยวเริ่มดึงคนเข้าหา V และพูดอีกประโยคเมื่อ V ฆ่าคนที่ตะขอเกี่ยวดึงมาและจับตัวไว้ หรือทำให้เขาหมดสติ ต้องมี Audioware ซึ่งเป็นตัวเล่นบทพูด ปิด: V จะไม่พูดอะไร");
+    this.Text("CyberGrapple-VoiceGender", "โทนเสียง");
+    this.Text("CyberGrapple-VoiceGender-Description", "เสียงที่ใช้พูดบทพูด อัตโนมัติ: เสียงของ V ของคุณ เสียงผู้หญิงหรือเสียงผู้ชาย: ใช้เสียงนั้นเสมอ");
+    this.Text("CyberGrapple-VoiceGender-Auto", "อัตโนมัติ");
+    this.Text("CyberGrapple-VoiceGender-Female", "เสียงผู้หญิง");
+    this.Text("CyberGrapple-VoiceGender-Male", "เสียงผู้ชาย");
+    this.Text("CyberGrapple-VoicePullChance", "ความถี่ของบทพูดตอนดึงคน");
+    this.Text("CyberGrapple-VoicePullChance-Description", "ความถี่เป็นเปอร์เซ็นต์ นับแม่นยำทุก 10 ครั้ง ที่ V จะพูดบทพูดเมื่อตะขอเกี่ยวเริ่มดึงคนเข้าหา V");
+    this.Text("CyberGrapple-VoiceKillChance", "ความถี่ของบทพูดตอนเทคดาวน์");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "ความถี่เป็นเปอร์เซ็นต์ นับแม่นยำทุก 10 ครั้ง ที่ V จะพูดบทพูดเมื่อ V ฆ่าคนที่ตะขอเกี่ยวดึงมาและจับตัวไว้ หรือทำให้เขาหมดสติ");
+    this.Text("CyberGrapple-VoiceKillStyle", "รูปแบบบทพูดตอนเทคดาวน์");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "วิธีที่ V พูดบทพูดตอนเทคดาวน์ ปกติ: พูดออกเสียง กระซิบ: V กระซิบบทพูด ปกติ + กระซิบ: ทั้งสองแบบ สลับกันแบบสุ่ม");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "ปกติ");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "กระซิบ");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "ปกติ + กระซิบ");
   }
 }

@@ -33,7 +33,7 @@ public class CyberGrappleRussian extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairShape-HeavyMachineGun", "Крупнокалиберный пулемёт");
     this.Text("CyberGrapple-CrosshairShape-Dot", "Точка в центре экрана");
     this.Text("CyberGrapple-CrosshairColor", "Цвет");
-    this.Text("CyberGrapple-CrosshairColor-Description", "Цвет прицела. Бирюзовый — цвет прицелов игры.");
+    this.Text("CyberGrapple-CrosshairColor-Description", "Цвет прицела. Бирюзовый: цвет прицелов игры.");
     this.Text("CyberGrapple-CrosshairColor-Yellow", "Жёлтый");
     this.Text("CyberGrapple-CrosshairColor-White", "Белый");
     this.Text("CyberGrapple-CrosshairColor-Red", "Красный");
@@ -80,5 +80,33 @@ public class CyberGrappleRussian extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "Игра");
     this.Text("CyberGrapple-CrosshairPick", "Форма прицела");
     this.Text("CyberGrapple-CrosshairPick-Description", "Форма прицела этого мода. Он скрывается, как только V берёт оружие или киберимпланты рук, у которых есть собственные прицелы, а также в транспортном средстве, при включённом сканере и во время сцен.");
+    this.Text("CyberGrapple-Impact", "Попадание крюка");
+    this.Text("CyberGrapple-ImpactEffect", "Эффект попадания");
+    this.Text("CyberGrapple-ImpactEffect-Description", "Один из эффектов попадания из игры, показывается один раз там, где крюк попадает в поверхность или транспортное средство. Не показывается при попадании в человека или мотоцикл. Выкл.: там, где попадает крюк, ничего не появляется.");
+    this.Text("CyberGrapple-ImpactStyle", "Вид эффекта попадания");
+    this.Text("CyberGrapple-ImpactStyle-Description", "Какой из эффектов попадания из игры показывается. Каждый назван по тому, что создаёт его в игре: поверхность, в которую попали, и оружие.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Бетон, пуля");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Бетон, крупный калибр");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Бетон, молот");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "Металл, молот");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Моноструна");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "Общий, пуля");
+    this.Text("CyberGrapple-Voice", "Голос V");
+    this.Text("CyberGrapple-VoiceLines", "Реплики");
+    this.Text("CyberGrapple-VoiceLines-Description", "V произносит реплику, когда крюк-кошка начинает тянуть человека к V, и ещё одну, когда V убивает или оглушает человека, которого крюк-кошка притянула и схватила. Требуется Audioware, который воспроизводит реплики. Выкл.: V ничего не говорит.");
+    this.Text("CyberGrapple-VoiceGender", "Голос");
+    this.Text("CyberGrapple-VoiceGender-Description", "Чьим голосом звучат реплики. Автоматический: голос вашего V. Женский или Мужской: всегда этот голос.");
+    this.Text("CyberGrapple-VoiceGender-Auto", "Автоматический");
+    this.Text("CyberGrapple-VoiceGender-Female", "Женский");
+    this.Text("CyberGrapple-VoiceGender-Male", "Мужской");
+    this.Text("CyberGrapple-VoicePullChance", "Частота реплики при притягивании");
+    this.Text("CyberGrapple-VoicePullChance-Description", "В процентах, точно на каждые 10 раз: как часто V произносит реплику, когда крюк-кошка начинает тянуть человека к V.");
+    this.Text("CyberGrapple-VoiceKillChance", "Частота реплики при обезвреживании");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "В процентах, точно на каждые 10 раз: как часто V произносит реплику, когда V убивает или оглушает человека, которого крюк-кошка притянула и схватила.");
+    this.Text("CyberGrapple-VoiceKillStyle", "Вид реплик при обезвреживании");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "Как V произносит реплики при обезвреживании. Обычный: вслух. Шёпот: V шепчет их. Обычный + шёпот: и то и другое, вперемешку.");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "Обычный");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "Шёпот");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "Обычный + шёпот");
   }
 }

@@ -1,9 +1,13 @@
 // The implant's texts in English, French and Simplified Chinese, through Codeware's translation system: the records
-// name them by key (r6/tweaks/CyberGrapple). Everything here compiles only when Codeware is installed: without it, one
-// unknown name would stop every redscript mod of the player from loading.
+// name them by key (r6/tweaks/CyberGrapple). Also the menu's texts the made Localization*.reds lack: the crosshair's
+// first line, the hook's impact effect and V's voice lines. Everything here compiles only when Codeware is installed:
+// without it, one unknown name would stop every redscript mod of the player from loading.
 // The mod is Cyber Grapple, the implant "Grapple System" (docs/cyber-grapple/README.md, D26 and D27).
 // The game's own words, read from its text files: Tier is "Niveau" in French and "阶" in Chinese, V's level is
 // "Character Level", "Niveau du personnage", "人物等级", and holding a person is "钳制".
+// The choice of voice takes the words of the game's character creator: its "Feminine" and "Masculine" (keys 43482,
+// 43481), and in Chinese its "Voice Tone" (23208, 声调) and Auto (78374, 自动). The French agrees with "Voix", where
+// the game writes "Féminin" and "Masculin" after "Timbre de voix".
 // The four "Next" lines name the levels of the game's sale rules as the game ships them (10, 20, 30, 40). Upgrade.reds
 // reads the rules themselves: with a mod that moves them, the refusal follows and these lines do not.
 // The card's units are written as the game writes its own in each language (onscreens.json of 2.5): in French a
@@ -78,6 +82,34 @@ public class CyberGrappleImplantEnglish extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "Game");
     this.Text("CyberGrapple-CrosshairPick", "Crosshair shape");
     this.Text("CyberGrapple-CrosshairPick-Description", "The shape of this mod's crosshair. It is hidden as soon as V holds a weapon or arm cyberware, which have crosshairs of their own, and in vehicles, with the scanner and in scenes.");
+    this.Text("CyberGrapple-Impact", "Hook impact");
+    this.Text("CyberGrapple-ImpactEffect", "Impact effect");
+    this.Text("CyberGrapple-ImpactEffect-Description", "One of the game's own impact effects, shown once where the hook hits a surface or a vehicle. None on a person or a motorcycle. Off: nothing shows where the hook hits.");
+    this.Text("CyberGrapple-ImpactStyle", "Impact effect style");
+    this.Text("CyberGrapple-ImpactStyle-Description", "Which of the game's impact effects shows. Each is named after what makes it in the game: the surface hit and the weapon.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Concrete, bullet");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Concrete, high caliber");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Concrete, hammer");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "Metal, hammer");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Monowire");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "Generic, bullet");
+    this.Text("CyberGrapple-Voice", "V's voice");
+    this.Text("CyberGrapple-VoiceLines", "Voice lines");
+    this.Text("CyberGrapple-VoiceLines-Description", "V says a line when the grapple starts pulling a person toward V, and another when V kills or knocks out a person the grapple brought and grabbed. Requires Audioware, which plays the lines. Off: V says nothing.");
+    this.Text("CyberGrapple-VoiceGender", "Voice");
+    this.Text("CyberGrapple-VoiceGender-Description", "Whose voice says the lines. Automatic: the voice of your V. Feminine or Masculine: always that voice.");
+    this.Text("CyberGrapple-VoiceGender-Auto", "Automatic");
+    this.Text("CyberGrapple-VoiceGender-Female", "Feminine");
+    this.Text("CyberGrapple-VoiceGender-Male", "Masculine");
+    this.Text("CyberGrapple-VoicePullChance", "Pull line frequency");
+    this.Text("CyberGrapple-VoicePullChance-Description", "In percent, exact over every 10 pulls: how often V says a line when the grapple starts pulling a person toward V.");
+    this.Text("CyberGrapple-VoiceKillChance", "Execution line frequency");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "In percent, exact over every 10 takedowns: how often V says a line when V kills or knocks out a person the grapple brought and grabbed.");
+    this.Text("CyberGrapple-VoiceKillStyle", "Execution line style");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "How V says the execution lines. Normal: out loud. Whisper: V whispers them. Normal + Whisper: both, mixed at random.");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "Normal");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "Whisper");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "Normal + Whisper");
   }
 }
 
@@ -113,6 +145,34 @@ public class CyberGrappleImplantFrench extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "Jeu");
     this.Text("CyberGrapple-CrosshairPick", "Forme du réticule");
     this.Text("CyberGrapple-CrosshairPick-Description", "La forme du réticule de ce mod. Il est caché dès que V tient une arme ou du matériel cybernétique des bras, qui ont leur propre réticule, ainsi qu'en véhicule, avec le scanner et pendant les scènes.");
+    this.Text("CyberGrapple-Impact", "Impact du crochet");
+    this.Text("CyberGrapple-ImpactEffect", "Effet d'impact");
+    this.Text("CyberGrapple-ImpactEffect-Description", "Un des effets d'impact du jeu, affiché une fois là où le crochet touche une surface ou un véhicule. Aucun sur une personne ni sur une moto. Éteint : rien n'apparaît là où le crochet touche.");
+    this.Text("CyberGrapple-ImpactStyle", "Style de l'effet d'impact");
+    this.Text("CyberGrapple-ImpactStyle-Description", "L'effet d'impact du jeu qui s'affiche. Chacun porte le nom de ce qui le produit dans le jeu : la surface touchée et l'arme.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Béton, balle");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Béton, gros calibre");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Béton, marteau");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "Métal, marteau");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Monocâble");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "Générique, balle");
+    this.Text("CyberGrapple-Voice", "Voix de V");
+    this.Text("CyberGrapple-VoiceLines", "Répliques");
+    this.Text("CyberGrapple-VoiceLines-Description", "V dit une réplique quand le grappin commence à tirer une personne vers V, et une autre quand V tue ou neutralise sans tuer une personne que le grappin a ramenée et saisie. Demande Audioware, qui joue les répliques. Éteint : V ne dit rien.");
+    this.Text("CyberGrapple-VoiceGender", "Voix");
+    this.Text("CyberGrapple-VoiceGender-Description", "La voix qui dit les répliques. Automatique : celle de votre V. Féminine ou Masculine : toujours cette voix.");
+    this.Text("CyberGrapple-VoiceGender-Auto", "Automatique");
+    this.Text("CyberGrapple-VoiceGender-Female", "Féminine");
+    this.Text("CyberGrapple-VoiceGender-Male", "Masculine");
+    this.Text("CyberGrapple-VoicePullChance", "Fréquence : personne tirée");
+    this.Text("CyberGrapple-VoicePullChance-Description", "En pour cent, exact sur chaque série de 10 : la fréquence à laquelle V dit une réplique quand le grappin commence à tirer une personne vers V.");
+    this.Text("CyberGrapple-VoiceKillChance", "Fréquence : exécution");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "En pour cent, exact sur chaque série de 10 : la fréquence à laquelle V dit une réplique quand V tue ou neutralise sans tuer une personne que le grappin a ramenée et saisie.");
+    this.Text("CyberGrapple-VoiceKillStyle", "Style des répliques d'exécution");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "Comment V dit les répliques d'exécution. Normale : à voix haute. Chuchotée : V les chuchote. Normale + chuchotée : les deux, mêlées au hasard.");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "Normale");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "Chuchotée");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "Normale + chuchotée");
   }
 }
 
@@ -148,5 +208,33 @@ public class CyberGrappleImplantChinese extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "游戏");
     this.Text("CyberGrapple-CrosshairPick", "准星样式");
     this.Text("CyberGrapple-CrosshairPick-Description", "本模组准星的样式。V 手持武器或手臂义体时隐藏（它们有自己的准星），在载具中、使用扫描器时和过场中也隐藏。");
+    this.Text("CyberGrapple-Impact", "钩子命中");
+    this.Text("CyberGrapple-ImpactEffect", "命中效果");
+    this.Text("CyberGrapple-ImpactEffect-Description", "游戏自带的命中效果之一，在钩子击中表面或载具的位置显示一次。击中人物或摩托车时不显示。关闭：钩子击中处不显示任何效果。");
+    this.Text("CyberGrapple-ImpactStyle", "命中效果样式");
+    this.Text("CyberGrapple-ImpactStyle-Description", "显示游戏中的哪一种命中效果。每种效果以游戏中产生它的来源命名：被击中的表面和武器。");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "混凝土，子弹");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "混凝土，大口径");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "混凝土，锤子");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "金属，锤子");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "单分子线");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "通用，子弹");
+    this.Text("CyberGrapple-Voice", "V 的语音");
+    this.Text("CyberGrapple-VoiceLines", "台词");
+    this.Text("CyberGrapple-VoiceLines-Description", "抓钩开始将人物拉向 V 时，V 会说一句台词；V 杀死或非致命击倒被抓钩拉来并钳制的人物时，会再说一句。需要 Audioware 来播放台词。关闭：V 什么也不说。");
+    this.Text("CyberGrapple-VoiceGender", "声调");
+    this.Text("CyberGrapple-VoiceGender-Description", "说台词的声音。自动：你的 V 的声音。女性化或男性化：始终使用该声音。");
+    this.Text("CyberGrapple-VoiceGender-Auto", "自动");
+    this.Text("CyberGrapple-VoiceGender-Female", "女性化");
+    this.Text("CyberGrapple-VoiceGender-Male", "男性化");
+    this.Text("CyberGrapple-VoicePullChance", "拉人台词频率");
+    this.Text("CyberGrapple-VoicePullChance-Description", "以百分比表示，每 10 次精确计算：抓钩开始将人物拉向 V 时，V 说台词的频率。");
+    this.Text("CyberGrapple-VoiceKillChance", "处决台词频率");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "以百分比表示，每 10 次精确计算：V 杀死或非致命击倒被抓钩拉来并钳制的人物时，说台词的频率。");
+    this.Text("CyberGrapple-VoiceKillStyle", "处决台词样式");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "V 说处决台词的方式。普通：大声说出。耳语：V 低声耳语。普通 + 耳语：两者随机混合。");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "普通");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "耳语");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "普通 + 耳语");
   }
 }

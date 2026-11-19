@@ -111,6 +111,22 @@ public class ApexGrappleSystem extends ScriptableSystem {
   public let swingEdgeFrames: Int32;
   // The impact effect's file is missing from the game (Impact.reds): switched off, the player told once.
   public let impactLost: Bool;
+  // V's voice lines (Voice.reds): the execution line and its phrase said last, and the Get over here said last, so that
+  // none is said twice in a row while another is there; the log's lines this load, of lines asked and of lines left out.
+  public let voiceLast: CName;
+  public let voiceLastPhrase: ApexGrappleVoicePhrase;
+  public let voicePullLast: CName;
+  public let voiceLines: Int32;
+  public let voiceNoneLines: Int32;
+  // The bags of ten occasions (VoiceBag.reds), a pull's and an execution's for each profile, made at their first use;
+  // the log's lines this load of draws missed and of people pulled dead or out, apart from the lines left out for
+  // another reason.
+  public let voiceBags: array<ref<ApexGrappleVoiceBag>>;
+  public let voiceMissLines: Int32;
+  public let voiceDeadLines: Int32;
+  public let voiceHandedLines: Int32;
+  // Which voice V says the lines in, told to the log this load (VoiceGender.reds): once, as soon as V exists.
+  public let voiceTold: Bool;
   // The key.
   public let keyDown: Bool;
   public let pressedAt: Float;
@@ -205,6 +221,7 @@ public class ApexGrappleSystem extends ScriptableSystem {
     this.settingsLoggedVersion = this.settingsVersion;
     ApexGrappleLog("loaded; settings in use: " + this.settingsLogged);
     ApexGrappleSayWhatCodewareGives();
+    ApexGrappleSayWhatAudiowareGives();
   }
 
   private func OnDetach() -> Void {

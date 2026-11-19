@@ -80,5 +80,33 @@ public class CyberGrappleGerman extends ModLocalizationPackage {
     this.Text("CyberGrapple-CrosshairSource-Game", "Spiel");
     this.Text("CyberGrapple-CrosshairPick", "Form des Fadenkreuzes");
     this.Text("CyberGrapple-CrosshairPick-Description", "Die Form des Fadenkreuzes dieser Mod. Es wird ausgeblendet, sobald V eine Waffe oder Arm-Cyberware hält, die ein eigenes Fadenkreuz haben, sowie in Fahrzeugen, mit dem Scanner und in Szenen.");
+    this.Text("CyberGrapple-Impact", "Aufprall des Hakens");
+    this.Text("CyberGrapple-ImpactEffect", "Aufpralleffekt");
+    this.Text("CyberGrapple-ImpactEffect-Description", "Einer der Aufpralleffekte des Spiels, einmal dort angezeigt, wo der Haken eine Oberfläche oder ein Fahrzeug trifft. Keiner bei einer Person oder einem Motorrad. Aus: Wo der Haken trifft, erscheint nichts.");
+    this.Text("CyberGrapple-ImpactStyle", "Stil des Aufpralleffekts");
+    this.Text("CyberGrapple-ImpactStyle-Description", "Welcher Aufpralleffekt des Spiels angezeigt wird. Jeder ist nach dem benannt, was ihn im Spiel erzeugt: der getroffenen Oberfläche und der Waffe.");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteBullet", "Beton, Kugel");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteLargeCaliber", "Beton, großes Kaliber");
+    this.Text("CyberGrapple-ImpactStyle-ConcreteHammer", "Beton, Hammer");
+    this.Text("CyberGrapple-ImpactStyle-MetalHammer", "Metall, Hammer");
+    this.Text("CyberGrapple-ImpactStyle-Monowire", "Monodraht");
+    this.Text("CyberGrapple-ImpactStyle-DefaultBullet", "Allgemein, Kugel");
+    this.Text("CyberGrapple-Voice", "Stimme von V");
+    this.Text("CyberGrapple-VoiceLines", "Sprüche");
+    this.Text("CyberGrapple-VoiceLines-Description", "V sagt einen Spruch, wenn der Enterhaken beginnt, eine Person zu V zu ziehen, und einen weiteren, wenn V eine Person tötet oder nichttödlich ausschaltet, die der Enterhaken herangezogen und gepackt hat. Erfordert Audioware, das die Sprüche abspielt. Aus: V sagt nichts.");
+    this.Text("CyberGrapple-VoiceGender", "Stimmlage");
+    this.Text("CyberGrapple-VoiceGender-Description", "Wessen Stimme die Sprüche sagt. Automatisch: die Stimme deines V. Feminin oder Maskulin: immer diese Stimmlage.");
+    this.Text("CyberGrapple-VoiceGender-Auto", "Automatisch");
+    this.Text("CyberGrapple-VoiceGender-Female", "Feminin");
+    this.Text("CyberGrapple-VoiceGender-Male", "Maskulin");
+    this.Text("CyberGrapple-VoicePullChance", "Häufigkeit des Spruchs beim Ziehen");
+    this.Text("CyberGrapple-VoicePullChance-Description", "In Prozent, genau auf je 10 Züge: wie oft V einen Spruch sagt, wenn der Enterhaken beginnt, eine Person zu V zu ziehen.");
+    this.Text("CyberGrapple-VoiceKillChance", "Häufigkeit des Spruchs beim Takedown");
+    this.Text("CyberGrapple-VoiceKillChance-Description", "In Prozent, genau auf je 10 Takedowns: wie oft V einen Spruch sagt, wenn V eine Person tötet oder nichttödlich ausschaltet, die der Enterhaken herangezogen und gepackt hat.");
+    this.Text("CyberGrapple-VoiceKillStyle", "Stil der Sprüche beim Takedown");
+    this.Text("CyberGrapple-VoiceKillStyle-Description", "Wie V die Sprüche beim Takedown sagt. Normal: laut. Flüstern: V flüstert sie. Normal + Flüstern: beides, zufällig gemischt.");
+    this.Text("CyberGrapple-VoiceKillStyle-Normal", "Normal");
+    this.Text("CyberGrapple-VoiceKillStyle-Whisper", "Flüstern");
+    this.Text("CyberGrapple-VoiceKillStyle-Both", "Normal + Flüstern");
   }
 }

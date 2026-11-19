@@ -160,6 +160,8 @@ private final func ApexGrappleFlyingFrame(system: ref<ApexGrappleSystem>, key: A
 private final func ApexGrappleAttach(system: ref<ApexGrappleSystem>, settings: ref<ApexGrappleSettings>, now: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
   // A person comes to V: pulled ("Pull people to V"), or brought for the game's grab, its key seen (Grab.reds).
   if (system.comesToV || system.grabKeySeen) && ApexGrappleStartYank(system, settings, now, ApexGrappleOnLadder(stateContext), scriptInterface) {
+    // The pull really started: V's Get over here (Voice.reds). Neither a motorcycle nor a pull refused reaches it.
+    ApexGrappleVoicePull(system, settings, scriptInterface.executionOwner, system.target);
     return;
   }
   if system.bikeComes && ApexGrappleStartBikePull(system, settings, now, scriptInterface) {
