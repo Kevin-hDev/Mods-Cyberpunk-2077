@@ -1,6 +1,6 @@
 # Mods Cyberpunk 2077
 
-Mods for Cyberpunk 2077 2.5, written in redscript: movement mods inspired by Apex Legends, a grapple arm implant, and a patch for the Mod Settings menu.
+Mods for Cyberpunk 2077 2.5, written in redscript: movement mods inspired by Apex Legends, a grapple arm implant, voice lines for V's executions, and a patch for the Mod Settings menu.
 
 | Mod | What it does | Version |
 |---|---|---|
@@ -12,13 +12,14 @@ Mods for Cyberpunk 2077 2.5, written in redscript: movement mods inspired by Ape
 | [Wall Climb](wall_climb/) | Climb any wall in Night City, sideways and upward | 1.0.0 |
 | [Apex Grapple](apex_grapple/) | A grappling hook: aim at a surface, the hook flies out, and the rope pulls you while your aim steers you | 1.1.6 |
 | [Cyber Grapple](cyber_grapple/) | Apex Grapple's grappling hook as an arm implant: bought from ripperdocs, upgraded tier by tier, with charges | 1.0.1 |
+| [Execution Lines](execution_lines/) | V says a voice line when executing an enemy: 8 lines, out loud or whispered, in several tones, for male V and female V, and you choose which ones you hear | 1.0.0 |
 | [Mod Settings Navigator](mod_settings_navigator/) | Favourites and pages in the list of Mod Settings, foldable settings sections, and a menu that reopens on the mod and the line you were on | 1.0.1 |
 
 Each folder holds the mod exactly as it ships on Nexus Mods: its `r6` folder mirrors the game folder.
 
 ## Installing a mod
 
-1. Install [redscript](https://www.nexusmods.com/cyberpunk2077/mods/1511). Omni Sprint, Omni Slide and Axle Slide also need [TweakXL](https://www.nexusmods.com/cyberpunk2077/mods/4197). Cyber Grapple also needs TweakXL 1.9.0 or newer, Codeware and RED4ext. Mod Settings Navigator also needs Mod Settings, Codeware and [RED4ext](https://www.nexusmods.com/cyberpunk2077/mods/2380). [RedFileSystem](https://www.nexusmods.com/cyberpunk2077/mods/13378) is optional for it: it gives the favourites and keeps them, and the folded sections, between game launches.
+1. Install [redscript](https://www.nexusmods.com/cyberpunk2077/mods/1511). Omni Sprint, Omni Slide and Axle Slide also need [TweakXL](https://www.nexusmods.com/cyberpunk2077/mods/4197). Cyber Grapple also needs TweakXL 1.9.0 or newer, Codeware and RED4ext. Execution Lines also needs [Audioware](https://www.nexusmods.com/cyberpunk2077/mods/12001) 1.11.0 or newer, which plays V's voice lines, Codeware and RED4ext. Mod Settings Navigator also needs Mod Settings, Codeware and [RED4ext](https://www.nexusmods.com/cyberpunk2077/mods/2380). [RedFileSystem](https://www.nexusmods.com/cyberpunk2077/mods/13378) is optional for it: it gives the favourites and keeps them, and the folded sections, between game launches.
 2. Optional: [Mod Settings](https://www.nexusmods.com/cyberpunk2077/mods/4885) to change the settings in Settings > Mods, and [Codeware](https://www.nexusmods.com/cyberpunk2077/mods/7780) for the menu texts in English, French and Simplified Chinese. Each mod's Nexus page says what else they bring.
 3. Copy the mod's `r6` folder into the game folder, next to `bin`.
 
@@ -30,8 +31,8 @@ Report it in the Bugs tab of the mod's Nexus page, and say what you were doing w
 
 ## License
 
-Every mod in this repository is under the [Mozilla Public License 2.0](LICENSE), except Apex Grapple and Cyber Grapple. Copyright 2026 Kevin-hDev.
+Every mod in this repository is under the [Mozilla Public License 2.0](LICENSE), except Apex Grapple, Cyber Grapple and Execution Lines. Copyright 2026 Kevin-hDev.
 
 You may use, change and share the code of the MPL-2.0 mods, in your own mods too, as long as the files you take stay under the MPL-2.0 and you share your changes to them.
 
-Apex Grapple is under the [PolyForm Strict License 1.0.0](apex_grapple/r6/scripts/ApexGrapple/LICENSE) since version 1.1.5: you may use it for free to play, but you may not share it elsewhere, sell it or change its code without my permission. Its versions up to 1.1.4 stay under the MPL-2.0. Cyber Grapple, made from Apex Grapple's code, is under the [same license](cyber_grapple/r6/scripts/CyberGrapple/LICENSE) from its first version. Game assets, redscript, RED4ext, Codeware, TweakXL and Mod Settings are not relicensed by this repository.
+Apex Grapple is under the [PolyForm Strict License 1.0.0](apex_grapple/r6/scripts/ApexGrapple/LICENSE) since version 1.1.5: you may use it for free to play, but you may not share it elsewhere, sell it or change its code without my permission. Its versions up to 1.1.4 stay under the MPL-2.0. Cyber Grapple, made from Apex Grapple's code, is under the [same license](cyber_grapple/r6/scripts/CyberGrapple/LICENSE) from its first version. Execution Lines is under the [same license](execution_lines/r6/scripts/ExecutionLines/LICENSE) from its first version too, its voice recordings included. Game assets, redscript, RED4ext, Codeware, TweakXL, Audioware and Mod Settings are not relicensed by this repository.
