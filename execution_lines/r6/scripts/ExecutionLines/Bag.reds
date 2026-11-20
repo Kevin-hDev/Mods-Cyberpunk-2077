@@ -13,7 +13,8 @@ public func ExecutionLinesBagSize() -> Int32 {
   return 10;
 }
 
-// The lines a full series holds for this setting, in percent (10 to 100 in the menu).
+// The lines a full series holds for this setting, in percent (in the menu, 10 to 100 for the executions, 0 to 100 for
+// the grab lines).
 public func ExecutionLinesBagSays(chance: Float) -> Int32 {
   return Clamp(RoundF(chance * Cast<Float>(ExecutionLinesBagSize()) / 100.0), 0, ExecutionLinesBagSize());
 }

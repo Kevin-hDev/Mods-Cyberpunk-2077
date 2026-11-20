@@ -2,12 +2,19 @@
 // values written here. Mod Settings keeps a choice under the name of its field and of its enum member: a name is never
 // changed once a version is published, and a phrase added later gets a field of its own.
 //
-// The menu is the one Kevin chose on drawings on 19 November 2026: a "Custom" switch at the head of each voice's
-// section, not one for both, because Mod Settings keeps a section's title on the page even when all its lines are
-// hidden. The phrases of a section hide behind its own Custom, the one condition Mod Settings takes per line, so none
-// depends on Enabled: the lines above would hide with it and the phrases would stand alone on the page, mod off.
-// Male V is section 1 and Female V section 2, below the four lines that have no section. The voice that speaks
-// decides which section is read (ExecutionLinesChoiceOf, SettingsChoice.reds).
+// The menu is the one Kevin chose on drawings on 19 November 2026: a "Custom" switch at the head of each section, not
+// one for several, because Mod Settings keeps a section's title on the page even when all its lines are hidden. The
+// phrases of a section hide behind its own Custom, the one condition Mod Settings takes per line, so none depends on
+// Enabled: the lines above would hide with it and the phrases would stand alone on the page, mod off. Below the five
+// lines that have no section come Male V's execution lines (section 1) and Female V's (section 2), then, since 1.0.1,
+// Male V's grab lines (section 3) and Female V's (section 4), each section's phrases in the alphabetical order of their
+// labels. The voice that speaks and the kind of the phrase decide which section is read (ExecutionLinesChoiceOf,
+// SettingsChoice.reds). A phrase that is only a conclusion has no field, and Death and SweetDreams, which also end
+// LockedIn, ignore theirs then: a conclusion follows its grab line, chosen or not (conception-saisies, 3.2).
+//
+// All the fields live in this one class although Mod Settings takes several classes for one mod: the 20 fields of
+// 1.0.0 were published here, and a field players keep never moves; the new ones follow them so that the code reads
+// one settings object.
 
 // The menu shows these three as Automatic, Feminine and Masculine, the words of the grapples' menus.
 enum ExecutionLinesVoice {
@@ -53,6 +60,17 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.max", "100.0")
   public let chance: Float = 50.0;
 
+  // Its own series of ten. 0 is allowed here and not for the executions: it is the one simple way to keep the
+  // execution lines without any grab line, while Enabled cuts the executions (conception-saisies, section 3.1,
+  // accepted by Kevin on 19 November 2026).
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-GrabChance")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-GrabChance-Description")
+  @runtimeProperty("ModSettings.step", "10.0")
+  @runtimeProperty("ModSettings.min", "0.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  public let grabChance: Float = 50.0;
+
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.displayName", "ExecutionLines-Style")
   @runtimeProperty("ModSettings.description", "ExecutionLines-Style-Description")
@@ -61,7 +79,7 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Style-Both")
   public let style: ExecutionLinesStyle = ExecutionLinesStyle.Both;
 
-  // Off: only Execution line style counts, and the choices below are ignored even if they were changed before.
+  // Off: only Line style counts, and the choices below are ignored even if they were changed before.
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.category", "ExecutionLines-Male")
   @runtimeProperty("ModSettings.category.order", "1")
@@ -108,6 +126,18 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.category", "ExecutionLines-Male")
   @runtimeProperty("ModSettings.category.order", "1")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleExitLight")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleExitLight-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMale")
+  public let maleExitLight: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-Male")
+  @runtimeProperty("ModSettings.category.order", "1")
   @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleKillOrBeKilled")
   @runtimeProperty("ModSettings.description", "ExecutionLines-MaleKillOrBeKilled-Description")
   @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
@@ -120,6 +150,18 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.category", "ExecutionLines-Male")
   @runtimeProperty("ModSettings.category.order", "1")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleNotPersonal")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleNotPersonal-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMale")
+  public let maleNotPersonal: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-Male")
+  @runtimeProperty("ModSettings.category.order", "1")
   @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleOneOfUs")
   @runtimeProperty("ModSettings.description", "ExecutionLines-MaleOneOfUs-Description")
   @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
@@ -128,6 +170,18 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
   @runtimeProperty("ModSettings.dependency", "customMale")
   public let maleOneOfUs: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-Male")
+  @runtimeProperty("ModSettings.category.order", "1")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleSweetDreams")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleSweetDreams-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMale")
+  public let maleSweetDreams: ExecutionLinesChoice = ExecutionLinesChoice.Both;
 
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.category", "ExecutionLines-Male")
@@ -187,6 +241,18 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.category", "ExecutionLines-Female")
   @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleExitLight")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleExitLight-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemale")
+  public let femaleExitLight: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-Female")
+  @runtimeProperty("ModSettings.category.order", "2")
   @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleKillOrBeKilled")
   @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleKillOrBeKilled-Description")
   @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
@@ -195,6 +261,18 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
   @runtimeProperty("ModSettings.dependency", "customFemale")
   public let femaleKillOrBeKilled: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-Female")
+  @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleNotPersonal")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleNotPersonal-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemale")
+  public let femaleNotPersonal: ExecutionLinesChoice = ExecutionLinesChoice.Both;
 
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.category", "ExecutionLines-Female")
@@ -223,6 +301,18 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.mod", "Execution Lines")
   @runtimeProperty("ModSettings.category", "ExecutionLines-Female")
   @runtimeProperty("ModSettings.category.order", "2")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleSweetDreams")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleSweetDreams-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemale")
+  public let femaleSweetDreams: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-Female")
+  @runtimeProperty("ModSettings.category.order", "2")
   @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleDeath")
   @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleDeath-Description")
   @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
@@ -243,4 +333,139 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
   @runtimeProperty("ModSettings.dependency", "customFemale")
   public let femaleSoul: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  // Kevin asked for a Custom at the head of each voice's grab lines, "as for the executions" (conception-saisies, 4).
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-MaleGrab")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-CustomMaleGrab")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-CustomMaleGrab-Description")
+  public let customMaleGrab: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-MaleGrab")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleTicket")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleTicket-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMaleGrab")
+  public let maleTicket: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-MaleGrab")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleLockedIn")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleLockedIn-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMaleGrab")
+  public let maleLockedIn: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-MaleGrab")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleLetYouGo")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleLetYouGo-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMaleGrab")
+  public let maleLetYouGo: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-MaleGrab")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleScars")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleScars-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMaleGrab")
+  public let maleScars: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-MaleGrab")
+  @runtimeProperty("ModSettings.category.order", "3")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-MaleSerious")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-MaleSerious-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customMaleGrab")
+  public let maleSerious: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-FemaleGrab")
+  @runtimeProperty("ModSettings.category.order", "4")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-CustomFemaleGrab")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-CustomFemaleGrab-Description")
+  public let customFemaleGrab: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-FemaleGrab")
+  @runtimeProperty("ModSettings.category.order", "4")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleTicket")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleTicket-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemaleGrab")
+  public let femaleTicket: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-FemaleGrab")
+  @runtimeProperty("ModSettings.category.order", "4")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleLockedIn")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleLockedIn-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemaleGrab")
+  public let femaleLockedIn: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-FemaleGrab")
+  @runtimeProperty("ModSettings.category.order", "4")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleLetYouGo")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleLetYouGo-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemaleGrab")
+  public let femaleLetYouGo: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-FemaleGrab")
+  @runtimeProperty("ModSettings.category.order", "4")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleScars")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleScars-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemaleGrab")
+  public let femaleScars: ExecutionLinesChoice = ExecutionLinesChoice.Both;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.category", "ExecutionLines-FemaleGrab")
+  @runtimeProperty("ModSettings.category.order", "4")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-FemaleSerious")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-FemaleSerious-Description")
+  @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Choice-Both")
+  @runtimeProperty("ModSettings.displayValues.Normal", "ExecutionLines-Choice-Normal")
+  @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Choice-Whisper")
+  @runtimeProperty("ModSettings.displayValues.None", "ExecutionLines-Choice-None")
+  @runtimeProperty("ModSettings.dependency", "customFemaleGrab")
+  public let femaleSerious: ExecutionLinesChoice = ExecutionLinesChoice.Both;
 }

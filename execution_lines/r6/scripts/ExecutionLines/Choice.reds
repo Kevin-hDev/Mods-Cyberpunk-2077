@@ -1,5 +1,6 @@
-// Which recordings V may say at an occasion, then which one (conception, section 2, points 3 to 5 and 7). No call to the
-// game here but RandRange: the table, the settings and the player's choices are this mod's own.
+// Which recordings V may say at an occasion or at a grab's moment, then which one (conception, section 2, points 3 to 5
+// and 7; conception-saisies, section 3.1, point 4). No call to the game here but RandRange: the table, the settings and
+// the player's choices are this mod's own.
 
 // The global style: the spoken takes unless Whisper, the whispered ones unless Normal.
 public func ExecutionLinesStyleAccepts(style: ExecutionLinesStyle, whispered: Bool) -> Bool {
@@ -20,15 +21,33 @@ public func ExecutionLinesChoiceAccepts(choice: ExecutionLinesChoice, whispered:
   return NotEquals(choice, ExecutionLinesChoice.Whisper);
 }
 
-// The takes of this voice whose phrase fits the occasion (a knock-out leaves the person alive: the phrases that fit a
-// non-lethal occasion alone), and that the global style and the phrase's choice both accept. Empty when the settings
-// allow none, and V then stays silent without drawing from the series of ten.
+// The takes of this voice whose phrase is said at this kind of occasion (a kill, or a knock-out that leaves the person
+// alive: SweetDreams at a knock-out only, Kevin, 20 November 2026), and that the global style and the phrase's choice
+// both accept. A grab line or a pure conclusion is said at neither kind, so never at an occasion (conception-saisies,
+// section 2). Empty when the settings allow none, and V then stays silent without drawing from the series of ten.
 public func ExecutionLinesAllowed(settings: ref<ExecutionLinesSettings>, female: Bool, lethal: Bool) -> array<ExecutionLinesLine> {
   let table: array<ExecutionLinesLine> = ExecutionLinesTable();
   let allowed: array<ExecutionLinesLine>;
   for line in table {
     if Equals(line.female, female)
-      && (lethal || ExecutionLinesFitsNonLethal(line.phrase))
+      && (lethal ? ExecutionLinesFitsLethal(line.phrase) : ExecutionLinesFitsNonLethal(line.phrase))
+      && ExecutionLinesStyleAccepts(settings.style, line.whispered)
+      && ExecutionLinesChoiceAccepts(ExecutionLinesChoiceOf(settings, line.phrase, female), line.whispered) {
+      ArrayPush(allowed, line);
+    }
+  }
+  return allowed;
+}
+
+// The grab lines of this voice that the global style and the phrase's choice in the voice's grab section both accept
+// (conception-saisies, section 3.1, point 4). Empty when the settings allow none, and V then stays silent without
+// drawing from the grab lines' series of ten.
+public func ExecutionLinesGrabAllowed(settings: ref<ExecutionLinesSettings>, female: Bool) -> array<ExecutionLinesLine> {
+  let table: array<ExecutionLinesLine> = ExecutionLinesTable();
+  let allowed: array<ExecutionLinesLine>;
+  for line in table {
+    if Equals(line.female, female)
+      && ExecutionLinesIsGrab(line.phrase)
       && ExecutionLinesStyleAccepts(settings.style, line.whispered)
       && ExecutionLinesChoiceAccepts(ExecutionLinesChoiceOf(settings, line.phrase, female), line.whispered) {
       ArrayPush(allowed, line);
@@ -42,7 +61,8 @@ public func ExecutionLinesAllowed(settings: ref<ExecutionLinesSettings>, female:
 // A draw by rounds kept the phrases of knock-outs ahead of the others, kills taking them again as soon as their round
 // was over (measure of 19 November 2026: the most said phrase of 35 lines, 9.4 on average, 8.2 by rounds, 6.3 so).
 // Each phrase and each take is known by a key, a phrase by its enum value, a take by its place in ExecutionLinesTable;
-// `counts` holds a count for each key, a key past its end counting 0 (Occasion.reds keeps the counts).
+// `counts` holds a count for each key, a key past its end counting 0 (the system keeps the counts: the executions'
+// and the conclusions' in Occasion.reds and Conclusion.reds, the grab lines' own in GrabLine.reds).
 
 // The keys of the allowed phrases, each once.
 public func ExecutionLinesPhraseKeys(allowed: array<ExecutionLinesLine>) -> array<Int32> {
@@ -87,7 +107,7 @@ public func ExecutionLinesCount(counts: array<Int32>, key: Int32) -> Int32 {
 }
 
 // One of the keys counted fewest, `last` left out unless it is the only key, each as likely. `keys` is never empty
-// here: the phrase drawn is one of the allowed (Occasion.reds, step 5), and so are its takes.
+// here: each caller has checked that a line is allowed, and the phrase drawn is one of the allowed, so are its takes.
 public func ExecutionLinesLeastSaid(keys: array<Int32>, counts: array<Int32>, last: Int32) -> Int32 {
   let others: array<Int32>;
   for key in keys {
@@ -129,7 +149,7 @@ public func ExecutionLinesCountsAfter(counts: array<Int32>, keys: array<Int32>, 
 }
 
 // The counts with this value at `key`, the keys before it that had none counting 0. A key is a phrase's enum value or a
-// place in the table, so that the counts never hold more than 9 or the table's number of lines.
+// place in the table, so that the counts never hold more than 23 or the table's number of lines.
 public func ExecutionLinesCountsWith(counts: array<Int32>, key: Int32, value: Int32) -> array<Int32> {
   let after: array<Int32>;
   let size: Int32 = Max(ArraySize(counts), key + 1);
