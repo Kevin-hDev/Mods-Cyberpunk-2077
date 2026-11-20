@@ -42,6 +42,10 @@ public class ExecutionLinesEnglish extends ModLocalizationPackage {
     this.Text("ExecutionLines-Style-Normal", "Normal");
     this.Text("ExecutionLines-Style-Whisper", "Whisper");
     this.Text("ExecutionLines-Style-Both", "Normal + Whisper");
+    this.Text("ExecutionLines-Volume", "Normal line volume");
+    this.Text("ExecutionLines-Volume-Description", "The volume of the lines V says out loud. 100: their original level. Lower makes them quieter; 0: silent.");
+    this.Text("ExecutionLines-WhisperVolume", "Whispered line volume");
+    this.Text("ExecutionLines-WhisperVolume-Description", "The volume of the lines V whispers. 100: their original level. Lower makes them quieter; 0: silent.");
     this.Text("ExecutionLines-Choice-Both", "Normal + Whisper");
     this.Text("ExecutionLines-Choice-Normal", "Normal");
     this.Text("ExecutionLines-Choice-Whisper", "Whisper");

@@ -22,13 +22,23 @@ public func ExecutionLinesSpeaking(system: ref<ExecutionLinesSystem>, now: Float
   return system.saying && now < system.sayingUntil;
 }
 
+// The volume Audioware is given for a take, from 0 to 1: the player's percentage for its kind, whispered or out loud,
+// clamped so that a settings file edited by hand never plays a line louder than its recording.
+public func ExecutionLinesVolumeOf(settings: ref<ExecutionLinesSettings>, whispered: Bool) -> Float {
+  let percent: Float = whispered ? settings.whisperVolume : settings.volume;
+  return ClampF(percent / 100.0, 0.0, 1.0);
+}
+
 // The line ends at its start plus its sound's length, which the table gives (fabrique/table_script.py measures it on the
-// sound). Kept before Audioware is asked, so that a line that fails to play still keeps V from talking over it.
+// sound). Kept before Audioware is asked, so that a line that fails to play still keeps V from talking over it. The
+// volume is read here, for every line of the mod, and changes nothing else: at 0 the line plays unheard and V still
+// speaks until its end.
 public func ExecutionLinesSay(system: ref<ExecutionLinesSystem>, game: GameInstance, player: ref<GameObject>, line: ExecutionLinesLine) -> Void {
   system.saying = true;
   system.sayingName = line.name;
   system.sayingUntil = ExecutionLinesNow(game) + Cast<Float>(line.milliseconds) / 1000.0;
-  ExecutionLinesPlay(player, line.name);
+  let settings: ref<ExecutionLinesSettings> = new ExecutionLinesSettings();
+  ExecutionLinesPlay(player, line.name, ExecutionLinesVolumeOf(settings, line.whispered));
 }
 
 // Both of the engine's clocks, in seconds, for the log lines of a line asked and a line stopped. Disposable: it goes

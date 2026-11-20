@@ -5,8 +5,9 @@
 // The menu is the one Kevin chose on drawings on 19 November 2026: a "Custom" switch at the head of each section, not
 // one for several, because Mod Settings keeps a section's title on the page even when all its lines are hidden. The
 // phrases of a section hide behind its own Custom, the one condition Mod Settings takes per line, so none depends on
-// Enabled: the lines above would hide with it and the phrases would stand alone on the page, mod off. Below the five
-// lines that have no section come Male V's execution lines (section 1) and Female V's (section 2), then, since 1.0.1,
+// Enabled: the lines above would hide with it and the phrases would stand alone on the page, mod off. Below the seven
+// lines that have no section (since 1.0.2, the two volumes right after Line style) come Male V's execution lines
+// (section 1) and Female V's (section 2), then, since 1.0.1,
 // Male V's grab lines (section 3) and Female V's (section 4), each section's phrases in the alphabetical order of their
 // labels. The voice that speaks and the kind of the phrase decide which section is read (ExecutionLinesChoiceOf,
 // SettingsChoice.reds). A phrase that is only a conclusion has no field, and Death and SweetDreams, which also end
@@ -78,6 +79,24 @@ public class ExecutionLinesSettings {
   @runtimeProperty("ModSettings.displayValues.Whisper", "ExecutionLines-Style-Whisper")
   @runtimeProperty("ModSettings.displayValues.Both", "ExecutionLines-Style-Both")
   public let style: ExecutionLinesStyle = ExecutionLinesStyle.Both;
+
+  // Kevin, 20 November 2026: one volume for the lines said out loud, one for the whispered ones, which only lower the
+  // sound; 100, the default, is the level of 1.0.1 (ExecutionLinesVolumeOf, Speaking.reds).
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-Volume")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-Volume-Description")
+  @runtimeProperty("ModSettings.step", "10.0")
+  @runtimeProperty("ModSettings.min", "0.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  public let volume: Float = 100.0;
+
+  @runtimeProperty("ModSettings.mod", "Execution Lines")
+  @runtimeProperty("ModSettings.displayName", "ExecutionLines-WhisperVolume")
+  @runtimeProperty("ModSettings.description", "ExecutionLines-WhisperVolume-Description")
+  @runtimeProperty("ModSettings.step", "10.0")
+  @runtimeProperty("ModSettings.min", "0.0")
+  @runtimeProperty("ModSettings.max", "100.0")
+  public let whisperVolume: Float = 100.0;
 
   // Off: only Line style counts, and the choices below are ignored even if they were changed before.
   @runtimeProperty("ModSettings.mod", "Execution Lines")

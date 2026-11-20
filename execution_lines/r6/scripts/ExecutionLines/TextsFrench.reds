@@ -23,6 +23,10 @@ public class ExecutionLinesFrench extends ModLocalizationPackage {
     this.Text("ExecutionLines-Style-Normal", "Normal");
     this.Text("ExecutionLines-Style-Whisper", "Chuchoté");
     this.Text("ExecutionLines-Style-Both", "Normal + chuchoté");
+    this.Text("ExecutionLines-Volume", "Volume des répliques normales");
+    this.Text("ExecutionLines-Volume-Description", "Le volume des répliques que V dit à voix haute. 100 : leur niveau d'origine. Plus bas, elles sont plus discrètes ; 0 : muettes.");
+    this.Text("ExecutionLines-WhisperVolume", "Volume des répliques chuchotées");
+    this.Text("ExecutionLines-WhisperVolume-Description", "Le volume des répliques que V chuchote. 100 : leur niveau d'origine. Plus bas, elles sont plus discrètes ; 0 : muettes.");
     this.Text("ExecutionLines-Choice-Both", "Normal + chuchoté");
     this.Text("ExecutionLines-Choice-Normal", "Normal");
     this.Text("ExecutionLines-Choice-Whisper", "Chuchoté");

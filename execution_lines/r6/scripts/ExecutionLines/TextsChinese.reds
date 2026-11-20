@@ -23,6 +23,10 @@ public class ExecutionLinesChinese extends ModLocalizationPackage {
     this.Text("ExecutionLines-Style-Normal", "正常");
     this.Text("ExecutionLines-Style-Whisper", "耳语");
     this.Text("ExecutionLines-Style-Both", "正常 + 耳语");
+    this.Text("ExecutionLines-Volume", "正常台词音量");
+    this.Text("ExecutionLines-Volume-Description", "V 大声说出的台词的音量。100：原始音量。调低则更轻；0：静音。");
+    this.Text("ExecutionLines-WhisperVolume", "耳语台词音量");
+    this.Text("ExecutionLines-WhisperVolume-Description", "V 耳语的台词的音量。100：原始音量。调低则更轻；0：静音。");
     this.Text("ExecutionLines-Choice-Both", "正常 + 耳语");
     this.Text("ExecutionLines-Choice-Normal", "正常");
     this.Text("ExecutionLines-Choice-Whisper", "耳语");

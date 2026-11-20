@@ -12,7 +12,7 @@ Mods for Cyberpunk 2077 2.5, written in redscript: movement mods inspired by Ape
 | [Wall Climb](wall_climb/) | Climb any wall in Night City, sideways and upward | 1.0.0 |
 | [Apex Grapple](apex_grapple/) | A grappling hook: aim at a surface, the hook flies out, and the rope pulls you while your aim steers you | 1.1.8 |
 | [Cyber Grapple](cyber_grapple/) | Apex Grapple's grappling hook as an arm implant: bought from ripperdocs, upgraded tier by tier, with charges | 1.0.3 |
-| [Execution Lines](execution_lines/) | V says a voice line when grabbing an enemy and when executing them: 22 lines, out loud or whispered, in several tones, for male V and female V, and you choose which ones you hear | 1.0.1 |
+| [Execution Lines](execution_lines/) | V says a voice line when grabbing an enemy and when executing them: 22 lines, out loud or whispered, in several tones, for male V and female V, and you choose which ones you hear | 1.0.2 |
 | [Mod Settings Navigator](mod_settings_navigator/) | Favourites and pages in the list of Mod Settings, foldable settings sections, and a menu that reopens on the mod and the line you were on | 1.0.1 |
 
 Each folder holds the mod exactly as it ships on Nexus Mods: its `r6` folder mirrors the game folder.
